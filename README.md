@@ -185,6 +185,6 @@ These conditions can be used to handle unusual situations.
     hand, set aside his or her unplayable tiles, and draw six new tiles at the
     beginning of his or her turn. Tiles set aside are discarded from the game.
 
-3.  **Bank doesn't have enough shares to allow everyone to trade in their
+3.  **Bank doesn’t have enough shares to allow everyone to trade in their
     shares** – first choice falls to person causing the merger, followed by
     other players in order around the table in the order of play.
