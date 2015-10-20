@@ -1,39 +1,39 @@
 html {
-	box-sizing: border-box;
+  box-sizing: border-box;
 }
 *, *:before, *:after {
-	box-sizing: inherit;
-	-webkit-font-smoothing: antialiased;
+  box-sizing: inherit;
+  -webkit-font-smoothing: antialiased;
 }
 
 html {
-	font-family: "Roboto";
-	color: rgba(0, 0, 0, 0.87);
-	background-color: #eeeeee;
-	font-size: 16px;
-	line-height: calc(24em / 14);
+  font-family: "Roboto";
+  color: rgba(0, 0, 0, 0.87);
+  background-color: #eeeeee;
+  font-size: 16px;
+  line-height: calc(24em / 14);
 }
 
 paper-toolbar#topbar,
 paper-button#join-button {
-	background-color: #1c66e3;
+  background-color: #1c66e3;
 }
 
 paper-toolbar .paper-toolbar,
 main {
-	max-width: 32em;
-	margin: 0 auto;
-	padding: 0 1em;
+  max-width: 32em;
+  margin: 0 auto;
+  padding: 0 1em;
 }
 
 main {
-	text-align: center;
+  text-align: center;
 }
 
 paper-input {
-	text-align: left;
+  text-align: left;
 }
 
 paper-button#join-button {
-	color: white;
+  color: white;
 }
