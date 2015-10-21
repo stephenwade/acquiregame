@@ -2,6 +2,7 @@
   "name": "acquiregame-client",
   "homepage": "https://github.com/stephenwade/acquiregame",
   "authors": [
+    "William Ashton <jwashton@gmail.com>",
     "Stephen Wade <stephen@stephenwade.me>"
   ],
   "description": "The client-side code for acquiregame",
