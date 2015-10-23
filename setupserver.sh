@@ -2,7 +2,7 @@
 
 # This is a script that will set up node.js and nginx on a DigitalOcean server running Ubuntu 15.10.
 # It also installs pm2, which is a process manager for node.js.
-# Use it like `sudo -H pm2 start acquire.js`
+# Use it like `pm2 start acquire.js`
 
 sudo touch /var/swap.img
 sudo chmod 600 /var/swap.img
@@ -18,7 +18,11 @@ wget -qO- https://deb.nodesource.com/setup_4.x | sudo bash -
 sudo apt -y install mosh vim curl git nginx nodejs build-essential
 wget -qO- https://npmjs.com/install.sh | sudo bash -
 
-sudo npm install pm2 -g
+sudo chgrp -R sudo /usr/lib/node_modules
+sudo chgrp sudo /usr/bin
+sudo chmod g+w -R /usr/lib/node_modules
+sudo chmod g+w /usr/bin
+npm install pm2 -g
 
 cd /var/www
 sudo git clone https://github.com/stephenwade/acquiregame.git
@@ -26,8 +30,8 @@ sudo chown -R $(whoami) acquiregame
 
 cd /var/www/acquiregame/server
 npm update
-sudo -H pm2 start acquire.js
-sudo -H pm2 startup systemd
+pm2 start acquire.js
+pm2 startup systemd 2>&1 | tail -n 1 | bash
 
 sudo sed -i \
   -e '/\s*#.*$/d' \
@@ -51,5 +55,5 @@ cd
 echo '#!/bin/bash' > update
 echo 'cd /var/www/acquiregame' >> update
 echo 'git pull' >> update
-echo 'sudo -H pm2 restart acquire' >> update
+echo 'pm2 restart acquire' >> update
 chmod +x update
