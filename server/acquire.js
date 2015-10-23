@@ -10,22 +10,13 @@ http.createServer(function (request, response) {
   if (url == "/")
     url = "/index.html"
   
-  if (url.startsWith("/acquire/")) {
+  if (url.startsWith("/game")) {
     response.writeHead(200, {"Content-Type": "text/plain"});
     response.end("server-side logic goes here");
   } else {
-    fs.readFile("client/" + url.substr(1), function(err, fileData) {
-      if (err) {
-        response.writeHead(400, {"Content-Type": "text/plain"});
-        response.end(String(err));
-        console.log(err);
-        return;
-      }
-      
-      response.writeHead(200, {"Content-Type": mime.lookup(url)});
-      response.end(fileData.toString());
-    });
+    response.writeHead(404, {"Content-Type": "text/plain"});
+    response.end("how did you get here??");
   }
-}).listen(8001, "0.0.0.0");
+}).listen(8001, "127.0.0.1");
 
 console.log("Server started");
