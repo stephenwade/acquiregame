@@ -15,7 +15,7 @@ sudo apt update
 sudo apt -y full-upgrade
 
 wget -qO- https://deb.nodesource.com/setup_4.x | sudo bash -
-sudo apt -y install vim curl git nginx nodejs build-essentials
+sudo apt -y install mosh vim curl git nginx nodejs build-essentials
 
 sudo npm install npm -g
 sudo npm install pm2 -g
