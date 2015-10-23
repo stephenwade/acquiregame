@@ -2,7 +2,7 @@
 
 # This is a script that will set up node.js and nginx on a DigitalOcean server running Ubuntu 15.10.
 # It also installs pm2, which is a process manager for node.js.
-# Use it like `pm2 start acquire.js`
+# Use it like `sudo pm2 start acquire.js`
 
 sudo touch /var/swap.img
 sudo chmod 600 /var/swap.img
@@ -21,6 +21,22 @@ wget -qO- https://npmjs.com/install.sh | sudo bash -
 sudo npm install pm2 -g
 sudo pm2 startup ubuntu
 
+cd /var/www
+sudo git clone https://github.com/stephenwade/acquiregame.git
+sudo chown -R $(whoami) acquiregame
+
+cd /var/www/acquiregame/server
+npm update
+sudo pm2 start acquire.js
+sudo pm2 save
+
 sudo sed -i -e '/\s*#.*$/d' -e '/^\s*$/d' -e 's:root /var/www/html:root /var/www/acquiregame/client:' -e 's/server_name _/server_name acquire.stephenwade.me/' -e '/^}$/d' /etc/nginx/sites-available/default
 sudo bash -c 'printf "\tlocation /game {\n\t\tproxy_set_header Upgrade \$http_upgrade;\n\t\tproxy_set_header Connection "upgrade";\n\t\tproxy_http_version 1.1;\n\t\tproxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;\n\t\tproxy_set_header Host \$host;\n\t\tproxy_pass http://127.0.0.1:8001;\n\t}\n}" >> /etc/nginx/sites-available/default'
 sudo systemctl restart nginx
+
+cd
+echo '#!/bin/bash' > update
+echo 'cd /var/www/acquiregame' >> update
+echo 'git pull' >> update
+echo 'sudo pm2 restart acquire' >> update
+chmod +x update
