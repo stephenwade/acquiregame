@@ -37,7 +37,7 @@ sudo sed -i \
   -e '/\s*#.*$/d' \
   -e '/^\s*$/d' \
   -e 's:root /var/www/html:root /var/www/acquiregame/client:' \
-  -e 's/server_name _/server_name acquire.stephenwade.me/' \
+  -e "s/server_name _/server_name $(nslookup $(curl ifconfig.co) | grep name | awk '{ print $4 }' | sed 's/\.$//')/" \
   -e '/^}$/d' \
   /etc/nginx/sites-available/default
 sudo bash -c 'printf "\tlocation /game {
