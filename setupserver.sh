@@ -14,7 +14,8 @@ sudo swapon /var/swap.img
 sudo apt update
 sudo apt -y full-upgrade
 
-sudo apt -y install vim curl git nginx nodejs npm nodejs-legacy
+wget -qO- https://deb.nodesource.com/setup_4.x | sudo bash -
+sudo apt -y install vim curl git nginx nodejs build-essentials
 
 sudo npm install npm -g
 sudo npm install pm2 -g
