@@ -14,26 +14,59 @@ html {
   line-height: calc(24em / 14);
 }
 
-paper-toolbar#topbar,
-paper-button#join-button {
-  background-color: #1c66e3;
+paper-header-panel {
+  height: calc(100vh - 64px);
+}
+
+paper-toolbar#header {
+  background-color: #e41c1c;
 }
 
 paper-toolbar .paper-toolbar,
-main {
+#mainContainer > * {
   max-width: 32em;
   margin: 0 auto;
   padding: 0 1em;
 }
 
+#mainContainer {
+  display: flex;
+  flex-direction: column;
+}
+
+#mainContainer > * {
+  width: 100%;
+}
+
 main {
-  text-align: center;
+  flex: 1;
 }
 
 paper-input {
   text-align: left;
 }
 
+#join-wrapper {
+  text-align: center;
+}
+
 paper-button#join-button {
   color: white;
+  background-color: #1c66e3;
+}
+
+#footer {
+  background-color: #e3d31c;
+  color: rgba(0, 0, 0, 0.87);
+}
+
+#footer-links > * {
+  float: left;
+}
+#footer-links > *:not(:first-child) {
+  margin-left: 0.5em;
+}
+#footer-links > *:not(:first-child)::before {
+  content: "|";
+  margin-right: 0.5em;
 }
