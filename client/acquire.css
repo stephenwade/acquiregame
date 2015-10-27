@@ -16,10 +16,6 @@ html {
   line-height: calc(24em / 14);
 }
 
-paper-header-panel {
-  height: calc(100% - 64px);
-}
-
 paper-toolbar#header {
   background-color: #e41c1c;
 }
@@ -27,7 +23,8 @@ paper-toolbar#header {
 paper-toolbar .paper-toolbar,
 #mainContainer > * {
   max-width: 32em;
-  margin: 0 auto;
+  margin-left: auto;
+  margin-right: auto;
   padding: 0 1em;
 }
 
@@ -57,13 +54,8 @@ paper-button#join-button {
   background-color: #1c66e3;
 }
 
-#footer {
-  position: fixed;
-  bottom: 0;
-  
-  width: 100%;
-  background-color: #e3d31c;
-  color: rgba(0, 0, 0, 0.87);
+footer {
+  margin-top: 10em;
 }
 
 #footer-links > * {
