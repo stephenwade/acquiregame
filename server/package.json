@@ -4,7 +4,6 @@
   "description": "The server-side code for acquiregame",
   "main": "acquire.js",
   "dependencies": {
-    "mime": "^1.3.4",
     "socket.io": "^1.3.7"
   },
   "devDependencies": {},
