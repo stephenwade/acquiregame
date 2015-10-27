@@ -7,6 +7,8 @@ html {
 }
 
 html {
+  height: 100%;
+  
   font-family: "Roboto";
   color: rgba(0, 0, 0, 0.87);
   background-color: #eeeeee;
@@ -15,7 +17,7 @@ html {
 }
 
 paper-header-panel {
-  height: calc(100vh - 64px);
+  height: calc(100% - 64px);
 }
 
 paper-toolbar#header {
@@ -56,6 +58,10 @@ paper-button#join-button {
 }
 
 #footer {
+  position: fixed;
+  bottom: 0;
+  
+  width: 100%;
   background-color: #e3d31c;
   color: rgba(0, 0, 0, 0.87);
 }
