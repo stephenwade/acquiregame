@@ -1,0 +1,38 @@
+<link rel="import" href="../paper-header-panel/paper-header-panel.html">
+<link rel="import" href="../paper-toolbar/paper-toolbar.html">
+<link rel="import" href="../paper-button/paper-button.html">
+<link rel="import" href="../paper-input/paper-input.html">
+
+<link rel="import" href="../polymer/polymer.html">
+
+<dom-module id="acquire-join-page">
+
+  <template>
+    <paper-header-panel mode="waterfall">
+      <paper-toolbar id="header">
+        <div class="flex">Acquire</div>
+      </paper-toolbar>
+      <div>
+        <paper-input type="tel" label="Game ID"></paper-input>
+        <div id="join-wrapper"><paper-button id="join-button">Join game</paper-button></div>
+        <div id="messages"></div>
+        <footer>
+          <div>v0.0.1</div>
+          <div id="footer-links">
+            <span><a href="https://en.wikipedia.org/wiki/Acquire">rules</a></span>
+            <span><a href="https://github.com/stephenwade/acquiregame">git</a></span>
+            <span><a href="https://github.com/stephenwade/acquiregame/issues">issues</a></span>
+          </div>
+          </div>
+        </footer>
+      </div>
+    </paper-header-panel>
+  </template>
+  
+  <script>
+    Polymer({
+      is: "acquire-join-page"
+    });
+  </script>
+
+</dom-module>
