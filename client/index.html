@@ -12,11 +12,16 @@
   
   <script src="bower_components/webcomponentsjs/webcomponents.js"></script>
   
+  <link rel="import" href="bower_components/acquire-router/acquire-router.html">
+  <link rel="import" href="bower_components/acquire-home-page/acquire-home-page.html">
   <link rel="import" href="bower_components/acquire-join-page/acquire-join-page.html">
 </head>
 <body unresolved class="fullbleed">
 
-<acquire-join-page></acquire-join-page>
+<acquire-router>
+  <acquire-home-page id="home"></acquire-home-page>
+  <acquire-join-page id="join"></acquire-join-page>
+</acquire-router>
 
 
 <script src="index.js"></script>
