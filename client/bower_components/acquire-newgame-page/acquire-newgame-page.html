@@ -1,0 +1,49 @@
+<link rel="import" href="../paper-header-panel/paper-header-panel.html">
+<link rel="import" href="../paper-toolbar/paper-toolbar.html">
+<link rel="import" href="../paper-button/paper-button.html">
+<link rel="import" href="../paper-input/paper-input.html">
+<link rel="import" href="../paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../iron-icons/iron-icons.html">
+
+<link rel="import" href="../polymer/polymer.html">
+
+<dom-module id="acquire-newgame-page">
+
+  <template>
+    <style>
+      paper-button {
+        display: block;
+        max-width: 12em;
+        margin: 1em auto;
+        color: white;
+        background-color: #1c66e3;
+      }
+      paper-icon-button {
+        margin-left: -12px;
+        margin-right: 8px;
+        color: white;
+      }
+    </style>
+    
+    <paper-header-panel mode="waterfall">
+      <paper-toolbar id="header">
+        <a href="#home"><paper-icon-button icon="arrow-back"></paper-icon-button></a>
+        <h3 class="flex">New game</h3>
+      </paper-toolbar>
+      <main>
+        <p>Let’s play a game!</p>
+        <p>I mean, we don’t actually have anything for you to play yet. But it’s gonna be really cool once we get it done!</p>
+        <p>Probably.</p>
+        <paper-button id="newgame-button">New game</paper-button>
+        <div id="messages"></div>
+      </main>
+    </paper-header-panel>
+  </template>
+  
+  <script>
+    Polymer({
+      is: "acquire-newgame-page"
+    });
+  </script>
+
+</dom-module>
