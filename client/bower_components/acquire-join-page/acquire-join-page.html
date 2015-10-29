@@ -2,21 +2,39 @@
 <link rel="import" href="../paper-toolbar/paper-toolbar.html">
 <link rel="import" href="../paper-button/paper-button.html">
 <link rel="import" href="../paper-input/paper-input.html">
+<link rel="import" href="../paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../iron-icons/iron-icons.html">
 
 <link rel="import" href="../polymer/polymer.html">
 
 <dom-module id="acquire-join-page">
 
   <template>
+    <style>
+      paper-button {
+        display: block;
+        max-width: 12em;
+        margin: 1em auto;
+        color: white;
+        background-color: #1c66e3;
+      }
+      paper-icon-button {
+        margin-left: -12px;
+        margin-right: 8px;
+        color: white;
+      }
+    </style>
+    
     <paper-header-panel mode="waterfall">
       <paper-toolbar id="header">
-        <div class="flex">Acquire</div>
+        <a href="#home"><paper-icon-button icon="arrow-back"></paper-icon-button></a>
+        <h3 class="flex">Join game</h3>
       </paper-toolbar>
-      <div>
+      <main>
         <paper-input type="tel" label="Game ID"></paper-input>
-        <div id="join-wrapper"><paper-button id="join-button">Join game</paper-button></div>
+        <paper-button id="join-button">Join game</paper-button>
         <div id="messages"></div>
-      </div>
+      </main>
     </paper-header-panel>
   </template>
   

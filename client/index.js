@@ -1,4 +1,4 @@
-// 'use strict';
+'use strict';
 
 // window.addEventListener("WebComponentsReady", function(e) { // page ready to go
 //   var socket = io('10.9.43.188:8001');

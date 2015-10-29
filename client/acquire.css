@@ -25,33 +25,15 @@ paper-toolbar .paper-toolbar,
   max-width: 32em;
   margin-left: auto;
   margin-right: auto;
-  padding: 0 1em;
 }
 
-#mainContainer {
-  display: flex;
-  flex-direction: column;
-}
-
-#mainContainer > * {
-  width: 100%;
-}
-
-main {
-  flex: 1;
+paper-header-panel main,
+paper-header-panel footer {
+  padding: 16px;
 }
 
 paper-input {
   text-align: left;
-}
-
-#join-wrapper {
-  text-align: center;
-}
-
-paper-button#join-button {
-  color: white;
-  background-color: #1c66e3;
 }
 
 footer {
