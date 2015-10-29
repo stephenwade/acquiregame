@@ -1,0 +1,50 @@
+<link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="../acquire-home-page/acquire-home-page.html">
+<link rel="import" href="../acquire-join-page/acquire-join-page.html">
+<link rel="import" href="../acquire-newgame-page/acquire-newgame-page.html">
+
+<dom-module id="acquire-router">
+
+  <template>
+    
+  </template>
+  
+  <script>
+    "use strict";
+    
+    var pageNames = {
+      "home": "acquire-home-page",
+      "new": "acquire-newgame-page",
+      "join": "acquire-join-page"
+    };
+    
+    var pages = {};
+    
+    var activePage;
+    
+    Polymer({
+      is: "acquire-router",
+      attached: function() {
+        this.async(function() { // https://www.polymer-project.org/1.0/docs/devguide/registering-elements.html#initialization-order
+          this.handleHash();
+          $(window).on("hashchange", this.handleHash);
+        });
+      },
+      handleHash: function() {
+        let hash = window.location.hash.replace(/^#/, "").split("/")[0];
+        
+        if (pageNames[hash] === undefined)
+          window.location.hash = "#home";
+        else {
+          if (activePage !== undefined)
+            $(pages[activePage]).remove();
+          if (pages[hash] === undefined)
+            pages[hash] = document.createElement(pageNames[hash]);
+          activePage = hash;
+          $(pages[hash]).appendTo("acquire-router");
+        }
+      }
+    });
+  </script>
+
+</dom-module>
