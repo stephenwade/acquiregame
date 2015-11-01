@@ -35,6 +35,7 @@
         <h3 class="flex">New game</h3>
       </paper-toolbar>
       <main>
+        <p>Players can connect to this game using ID <span id="game-ID"></span>.</p>
         <p>Waiting for players to connect…</p>
         <p>Players:</p>
         <div id="players"></div>
@@ -45,7 +46,16 @@
     <script>
       "use strict";
       
-      socket.emit("new game");
+      socket.emit('new game');
+      
+      socket.on('game created', function(msg) {
+        gameID = msg;
+        $("#game-ID").html(gameID);
+      });
+      
+      socket.on('players', function(msg) {
+        $('#players').html(msg.toString());
+      });
     </script>
   </template>
   

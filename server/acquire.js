@@ -11,14 +11,22 @@ io.on('connection', function(socket) {
   console.log('a user connected');
   
   socket.on('new game', function() {
-    console.log(newGameID());
+    let id = newGameID();
+    games[id] = {
+      players: []
+    };
+    socket.join(id);
+    io.to(id).emit('game created', id);
   });
   
   socket.on('join game', function(msg) {
-    socket.join(msg);
-    setTimeout(function() {
-      console.log(socket.rooms);
-    }, 1000);
+    if (games[msg]) {
+      socket.join(msg);
+      games[msg].players.push(socket.id);
+      io.to(msg).emit('players', games[msg].players);
+    } else {
+      socket.emit('invalid game');
+    }
   });
   
   socket.on('disconnect', function() {
