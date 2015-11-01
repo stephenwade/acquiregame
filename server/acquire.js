@@ -1,8 +1,8 @@
 "use strict";
 
-var http   = require("http").createServer(handler).listen(8001, "0.0.0.0");
-var fs     = require("fs");
-var io = require("socket.io")(http);
+var http = require("http").createServer(handler).listen(8001, "0.0.0.0");
+var fs   = require("fs");
+var io   = require("socket.io")(http);
 
 function handler(request, response) {
   let url = request.url;
@@ -17,8 +17,21 @@ function handler(request, response) {
   }
 }
 
+
+
+var games = {};
+
+
+
 io.on('connection', function(socket) {
   console.log('a user connected');
+  
+  socket.on('join game', function(msg) {
+    socket.join(msg);
+    setTimeout(function() {
+      console.log(socket.rooms);
+    }, 1000);
+  });
   
   socket.on('disconnect', function() {
     console.log('user disconnected');
@@ -27,7 +40,7 @@ io.on('connection', function(socket) {
   socket.on('chat message', function(msg) {
     console.log('message: ', msg);
     
-    io.emit('chat message', msg);
+    io.to(socket.rooms[1]).emit('chat message', msg);
   });
 });
 
