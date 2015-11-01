@@ -1,30 +1,18 @@
 "use strict";
 
-var http = require("http").createServer(handler).listen(8001, "0.0.0.0");
-var fs   = require("fs");
-var io   = require("socket.io")(http);
-
-function handler(request, response) {
-  let url = request.url;
-  console.log(url);
-  
-  if (url.startsWith("/game")) {
-    response.writeHead(200, {"Content-Type": "text/plain"});
-    response.end("coming soon");
-  } else {
-    response.writeHead(404, {"Content-Type": "text/plain"});
-    response.end("how did you get here??");
-  }
-}
-
+var fs = require("fs");
+var io = require("socket.io")(8001);
 
 
 var games = {};
 
 
-
 io.on('connection', function(socket) {
   console.log('a user connected');
+  
+  socket.on('new game', function() {
+    console.log(newGameID());
+  });
   
   socket.on('join game', function(msg) {
     socket.join(msg);
@@ -43,5 +31,13 @@ io.on('connection', function(socket) {
     io.to(socket.rooms[1]).emit('chat message', msg);
   });
 });
+
+function newGameID() {
+  let attempt = Math.floor(Math.random() * 10000);
+  if (attempt < 1000 || games.attempt)
+    return newGameID();
+  else
+    return attempt;
+}
 
 console.log("Server started");

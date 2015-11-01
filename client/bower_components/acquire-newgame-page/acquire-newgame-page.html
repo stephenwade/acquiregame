@@ -18,6 +18,10 @@
         color: white;
         background-color: #1c66e3;
       }
+      paper-button[disabled] {
+        background-color: #aaa;
+        color: black;
+      }
       paper-icon-button {
         margin-left: -12px;
         margin-right: 8px;
@@ -31,12 +35,18 @@
         <h3 class="flex">New game</h3>
       </paper-toolbar>
       <main>
-        <p>Let’s play a game!</p>
-        <p>I mean, we don’t actually have anything for you to play yet. But it’s gonna be really cool once we get it done!</p>
-        <p>Probably.</p>
-        <paper-button id="newgame-button">New game</paper-button>
+        <p>Waiting for players to connect…</p>
+        <p>Players:</p>
+        <div id="players"></div>
+        <paper-button disabled>Start game</paper-button>
       </main>
     </paper-header-panel>
+    
+    <script>
+      "use strict";
+      
+      socket.emit("new game");
+    </script>
   </template>
   
   <script>
