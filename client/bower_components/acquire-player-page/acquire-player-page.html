@@ -7,7 +7,7 @@
 
 <link rel="import" href="../polymer/polymer.html">
 
-<dom-module id="acquire-join-page">
+<dom-module id="acquire-player-page">
 
   <template>
     <style>
@@ -28,27 +28,39 @@
     <paper-header-panel mode="waterfall">
       <paper-toolbar id="header">
         <a href="#home"><paper-icon-button icon="arrow-back"></paper-icon-button></a>
-        <h3 class="flex">Join game</h3>
+        <h3 class="flex">Play game</h3>
       </paper-toolbar>
       <main>
-        <paper-input type="tel" label="Game ID"></paper-input>
-        <paper-button id="join-button">Join game</paper-button>
+        <paper-input type="text" label="Message"></paper-input>
+        <paper-button id="send-button">Send</paper-button>
+        <div id="messages"></div>
       </main>
     </paper-header-panel>
     
     <script>
       "use strict";
       
-      gameID = prompt("Game ID");
-      socket.emit("join game", gameID);
+      $('paper-button').click(function(evt) {
+      var input = $('paper-input')[0];
+      var val = input.value;
       
-      window.location.hash = "#play";
+      if (val !== '') {
+        socket.emit('chat message', val);
+        console.log('submitting:', val);
+        input.value = '';
+      }
+      });
+      
+      socket.on('chat message', function(msg) {
+        console.log(msg);
+        $('#messages').append($('<p>').text(msg));
+      });
     </script>
   </template>
   
   <script>
     Polymer({
-      is: "acquire-join-page"
+      is: "acquire-player-page"
     });
   </script>
 
