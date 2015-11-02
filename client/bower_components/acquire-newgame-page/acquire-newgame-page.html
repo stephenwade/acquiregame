@@ -42,26 +42,26 @@
         <paper-button disabled>Start game</paper-button>
       </main>
     </paper-header-panel>
-    
-    <script>
-      'use strict';
-      
-      socket.emit('new game');
-      
-      socket.on('game created', function(msg) {
-        gameID = msg;
-        $('#game-ID').html(gameID);
-      });
-      
-      socket.on('players', function(msg) {
-        $('#players').html(msg.toString());
-      });
-    </script>
   </template>
   
   <script>
+    'use strict';
+    
     Polymer({
-      is: 'acquire-newgame-page'
+      is: 'acquire-newgame-page',
+      
+      attached: function() {
+        socket.emit('new game');
+        
+        socket.on('game created', function(msg) {
+          gameID = msg;
+          $('#game-ID').html(gameID);
+        });
+        
+        socket.on('players', function(msg) {
+          $('#players').html(msg.toString());
+        });
+      }
     });
   </script>
 
