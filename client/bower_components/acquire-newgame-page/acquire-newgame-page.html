@@ -58,8 +58,9 @@
           $('#game-ID').html(gameID);
         });
         
-        socket.on('players', function(msg) {
-          $('#players').html(msg.toString());
+        socket.on('setup state', function(msg) {
+          $('#players').html(msg.players.toString());
+          $('paper-button').attr('disabled', ! msg.isReady);
         });
       }
     });

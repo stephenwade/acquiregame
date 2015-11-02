@@ -1,10 +1,13 @@
 'use strict';
 
-var GamesManager = require('./gamesManager');
+var io = require('socket.io')(8001);
 
 var shared = {
-  io: require('socket.io')(8001),
-  gamesManager: new GamesManager()
+  io: io
 };
+
+setTimeout(function() {
+  console.log('shared', typeof io);
+}, 1000);
 
 module.exports = shared;

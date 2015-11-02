@@ -1,7 +1,8 @@
 'use strict';
 
 var io = require('./shared').io;
-var gamesManager = require('./shared').gamesManager;
+// var gamesManager = require('./shared').gamesManager;
+var gamesManager = new (require('./gamesManager'))();
 
 class Connection {
   constructor(socket) {
@@ -40,7 +41,6 @@ class Connection {
     if (game) {
       this.socket.join(msg);
       game.addPlayer(this.socket.id);
-      io.to(msg).emit('players', game.players);
     } else {
       this.socket.emit('invalid game');
     }
