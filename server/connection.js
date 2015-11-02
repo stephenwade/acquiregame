@@ -1,12 +1,12 @@
 'use strict';
 
 var io = require('./shared').io;
+var gamesManager = require('./shared').gamesManager;
 
 class Connection {
-  constructor(socket, gamesManager) {
+  constructor(socket) {
     console.log('a user connected');
     this.socket = socket;
-    this.gamesManager = gamesManager;
     
     this.gameID = null;
     
@@ -29,14 +29,14 @@ class Connection {
   newGame() {
     console.log(this.id, 'started a new game');
     
-    this.gameID = this.gamesManager.newGame();
+    this.gameID = gamesManager.newGame();
     
     this.socket.join(this.gameID);
     io.to(this.gameID).emit('game created', this.gameID);
   }
   
   joinGame(msg) {
-    let game = this.gamesManager.findGame(msg);
+    let game = gamesManager.findGame(msg);
     if (game) {
       this.socket.join(msg);
       game.addPlayer(this.socket.id);
@@ -51,7 +51,7 @@ class Connection {
   }
   
   chatMessage(msg) {
-    console.log('message: ', msg);
+    console.log('message:', msg);
     
     io.to(this.socket.rooms[1]).emit('chat message', msg);
   }
