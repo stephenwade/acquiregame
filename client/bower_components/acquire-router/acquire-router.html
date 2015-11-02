@@ -11,13 +11,13 @@
   </template>
   
   <script>
-    "use strict";
+    'use strict';
     
     var pageNames = {
-      "home": "acquire-home-page",
-      "new": "acquire-newgame-page",
-      "join": "acquire-join-page",
-      "play": "acquire-player-page"
+      'home': 'acquire-home-page',
+      'new': 'acquire-newgame-page',
+      'join': 'acquire-join-page',
+      'play': 'acquire-player-page'
     };
     
     var pages = {};
@@ -25,25 +25,25 @@
     var activePage;
     
     Polymer({
-      is: "acquire-router",
+      is: 'acquire-router',
       attached: function() {
         this.async(function() { // https://www.polymer-project.org/1.0/docs/devguide/registering-elements.html#initialization-order
           this.handleHash();
-          $(window).on("hashchange", this.handleHash);
+          $(window).on('hashchange', this.handleHash);
         });
       },
       handleHash: function() {
-        let hash = window.location.hash.replace(/^#/, "").split("/")[0];
+        let hash = window.location.hash.replace(/^#/, '').split('/')[0];
         
         if (pageNames[hash] === undefined)
-          window.location.hash = "#home";
+          window.location.hash = '#home';
         else {
           if (activePage !== undefined)
             $(pages[activePage]).remove();
           if (pages[hash] === undefined)
             pages[hash] = document.createElement(pageNames[hash]);
           activePage = hash;
-          $(pages[hash]).appendTo("acquire-router");
+          $(pages[hash]).appendTo('acquire-router');
         }
       }
     });

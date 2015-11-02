@@ -35,20 +35,21 @@
         <paper-button id="join-button">Join game</paper-button>
       </main>
     </paper-header-panel>
-    
-    <script>
-      "use strict";
-      
-      gameID = prompt("Game ID");
-      socket.emit("join game", gameID);
-      
-      window.location.hash = "#play";
-    </script>
   </template>
   
   <script>
+    'use strict';
+      
     Polymer({
-      is: "acquire-join-page"
+      is: 'acquire-join-page',
+      
+      attached: function() {
+        console.log('attached');
+        gameID = prompt('Game ID');
+        socket.emit('join game', gameID);
+        
+        window.location.hash = '#play';
+      }
     });
   </script>
 

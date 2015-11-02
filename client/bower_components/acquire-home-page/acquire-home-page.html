@@ -54,21 +54,21 @@
   </template>
   
   <script>
-    "use strict";
+    'use strict';
     
     Polymer({
-      is: "acquire-home-page"
+      is: 'acquire-home-page'
     });
     
     var newgameClick = function() {
-      if (window.matchMedia("(max-width: 600px)").matches)
-        document.querySelector("paper-dialog").open();
+      if (window.matchMedia('(max-width: 600px)').matches)
+        document.querySelector('paper-dialog').open();
       else
-        window.location.hash = "#new";
+        window.location.hash = '#new';
     };
     
     var joinClick = function() {
-      window.location.hash = "#join";
+      window.location.hash = '#join';
     }
   </script>
 
