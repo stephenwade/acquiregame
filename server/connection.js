@@ -39,7 +39,7 @@ class Connection {
     let game = this.gamesManager.findGame(msg);
     if (game) {
       this.socket.join(msg);
-      game.players.push(this.socket.id);
+      game.addPlayer(this.socket.id);
       io.to(msg).emit('players', game.players);
     } else {
       this.socket.emit('invalid game');

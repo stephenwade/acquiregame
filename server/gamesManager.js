@@ -1,5 +1,7 @@
 'use strict';
 
+var Game = require('./game');
+
 class GamesManager {
   constructor() {
     this.games = {};
@@ -16,9 +18,7 @@ class GamesManager {
   newGame() {
     let id = this.newID();
     
-    this.games[id] = {
-      players: []
-    };
+    this.games[id] = new Game(id);
     
     return id;
   }
