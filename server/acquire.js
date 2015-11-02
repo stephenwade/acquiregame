@@ -1,7 +1,7 @@
-"use strict";
+'use strict';
 
-var fs = require("fs");
-var io = require("socket.io")(8001);
+var fs = require('fs');
+var io = require('socket.io')(8001);
 
 
 var games = {};
@@ -48,4 +48,4 @@ function newGameID() {
     return attempt;
 }
 
-console.log("Server started");
+console.log('Server started');

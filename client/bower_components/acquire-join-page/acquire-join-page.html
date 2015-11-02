@@ -37,18 +37,18 @@
     </paper-header-panel>
     
     <script>
-      "use strict";
+      'use strict';
       
-      gameID = prompt("Game ID");
-      socket.emit("join game", gameID);
+      gameID = prompt('Game ID');
+      socket.emit('join game', gameID);
       
-      window.location.hash = "#play";
+      window.location.hash = '#play';
     </script>
   </template>
   
   <script>
     Polymer({
-      is: "acquire-join-page"
+      is: 'acquire-join-page'
     });
   </script>
 
