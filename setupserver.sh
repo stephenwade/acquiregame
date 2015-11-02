@@ -48,6 +48,14 @@ sudo bash -c 'printf "\tlocation /game {
 \t\tproxy_set_header Host \$host;
 \t\tproxy_pass http://127.0.0.1:8001;
 \t}
+\tlocation /socket.io {
+\t\tproxy_set_header Upgrade \$http_upgrade;
+\t\tproxy_set_header Connection "upgrade";
+\t\tproxy_http_version 1.1;
+\t\tproxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
+\t\tproxy_set_header Host \$host;
+\t\tproxy_pass http://127.0.0.1:8001;
+\t}
 }" >> /etc/nginx/sites-available/default'
 sudo systemctl restart nginx
 

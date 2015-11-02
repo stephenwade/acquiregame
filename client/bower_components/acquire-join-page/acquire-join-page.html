@@ -33,14 +33,23 @@
       <main>
         <paper-input type="tel" label="Game ID"></paper-input>
         <paper-button id="join-button">Join game</paper-button>
-        <div id="messages"></div>
       </main>
     </paper-header-panel>
   </template>
   
   <script>
+    'use strict';
+      
     Polymer({
-      is: "acquire-join-page"
+      is: 'acquire-join-page',
+      
+      attached: function() {
+        console.log('attached');
+        gameID = prompt('Game ID');
+        socket.emit('join game', gameID);
+        
+        window.location.hash = '#play';
+      }
     });
   </script>
 
