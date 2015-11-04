@@ -1,7 +1,6 @@
 'use strict';
 
 var io = require('./shared').io;
-// var gamesManager = require('./shared').gamesManager;
 var gamesManager = new (require('./gamesManager'))();
 
 class Connection {

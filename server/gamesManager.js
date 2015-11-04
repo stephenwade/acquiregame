@@ -1,8 +1,6 @@
 'use strict';
 
-// setTimeout(function() {
-  var Game = require('./game');
-// }, 1000);
+var Game = require('./game');
 
 class GamesManager {
   constructor() {
