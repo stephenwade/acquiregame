@@ -32,12 +32,10 @@
         <h3 class="flex">Join game</h3>
       </paper-toolbar>
       <main>
-        <form id="join-form">
-          <paper-input id="gameID" type="tel" auto-validate pattern="[0-9]*" maxlength="4" label="Game ID" error-message="Digits only"></paper-input>
-          <paper-input id="nickname" label="Nickname"></paper-input>
-          <paper-button id="join-button" on-click="tryJoin">Join game</paper-button>
-          <iron-a11y-keys target="{{}}" keys="enter" on-keys-pressed="tryJoin"></iron-a11y-keys>
-        </form>
+        <paper-input id="gameID" type="tel" auto-validate pattern="[0-9]*" maxlength="4" label="Game ID" error-message="Digits only"></paper-input>
+        <paper-input id="nickname" label="Nickname"></paper-input>
+        <paper-button id="join-button" on-click="tryJoin">Join game</paper-button>
+        <iron-a11y-keys target="{{}}" keys="enter" on-keys-pressed="tryJoin"></iron-a11y-keys>
       </main>
     </paper-header-panel>
   </template>
