@@ -10,7 +10,6 @@ class Game {
   
   addPlayer(player) {
     this.players.push(player);
-    console.log(typeof io)
     io.to(this.id).emit('setup state', {
       players: this.players,
       isReady: this.isReady()
