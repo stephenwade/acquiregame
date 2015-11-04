@@ -27,11 +27,15 @@
         margin-right: 8px;
         color: white;
       }
+      
+      #game-ID {
+        font-weight: bold;
+      }
     </style>
     
     <paper-header-panel mode="waterfall">
       <paper-toolbar id="header">
-        <a href="#home"><paper-icon-button icon="arrow-back"></paper-icon-button></a>
+        <a href="#home" tabindex="-1"><paper-icon-button icon="arrow-back"></paper-icon-button></a>
         <h3 class="flex">New game</h3>
       </paper-toolbar>
       <main>
@@ -39,7 +43,7 @@
         <p>Waiting for players to connect…</p>
         <p>Players:</p>
         <div id="players"></div>
-        <paper-button disabled>Start game</paper-button>
+        <paper-button on-click="startGame" disabled>Start game</paper-button>
       </main>
     </paper-header-panel>
   </template>
@@ -62,6 +66,12 @@
           $('#players').html(msg.players.map((player) => player.nickname).toString());
           $('paper-button').attr('disabled', ! msg.isReady);
         });
+      },
+      
+      startGame: function() {
+        socket.emit('start game');
+        
+        window.location.hash = '#board/' + gameID;
       }
     });
   </script>

@@ -4,6 +4,8 @@
 <link rel="import" href="../paper-input/paper-input.html">
 <link rel="import" href="../paper-icon-button/paper-icon-button.html">
 <link rel="import" href="../iron-icons/iron-icons.html">
+<link rel="import" href="../iron-a11y-keys/iron-a11y-keys.html">
+<link rel="import" href="../paper-toast/paper-toast.html">
 
 <link rel="import" href="../polymer/polymer.html">
 
@@ -27,15 +29,19 @@
     
     <paper-header-panel mode="waterfall">
       <paper-toolbar id="header">
-        <a href="#home"><paper-icon-button icon="arrow-back"></paper-icon-button></a>
+        <a href="#home" tabindex="-1"><paper-icon-button icon="arrow-back"></paper-icon-button></a>
         <h3 class="flex">Join game</h3>
       </paper-toolbar>
       <main>
-        <paper-input id="gameID" type="tel" label="Game ID"></paper-input>
-        <paper-input id="nickname" label="Nickname"></paper-input>
-        <paper-button id="join-button">Join game</paper-button>
+        <paper-input id="gameID" type="tel" auto-validate pattern="[0-9]*" maxlength="4" label="Game ID" error-message="Digits only"></paper-input>
+        <paper-input id="nickname" auto-validate label="Nickname" required></paper-input>
+        <paper-button id="join-button" on-click="tryJoin">Join game</paper-button>
+        <iron-a11y-keys target="{{}}" keys="enter" on-keys-pressed="tryJoin"></iron-a11y-keys>
       </main>
     </paper-header-panel>
+    <paper-toast id="join-error" text="That game doesn’t exist."></paper-toast>
+    <paper-toast id="invalid-id" text="Invalid game ID."></paper-toast>
+    <paper-toast id="missing-nickname" text="Missing nickname."></paper-toast>
   </template>
   
   <script>
@@ -44,14 +50,25 @@
     Polymer({
       is: 'acquire-join-page',
       
-      attached: function() {
-        $('paper-button').click(function() {
-          gameID = document.getElementById('gameID').value;
-          nickname = document.getElementById('nickname').value;
-          socket.emit('join game', { id: gameID, nickname: nickname });
+      tryJoin: function() {
+        let gameIDInput = document.getElementById('gameID');
+        gameID = gameIDInput.value;
+        let nicknameInput = document.getElementById('nickname');
+        nickname = nicknameInput.value;
+        socket.emit('join game', { id: gameID, nickname: nickname });
+        if (! gameIDInput.validate() || gameIDInput.value.length != 4) {
+          document.getElementById('invalid-id').show();
+        } else if (! nicknameInput.validate()) {
+          document.getElementById('missing-nickname').show();
+        } else {
+          socket.on('joined game', function(msg) {
+            window.location.hash = '#play/' + msg;
+          });
           
-          window.location.hash = '#play';
-        });
+          socket.on('invalid game', function() {
+            document.getElementById('join-error').show();
+          });
+        }
       }
     });
   </script>
