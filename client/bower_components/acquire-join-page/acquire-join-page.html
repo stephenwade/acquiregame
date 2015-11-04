@@ -31,7 +31,8 @@
         <h3 class="flex">Join game</h3>
       </paper-toolbar>
       <main>
-        <paper-input type="tel" label="Game ID"></paper-input>
+        <paper-input id="gameID" type="tel" label="Game ID"></paper-input>
+        <paper-input id="nickname" label="Nickname"></paper-input>
         <paper-button id="join-button">Join game</paper-button>
       </main>
     </paper-header-panel>
@@ -45,8 +46,9 @@
       
       attached: function() {
         $('paper-button').click(function() {
-          gameID = document.querySelector('paper-input').value;
-          socket.emit('join game', gameID);
+          gameID = document.getElementById('gameID').value;
+          nickname = document.getElementById('nickname').value;
+          socket.emit('join game', { id: gameID, nickname: nickname });
           
           window.location.hash = '#play';
         });

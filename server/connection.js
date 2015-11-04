@@ -37,10 +37,10 @@ class Connection {
   }
   
   joinGame(msg) {
-    let game = gamesManager.findGame(msg);
+    let game = gamesManager.findGame(msg.id);
     if (game) {
-      this.socket.join(msg);
-      game.addPlayer(this.socket.id);
+      this.socket.join(msg.id);
+      game.addPlayer({ id: this.socket.id, nickname: msg.nickname });
     } else {
       this.socket.emit('invalid game');
     }

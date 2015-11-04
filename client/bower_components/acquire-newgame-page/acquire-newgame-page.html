@@ -59,7 +59,7 @@
         });
         
         socket.on('setup state', function(msg) {
-          $('#players').html(msg.players.toString());
+          $('#players').html(msg.players.map((player) => player.nickname).toString());
           $('paper-button').attr('disabled', ! msg.isReady);
         });
       }
