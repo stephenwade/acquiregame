@@ -26,6 +26,10 @@ The rules
 
   [cc]: https://creativecommons.org/licenses/by-sa/3.0/
 
+*Acquire* is a game for three to six players, though earlier editions included
+special rules for two players. Standard tournament games are played with four
+players.
+
 ### Setup
 
 At the beginning of the game, each player receives $6000 in cash. Each player
