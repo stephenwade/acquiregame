@@ -43,7 +43,7 @@
         <p>Waiting for players to connect…</p>
         <p>Players:</p>
         <div id="players"></div>
-        <paper-button disabled>Start game</paper-button>
+        <paper-button on-click="startGame" disabled>Start game</paper-button>
       </main>
     </paper-header-panel>
   </template>
@@ -66,6 +66,12 @@
           $('#players').html(msg.players.map((player) => player.nickname).toString());
           $('paper-button').attr('disabled', ! msg.isReady);
         });
+      },
+      
+      startGame: function() {
+        socket.emit('start game');
+        
+        window.location.hash = '#board/' + gameID;
       }
     });
   </script>
