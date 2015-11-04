@@ -2,6 +2,7 @@
 
 var io = require('./shared').io;
 var gamesManager = new (require('./gamesManager'))();
+var he = require('he');
 
 class Connection {
   constructor(socket) {
@@ -39,7 +40,7 @@ class Connection {
     let game = gamesManager.findGame(msg.id);
     if (game) {
       this.socket.join(msg.id);
-      game.addPlayer({ id: this.socket.id, nickname: msg.nickname });
+      game.addPlayer({ id: this.socket.id, nickname: he.encode(msg.nickname) });
     } else {
       this.socket.emit('invalid game');
     }
@@ -52,7 +53,7 @@ class Connection {
   chatMessage(msg) {
     console.log('message:', msg);
     
-    io.to(this.socket.rooms[1]).emit('chat message', msg);
+    io.to(this.socket.rooms[1]).emit('chat message', he.encode(msg));
   }
 };
 
