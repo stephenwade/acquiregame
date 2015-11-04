@@ -1,9 +1,6 @@
 'use strict';
 
 var io = require('./shared').io;
-setTimeout(function() {
-  console.log('game', typeof io);
-}, 1000);
 
 class Game {
   constructor(id) {
