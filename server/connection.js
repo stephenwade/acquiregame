@@ -41,6 +41,7 @@ class Connection {
     if (game) {
       this.socket.join(msg.id);
       game.addPlayer({ id: this.socket.id, nickname: he.escape(msg.nickname) });
+      this.socket.emit('joined game', msg.id);
     } else {
       this.socket.emit('invalid game');
     }
