@@ -34,12 +34,14 @@
       </paper-toolbar>
       <main>
         <paper-input id="gameID" type="tel" auto-validate pattern="[0-9]*" maxlength="4" label="Game ID" error-message="Digits only"></paper-input>
-        <paper-input id="nickname" label="Nickname" required></paper-input>
+        <paper-input id="nickname" auto-validate label="Nickname" required></paper-input>
         <paper-button id="join-button" on-click="tryJoin">Join game</paper-button>
         <iron-a11y-keys target="{{}}" keys="enter" on-keys-pressed="tryJoin"></iron-a11y-keys>
       </main>
     </paper-header-panel>
     <paper-toast id="join-error" text="That game doesn’t exist."></paper-toast>
+    <paper-toast id="invalid-id" text="Invalid game ID."></paper-toast>
+    <paper-toast id="missing-nickname" text="Missing nickname."></paper-toast>
   </template>
   
   <script>
@@ -49,17 +51,24 @@
       is: 'acquire-join-page',
       
       tryJoin: function() {
-        gameID = document.getElementById('gameID').value;
-        nickname = document.getElementById('nickname').value;
+        let gameIDInput = document.getElementById('gameID');
+        gameID = gameIDInput.value;
+        let nicknameInput = document.getElementById('nickname');
+        nickname = nicknameInput.value;
         socket.emit('join game', { id: gameID, nickname: nickname });
-        
-        socket.on('joined game', function(msg) {
-          window.location.hash = '#play/' + msg;
-        });
-        
-        socket.on('invalid game', function() {
-          document.getElementById('join-error').show();
-        });
+        if (! gameIDInput.validate() || gameIDInput.value.length != 4) {
+          document.getElementById('invalid-id').show();
+        } else if (! nicknameInput.validate()) {
+          document.getElementById('missing-nickname').show();
+        } else {
+          socket.on('joined game', function(msg) {
+            window.location.hash = '#play/' + msg;
+          });
+          
+          socket.on('invalid game', function() {
+            document.getElementById('join-error').show();
+          });
+        }
       }
     });
   </script>
