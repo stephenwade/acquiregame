@@ -40,7 +40,7 @@ class Connection {
     let game = gamesManager.findGame(msg.id);
     if (game) {
       this.socket.join(msg.id);
-      game.addPlayer({ id: this.socket.id, nickname: he.encode(msg.nickname) });
+      game.addPlayer({ id: this.socket.id, nickname: he.escape(msg.nickname) });
     } else {
       this.socket.emit('invalid game');
     }
@@ -53,7 +53,7 @@ class Connection {
   chatMessage(msg) {
     console.log('message:', msg);
     
-    io.to(this.socket.rooms[1]).emit('chat message', he.encode(msg));
+    io.to(this.socket.rooms[1]).emit('chat message', he.escape(msg));
   }
 };
 
