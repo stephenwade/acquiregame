@@ -50,10 +50,3 @@ sudo bash -c 'printf "\tlocation /socket.io {
 \t}
 }" >> /etc/nginx/sites-available/default'
 sudo systemctl restart nginx
-
-cd
-echo '#!/bin/bash' > update
-echo 'cd /var/www/acquiregame' >> update
-echo 'git pull' >> update
-echo 'pm2 restart acquire' >> update
-chmod +x update
