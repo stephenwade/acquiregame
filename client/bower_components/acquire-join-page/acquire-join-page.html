@@ -4,6 +4,7 @@
 <link rel="import" href="../paper-input/paper-input.html">
 <link rel="import" href="../paper-icon-button/paper-icon-button.html">
 <link rel="import" href="../iron-icons/iron-icons.html">
+<link rel="import" href="../iron-a11y-keys/iron-a11y-keys.html">
 
 <link rel="import" href="../polymer/polymer.html">
 
@@ -31,9 +32,12 @@
         <h3 class="flex">Join game</h3>
       </paper-toolbar>
       <main>
-        <paper-input id="gameID" type="tel" label="Game ID"></paper-input>
-        <paper-input id="nickname" label="Nickname"></paper-input>
-        <paper-button id="join-button">Join game</paper-button>
+        <form id="join-form">
+          <paper-input id="gameID" type="tel" auto-validate pattern="[0-9]*" maxlength="4" label="Game ID" error-message="Digits only"></paper-input>
+          <paper-input id="nickname" label="Nickname"></paper-input>
+          <paper-button id="join-button" on-click="tryJoin">Join game</paper-button>
+          <iron-a11y-keys target="{{}}" keys="enter" on-keys-pressed="tryJoin"></iron-a11y-keys>
+        </form>
       </main>
     </paper-header-panel>
   </template>
@@ -44,14 +48,12 @@
     Polymer({
       is: 'acquire-join-page',
       
-      attached: function() {
-        $('paper-button').click(function() {
-          gameID = document.getElementById('gameID').value;
-          nickname = document.getElementById('nickname').value;
-          socket.emit('join game', { id: gameID, nickname: nickname });
-          
-          window.location.hash = '#play';
-        });
+      tryJoin: function() {
+        gameID = document.getElementById('gameID').value;
+        nickname = document.getElementById('nickname').value;
+        socket.emit('join game', { id: gameID, nickname: nickname });
+        
+        window.location.hash = '#play';
       }
     });
   </script>
