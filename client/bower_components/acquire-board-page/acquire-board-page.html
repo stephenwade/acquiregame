@@ -13,10 +13,6 @@
       overflow: hidden;
       font-size: 0;
     }
-    
-    canvas {
-      background-color: blue;
-    }
   </style>
 
   <template>
@@ -25,11 +21,22 @@
     </canvas>
   </template>
   
+  <script src="./view.js"></script>
   <script>
     'use strict';
     
     Polymer({
-      is: 'acquire-board-page'
+      is: 'acquire-board-page',
+      
+      attached() {
+        var canvas = document.querySelector('canvas');
+        var view = new BoardView(canvas);
+        
+        view.resize();
+        
+        window.addEventListener('resize', () => view.resize() );
+        canvas.addEventListener('click',  () => view.fullscreen() );
+      }
     });
   </script>
 
