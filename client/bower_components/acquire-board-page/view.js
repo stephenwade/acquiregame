@@ -15,8 +15,25 @@ class BoardView {
       }
     }
     
+    // var self = this;
+    // this.drawInterval = window.setInterval( () => self.draw() , 40);
+    // this.drawInterval = window.setInterval(function() {
+    //   self.draw();
+    //   console.log(new Date);
+    // }, 40);
+  }
+  
+  attach() {
     var self = this;
-    window.setInterval( () => self.draw() , 40);
+    // this.drawInterval = window.setInterval( () => self.draw() , 40);
+    this.drawInterval = window.setInterval(function() {
+      // self.draw();
+      console.log(new Date);
+    }, 40);
+  }
+  
+  detatch() {
+    window.clearInterval(this.drawInterval);
   }
   
   draw() {
