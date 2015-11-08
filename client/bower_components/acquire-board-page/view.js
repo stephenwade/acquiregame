@@ -44,7 +44,7 @@ class BoardView {
   drawSpace(cell, size, filled) {
     let width = size * 0.90;
     let padding = size * 0.05;
-    let text = (cell.x + 1).toString() + '-' + String.fromCharCode(65 + cell.y);
+    let text = this.cellText(cell);
     let textColor;
     
     if (filled) {
@@ -64,6 +64,10 @@ class BoardView {
     this.context.font = (size / 3).toString() + 'px sans';
     this.context.textAlign = 'center';
     this.context.fillText(text, size * cell.x + size / 2, size * cell.y + size * (3 / 5));
+  }
+  
+  cellText(cell) {
+    return (cell.x + 1) + '-' + String.fromCharCode(65 + cell.y);
   }
   
   resize() {
