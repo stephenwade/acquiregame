@@ -14,22 +14,11 @@ class BoardView {
         this.board[x][y] = Math.random() >= 0.5;
       }
     }
-    
-    // var self = this;
-    // this.drawInterval = window.setInterval( () => self.draw() , 40);
-    // this.drawInterval = window.setInterval(function() {
-    //   self.draw();
-    //   console.log(new Date);
-    // }, 40);
   }
   
   attach() {
     var self = this;
-    // this.drawInterval = window.setInterval( () => self.draw() , 40);
-    this.drawInterval = window.setInterval(function() {
-      // self.draw();
-      console.log(new Date);
-    }, 40);
+    this.drawInterval = window.setInterval( () => self.draw() , 40);
   }
   
   detatch() {
