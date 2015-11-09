@@ -8,7 +8,7 @@ class Game {
     this.players = [];
   }
   
-  addPlayer(player) { // player: { id, nickname }
+  addPlayer(player) {
     this.players.push(player);
     this.pushSetupState();
   }

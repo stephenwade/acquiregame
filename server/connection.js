@@ -2,6 +2,7 @@
 
 var io = require('./shared').io;
 var gamesManager = new (require('./gamesManager'))();
+var Player = require('./player');
 var he = require('he');
 
 class Connection {
@@ -49,7 +50,7 @@ class Connection {
     if (this.game) {
       this.gameID = msg.id;
       this.socket.join(msg.id);
-      this.game.addPlayer({ id: this.socket.id, nickname: he.escape(msg.nickname) });
+      this.game.addPlayer(new Player(this.socket.id, he.escape(msg.nickname)));
       this.socket.emit('joined game', msg.id);
     } else {
       this.socket.emit('invalid game');
