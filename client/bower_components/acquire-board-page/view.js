@@ -19,6 +19,9 @@ class BoardView {
   attach() {
     var self = this;
     this.drawInterval = window.setInterval( () => self.draw() , 40);
+    
+    socket.emit('start game');
+    socket.on('game started', (msg) => self.animatePlayerOrder(msg) );
   }
   
   detatch() {
@@ -80,5 +83,14 @@ class BoardView {
     if (this.canvas.webkitRequestFullScreen) {
       this.canvas.webkitRequestFullScreen();
     }
+  }
+  
+  animatePlayerOrder(msg) {
+    console.log('players:', msg.players);
+    console.log('starting tiles:', msg.startingTiles);
+    
+    // animate picking player order
+    
+    socket.emit('board ready');
   }
 };
