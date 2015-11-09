@@ -27,11 +27,17 @@
     
     <paper-header-panel mode="waterfall">
       <paper-toolbar id="header">
-        <a href="#home" tabindex="-1"><paper-icon-button icon="arrow-back"></paper-icon-button></a>
+        <a href="#home" tabindex="-1">
+          <paper-icon-button icon="arrow-back"></paper-icon-button>
+        </a>
         <h3 class="flex">Play game</h3>
       </paper-toolbar>
       <main>
-        <paper-input type="text" label="Message"></paper-input>
+        You have joined game <span id="gameID"></span>.
+        <paper-input
+          type="text"
+          label="Nickname"
+          value="{{nickname}}"></paper-input>
         <paper-button id="send-button">Send</paper-button>
         <div id="messages"></div>
       </main>
@@ -44,22 +50,70 @@
     Polymer({
       is: 'acquire-player-page',
       
-      attached: function() {
-        $('paper-button').click(function(evt) {
-          var input = $('paper-input')[0];
-          var val = input.value;
-          
-          if (val !== '') {
-            socket.emit('chat message', val);
-            console.log('submitting:', val);
-            input.value = '';
-          }
-        });
+      created() {
+        console.log(sessionStorage.gameID);
         
         socket.on('chat message', function(msg) {
           console.log(msg);
           $('#messages').append($('<p>').text(msg));
         });
+        
+        socket.on('invalid game', function() {
+          console.log('invalid game');
+          window.location.hash = '#join';
+        });
+      },
+      
+      getID() {
+        let match = /#play\/(.*)/.exec(window.location.hash);
+        if (match) {
+          return match[1];
+        } else {
+          return false;
+        }
+      },
+      
+      newNickname() {
+        return 'Player' + Math.floor(Math.random() * 10000);
+      },
+      
+      attached() {
+        let gameID = this.getID() || sessionStorage.getItem('gameID');
+        let nickname = sessionStorage.getItem('nickname') || this.newNickname();
+        this.nickname = nickname;
+        
+        if (!gameID) {
+          window.location.hash = '#join';
+        } else {
+          sessionStorage.gameID = gameID;
+          
+          if (! sessionStorage.nickname) {
+            sessionStorage.setItem('nickname', nickname);
+          }
+          
+          if (!sessionStorage.joined) {
+            socket.emit('join game', {
+              id: sessionStorage.gameID,
+              nickname
+            });
+          }
+          
+          document.getElementById('gameID').innerText = gameID;
+          
+          document.getElementById('messages').value = nickname;
+        }
+        
+        document.getElementById('send-button').addEventListener('click', () => {
+          console.log('clicked');
+          var input = $('paper-input')[0];
+          var val = input.value;
+          
+          if (val !== '') {
+            socket.emit('update nickname', { id: socket.id, val });
+            console.log('submitting:', val);
+          }
+        });
+        
       }
     });
   </script>
