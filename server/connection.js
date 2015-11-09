@@ -24,7 +24,6 @@ class Connection {
     this.socket.on('new game',         ()    => self.newGame());
     this.socket.on('join game',        (msg) => self.joinGame(msg));
     this.socket.on('disconnect',       ()    => self.disconnect());
-    this.socket.on('chat message',     (msg) => self.chatMessage(msg));
     this.socket.on('update nickname',  (msg) => self.updateNickname(msg));
     this.socket.on('start game',       ()    => self.game.startGame());
     this.socket.on('board ready',      ()    => self.game.boardReady());
@@ -59,12 +58,6 @@ class Connection {
   
   disconnect() {
     console.log('user disconnected');
-  }
-  
-  chatMessage(msg) {
-    console.log('message:', msg);
-    
-    io.to(this.socket.rooms[1]).emit('chat message', he.escape(msg));
   }
   
   updateNickname(msg) {
