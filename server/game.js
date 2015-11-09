@@ -8,7 +8,7 @@ class Game {
     this.players = [];
   }
   
-  addPlayer(player) {
+  addPlayer(player) { // player: { id, nickname }
     this.players.push(player);
     io.to(this.id).emit('setup state', {
       players: this.players,

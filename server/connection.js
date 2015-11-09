@@ -10,6 +10,7 @@ class Connection {
     this.socket = socket;
     
     this.gameID = null;
+    this.game = null;
     
     this.registerMessages();
   }
@@ -24,11 +25,12 @@ class Connection {
     this.socket.on('join game',        (msg) => self.joinGame(msg));
     this.socket.on('disconnect',       ()    => self.disconnect());
     this.socket.on('chat message',     (msg) => self.chatMessage(msg));
-    this.socket.on('board ready',      ()    => self.boardReady());
-    this.socket.on('tile chosen',      (msg) => self.tileChosen(msg));
-    this.socket.on('merger chosen',    (msg) => self.mergerChosen(msg));
-    this.socket.on('stock decision',   (msg) => self.stockDecision(msg));
-    this.socket.on('stocks purchased', (msg) => self.stocksPurchased(msg));
+    this.socket.on('start game',       ()    => self.game.startGame());
+    this.socket.on('board ready',      ()    => self.game.boardReady());
+    this.socket.on('tile chosen',      (msg) => self.game.tileChosen(this.id, msg));
+    this.socket.on('merger chosen',    (msg) => self.game.mergerChosen(this.id, msg));
+    this.socket.on('stock decision',   (msg) => self.game.stockDecision(this.id, msg));
+    this.socket.on('stocks purchased', (msg) => self.game.stocksPurchased(this.id, msg));
   }
   
   // Callbacks
@@ -42,8 +44,8 @@ class Connection {
   }
   
   joinGame(msg) {
-    let game = gamesManager.findGame(msg.id);
-    if (game) {
+    this.game = gamesManager.findGame(msg.id);
+    if (this.game) {
       this.socket.join(msg.id);
       game.addPlayer({ id: this.socket.id, nickname: he.escape(msg.nickname) });
       this.socket.emit('joined game', msg.id);
@@ -61,27 +63,6 @@ class Connection {
     
     io.to(this.socket.rooms[1]).emit('chat message', he.escape(msg));
   }
-  
-  boardReady() {
-    console.log('board ready');
-  }
-  
-  tileChosen(msg) {
-    console.log('tile chosen:', msg);
-  }
-  
-  mergerChosen(msg) {
-    console.log('merger chosen:', msg);
-  }
-  
-  stockDecision(msg) {
-    console.log('stock decision:', msg);
-  }
-  
-  stocksPurchased(msg) {
-    console.log('stocks purchased:', msg);
-  }
-  
 };
 
 module.exports = Connection;
