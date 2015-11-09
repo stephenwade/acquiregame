@@ -58,6 +58,8 @@ class Connection {
   
   disconnect() {
     console.log('user disconnected');
+    if (this.game)
+      this.game.removePlayer(this.socket.id);
   }
   
   updateNickname(msg) {

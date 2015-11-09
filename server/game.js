@@ -10,6 +10,19 @@ class Game {
   
   addPlayer(player) { // player: { id, nickname }
     this.players.push(player);
+    this.pushSetupState();
+  }
+  
+  removePlayer(id) {
+    for (let i = 0; i < this.players.length; i++) {
+      if (id == this.players[i].id) {
+        this.players.splice(i, 1); // remove this.players[i]
+      }
+    }
+    this.pushSetupState();
+  }
+  
+  pushSetupState() {
     io.to(this.id).emit('setup state', {
       players: this.players,
       isReady: this.isReady()
