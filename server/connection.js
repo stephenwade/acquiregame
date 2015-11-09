@@ -63,18 +63,8 @@ class Connection {
   }
   
   updateNickname(msg) {
-    let game = gamesManager.findGame(this.gameID);
-    
     console.log('Player', this.socket.id, 'updating nickname to', msg.val);
-    for (let i = 0; i < game.players.length; i++) {
-      if (game.players[i].id === this.socket.id) {
-        game.players[i].nickname = msg.val;
-      }
-    }
-    io.to(this.gameID).emit('setup state', {
-      players: game.players,
-      isReady: game.isReady()
-    });
+    this.game.updateNickname(this.socket.id, msg.val);
   }
 };
 

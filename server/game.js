@@ -15,8 +15,17 @@ class Game {
   
   removePlayer(id) {
     for (let i = 0; i < this.players.length; i++) {
-      if (id == this.players[i].id) {
+      if (id === this.players[i].id) {
         this.players.splice(i, 1); // remove this.players[i]
+      }
+    }
+    this.pushSetupState();
+  }
+  
+  updateNickname(id, newName) {
+    for (let i = 0; i < this.players.length; i++) {
+      if (this.players[i].id === id) {
+        this.players[i].nickname = newName;
       }
     }
     this.pushSetupState();
