@@ -25,6 +25,7 @@ class Game {
     // draw a few tiles to pick the first player
     // calculate player order, reorder players array
     // tell the board about players
+    console.log('start game');
   }
   
   boardReady() {

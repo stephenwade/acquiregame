@@ -38,6 +38,7 @@ class Connection {
     console.log(this.id, 'started a new game');
     
     this.gameID = gamesManager.newGame();
+    this.game = gamesManager.findGame(this.gameID);
     
     this.socket.join(this.gameID);
     io.to(this.gameID).emit('game created', this.gameID);
@@ -47,7 +48,7 @@ class Connection {
     this.game = gamesManager.findGame(msg.id);
     if (this.game) {
       this.socket.join(msg.id);
-      game.addPlayer({ id: this.socket.id, nickname: he.escape(msg.nickname) });
+      this.game.addPlayer({ id: this.socket.id, nickname: he.escape(msg.nickname) });
       this.socket.emit('joined game', msg.id);
     } else {
       this.socket.emit('invalid game');
