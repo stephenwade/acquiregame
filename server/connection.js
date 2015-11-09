@@ -25,6 +25,7 @@ class Connection {
     this.socket.on('join game',        (msg) => self.joinGame(msg));
     this.socket.on('disconnect',       ()    => self.disconnect());
     this.socket.on('chat message',     (msg) => self.chatMessage(msg));
+    this.socket.on('update nickname',  (msg) => self.updateNickname(msg));
     this.socket.on('start game',       ()    => self.game.startGame());
     this.socket.on('board ready',      ()    => self.game.boardReady());
     this.socket.on('tile chosen',      (msg) => self.game.tileChosen(this.id, msg));
@@ -47,6 +48,7 @@ class Connection {
   joinGame(msg) {
     this.game = gamesManager.findGame(msg.id);
     if (this.game) {
+      this.gameID = msg.id;
       this.socket.join(msg.id);
       this.game.addPlayer({ id: this.socket.id, nickname: he.escape(msg.nickname) });
       this.socket.emit('joined game', msg.id);
@@ -63,6 +65,21 @@ class Connection {
     console.log('message:', msg);
     
     io.to(this.socket.rooms[1]).emit('chat message', he.escape(msg));
+  }
+  
+  updateNickname(msg) {
+    let game = gamesManager.findGame(this.gameID);
+    
+    console.log('Player', this.socket.id, 'updating nickname to', msg.val);
+    for (let i = 0; i < game.players.length; i++) {
+      if (game.players[i].id === this.socket.id) {
+        game.players[i].nickname = msg.val;
+      }
+    }
+    io.to(this.gameID).emit('setup state', {
+      players: game.players,
+      isReady: game.isReady()
+    });
   }
 };
 
