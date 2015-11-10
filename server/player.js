@@ -9,6 +9,14 @@ class Player {
     // stock
     // etc.
   }
+  
+  addTile(tile) {
+    this.tiles.push(tile);
+  }
+  
+  addTiles(tiles) {
+    tiles.forEach( (tile) => this.addTile(tile) );
+  }
 };
 
 module.exports = Player;
