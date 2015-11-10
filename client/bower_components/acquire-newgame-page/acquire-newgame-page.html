@@ -69,8 +69,6 @@
       },
       
       startGame: function() {
-        socket.emit('start game');
-        
         window.location.hash = '#board/' + sessionStorage.gameID;
       }
     });

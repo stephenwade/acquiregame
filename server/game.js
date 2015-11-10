@@ -1,11 +1,14 @@
 'use strict';
 
 var io = require('./shared').io;
+var TileStore = require('./tileStore');
 
 class Game {
   constructor(id) {
     this.id = id;
     this.players = [];
+    
+    this.tileStore = new TileStore();
   }
   
   addPlayer(player) {
@@ -44,10 +47,19 @@ class Game {
   }
   
   startGame() {
+    console.log('start game');
+    
+    let orderTiles = this.tileStore.getTiles(this.players.length);
+    
+    let order = this.players.map((player, i) => {
+      return { id: player.id, tile: orderTiles[i] }
+    });
+    
+    console.log(order);
+    // [{player, tile}, {player, tile}, {player, tile}, {player, tile}]
     // draw a few tiles to pick the first player
     // calculate player order, reorder players array
     // tell the board about players
-    console.log('start game');
   }
   
   boardReady() {
