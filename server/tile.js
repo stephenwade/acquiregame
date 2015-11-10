@@ -7,7 +7,7 @@ class Tile {
   }
   
   get label() {
-    return (this.col + 1) + String.fromCharCode(65 + row);
+    return (this.col + 1) + String.fromCharCode(65 + this.row);
   }
 };
 
