@@ -11,7 +11,7 @@ class Game {
     this.tileStore = new TileStore();
   }
   
-  addPlayer(player) { // player: { id, nickname }
+  addPlayer(player) {
     this.players.push(player);
     this.pushSetupState();
   }
@@ -63,6 +63,14 @@ class Game {
   }
   
   boardReady() {
+    for (let player of this.players) {
+      player.addTiles(this.tileStore.getTiles(6));
+      io.to(player.id).emit('new tiles', player.tiles.map( (tile) => tile.label ))
+      console.log(player.id, 'has tiles', player.tiles);
+    }
+    
+    // io.to(this.id).emit('next turn', /* whose ~line~ turn is it anyway? */ )
+    
     // draw new tiles for everyone
     // tell each player what their tiles are
     // announce the next turn
