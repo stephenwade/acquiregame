@@ -7,6 +7,7 @@ class BoardCell {
     this.col = col;
     
     this.filled = false;
+    this.frame = 0;
     
     this.colors = {
       borderColor:      '#555555',
@@ -63,5 +64,9 @@ class BoardCell {
   
   cellText() {
     return (this.col + 1) + '-' + String.fromCharCode(65 + this.row);
+  }
+  
+  flip() {
+    this.filled = !this.filled;
   }
 }

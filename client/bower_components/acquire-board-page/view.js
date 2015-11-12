@@ -43,7 +43,6 @@ class BoardView {
     
     for (let x = 0; x < 12; x++) {
       for (let y = 0; y < 9; y++) {
-        //this.drawSpace({x, y}, size, this.board[x][y]);
         this.board[x][y].draw(size);
       }
     }
@@ -59,6 +58,15 @@ class BoardView {
     if (this.canvas.webkitRequestFullScreen) {
       this.canvas.webkitRequestFullScreen();
     }
+  }
+  
+  findClickSubject(event) {
+    var rect = this.canvas.getBoundingClientRect();
+    var size = Math.min(this.canvas.width / 12, this.canvas.height / 9);
+    var x = ((event.clientX - rect.left) / size)|0;
+    var y = ((event.clientY - rect.top) / size)|0;
+    
+    this.board[x][y].flip();
   }
   
   animatePlayerOrder(msg) {

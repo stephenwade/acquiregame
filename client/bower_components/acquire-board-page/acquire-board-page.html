@@ -38,7 +38,7 @@
         
         this.resizeHandler = () => this.view.resize()
         window.addEventListener('resize', this.resizeHandler );
-        this.canvasClickHandler = () => this.view.fullscreen()
+        this.canvasClickHandler = (event) => this.view.findClickSubject(event)
         this.$.canvas.addEventListener('click', this.canvasClickHandler );
       },
       
