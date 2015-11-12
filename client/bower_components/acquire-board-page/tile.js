@@ -9,6 +9,8 @@ class BoardCell {
     this.filled = false;
     this.frame = 1;
     
+    this.flipDuration = 400;
+    
     this.colors = {
       borderColor:      '#555555',
       emptyBackground:  '#ffffff',
@@ -82,7 +84,7 @@ class BoardCell {
     this.filled = !this.filled;
     
     this.startTime = startTime;
-    this.endTime = startTime + 400;
+    this.endTime = startTime + this.flipDuration;
     
     this.frame = this.progress();
   }
