@@ -36,9 +36,7 @@ class BoardCell {
     this.drawText();
     
     let now = new Date().getTime();
-    if (this.endTime >= now) {
-      this.frame = this.progress();
-    }
+    this.frame = this.progress();
   }
   
   drawOuterBox() {
@@ -102,7 +100,7 @@ class BoardCell {
       
       return this.filled ? progress : (1 - progress);
     } else {
-      return 0;
+      return 1;
     }
   }
 }
