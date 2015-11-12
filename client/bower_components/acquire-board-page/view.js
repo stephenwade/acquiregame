@@ -66,7 +66,7 @@ class BoardView {
     var x = ((event.clientX - rect.left) / size)|0;
     var y = ((event.clientY - rect.top) / size)|0;
     
-    this.board[x][y].flip();
+    this.board[x][y].flip(new Date().getTime());
   }
   
   animatePlayerOrder(msg) {
