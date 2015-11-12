@@ -8,13 +8,11 @@ class BoardView {
     this.frame = 0;
     this.board = [];
     
-    var size = Math.min(this.canvas.width / 12, this.canvas.height / 9);
-    
     for (let x = 0; x < 12; x++) {
       this.board.push([]);
       
       for (let y = 0; y < 9; y++) {
-        this.board[x][y] = new BoardCell(this.context, y, x, size);
+        this.board[x][y] = new BoardCell(this.context, y, x);
         this.board[x][y].filled = Math.random() >= 0.5;
       }
     }
@@ -22,20 +20,22 @@ class BoardView {
   
   attach() {
     var self = this;
-    this.drawInterval = window.setInterval( () => self.draw() , 40);
+    this.drawFrame = window.requestAnimationFrame( () => self.draw() );
     
     socket.emit('start game');
     socket.on('game started', (msg) => self.animatePlayerOrder(msg) );
   }
   
   detatch() {
-    window.clearInterval(this.drawInterval);
+    window.cancelAnimationFrame(this.drawFrame);
   }
   
   draw() {
     this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
     
     this.drawBoard();
+    var self = this;
+    window.requestAnimationFrame( () => self.draw() );
   };
   
   drawBoard() {

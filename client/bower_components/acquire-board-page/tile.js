@@ -1,11 +1,10 @@
 'use strict';
 
 class BoardCell {
-  constructor(context, row, col, size) {
+  constructor(context, row, col) {
     this.context = context;
     this.row = row;
     this.col = col;
-    this.calcDimensions(size);
     
     this.filled = false;
     
