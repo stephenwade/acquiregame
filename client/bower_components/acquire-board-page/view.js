@@ -8,12 +8,16 @@ class BoardView {
     this.frame = 0;
     this.board = [];
     
+    let now = new Date().getTime();
+    
     for (let x = 0; x < 12; x++) {
       this.board.push([]);
       
       for (let y = 0; y < 9; y++) {
         this.board[x][y] = new BoardCell(this.context, y, x);
-        this.board[x][y].filled = Math.random() >= 0.5;
+        if (Math.random() >= 0.5) {
+          this.board[x][y].flip(now);
+        }
       }
     }
   }

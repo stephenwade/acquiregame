@@ -46,7 +46,7 @@ class BoardCell {
   }
   
   drawInnerBox() {
-    let id = this.filled ? 'filledBackground' : 'emptyBackground';
+    let id = this.frame < 0.5 ? 'filledBackground' : 'emptyBackground';
     
     let x = this.x + this.padding + this.width * this.frame;
     let width = this.width * -(this.frame * 2 - 1);
@@ -58,16 +58,20 @@ class BoardCell {
                           this.width);
   }
   
-  drawText() {  
-    let id = this.filled ? 'filledText' : 'emptyText';
+  drawText() {
+    this.context.save();
+    let id = this.frame < 0.5 ? 'filledText' : 'emptyText';
     
     this.context.fillStyle = this.colors[id];
     this.context.font = (this.size / 3).toString() + 'px sans';
     this.context.textAlign = 'center';
     
+    this.context.translate(this.x + this.size / 2, this.y);
+    this.context.scale(Math.abs(this.frame * 2 - 1), 1);
+    
     this.context.fillText(this.cellText(),
-                          this.x + this.size / 2,
-                          this.y + this.size * (3 / 5))
+                          0, this.size * (3/5));
+    this.context.restore();
   }
   
   cellText() {
@@ -78,22 +82,25 @@ class BoardCell {
     this.filled = !this.filled;
     
     this.startTime = startTime;
-    this.endTime = startTime + 500;
+    this.endTime = startTime + 400;
     
-    console.log(this.progress());
-    console.log(this.startTime, this.endTime)
+    this.frame = this.progress();
   }
   
   progress() {
     let currentTime = new Date().getTime();
-    let progress = (this.endTime - currentTime) / (this.endTime - this.startTime);
-    
-    if (progress < 0) {
-      progress = 0;
-    } else if (progress > 1) {
-      progress = 1;
+    if (this.endTime) {
+      let progress = (this.endTime - currentTime) / (this.endTime - this.startTime);
+      
+      if (progress < 0) {
+        progress = 0;
+      } else if (progress > 1) {
+        progress = 1;
+      }
+      
+      return this.filled ? progress : (1 - progress);
+    } else {
+      return 0;
     }
-    
-    return this.filled ? (1 - progress) : (progress);
   }
 }
