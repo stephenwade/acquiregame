@@ -43,11 +43,9 @@ class BoardView {
   };
   
   drawBoard() {
-    var size = Math.min(this.canvas.width / 12, this.canvas.height / 9);
-    
     for (let x = 0; x < 12; x++) {
       for (let y = 0; y < 9; y++) {
-        this.board[x][y].draw(size);
+        this.board[x][y].draw();
       }
     }
   }
@@ -55,7 +53,15 @@ class BoardView {
   resize() {
     this.canvas.width = window.innerWidth;
     this.canvas.height = window.innerHeight;
-    this.draw();
+    
+    var size = Math.min(this.canvas.width / 12, this.canvas.height / 9);
+    
+    for (let x = 0; x < 12; x++) {
+      for (let y = 0; y < 9; y++) {
+        this.board[x][y].updateSize(size);
+      }
+    }
+    //this.draw();
   }
   
   fullscreen() {
