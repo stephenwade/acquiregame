@@ -1,51 +1,24 @@
-<link rel="import" href="../paper-header-panel/paper-header-panel.html">
-<link rel="import" href="../paper-toolbar/paper-toolbar.html">
-<link rel="import" href="../paper-button/paper-button.html">
-<link rel="import" href="../paper-input/paper-input.html">
-<link rel="import" href="../paper-icon-button/paper-icon-button.html">
-<link rel="import" href="../iron-icons/iron-icons.html">
-<link rel="import" href="../iron-a11y-keys/iron-a11y-keys.html">
-<link rel="import" href="../paper-toast/paper-toast.html">
-
 <link rel="import" href="../polymer/polymer.html">
 
 <dom-module id="acquire-player-page">
+  <style>
+    html, body, :host, canvas {
+      display: block;
+      
+      width: 100%;
+      height: 100%;
+      padding: 0;
+      margin: 0;
+      
+      overflow: hidden;
+      font-size: 0;
+    }
+  </style>
 
   <template>
-    <style>
-      paper-button {
-        display: block;
-        max-width: 12em;
-        margin: 1em auto;
-        color: white;
-        background-color: #1c66e3;
-      }
-      paper-icon-button {
-        margin-left: -12px;
-        margin-right: 8px;
-        color: white;
-      }
-    </style>
-    
-    <paper-header-panel mode="waterfall">
-      <paper-toolbar id="header">
-        <a href="#home" tabindex="-1">
-          <paper-icon-button icon="arrow-back"></paper-icon-button>
-        </a>
-        <h3 class="flex">Play game</h3>
-      </paper-toolbar>
-      <main>
-        You have joined game <span id="gameID"></span>.
-        <paper-input
-          id="nickname"
-          type="text"
-          label="Nickname"
-          value="{{nickname}}"></paper-input>
-        <paper-button id="send-button" on-click="tryChangeNickname">Send</paper-button>
-        <iron-a11y-keys target="{{}}" keys="enter" on-keys-pressed="tryChangeNickname"></iron-a11y-keys>
-      </main>
-    </paper-header-panel>
-    <paper-toast id="nickname-required" text="Nickname required."></paper-toast>
+    <canvas id="canvas">
+      Say “Hello!” to the year 2000 for me!
+    </canvas>
   </template>
   
   <script>
@@ -55,61 +28,11 @@
       is: 'acquire-player-page',
       
       created() {
-        console.log(sessionStorage.gameID);
         
-        socket.on('invalid game', function() {
-          console.log('invalid game');
-          window.location.hash = '#join';
-        });
-      },
-      
-      getID() {
-        let match = /#play\/(.*)/.exec(window.location.hash);
-        if (match) {
-          return match[1];
-        } else {
-          return false;
-        }
-      },
-      
-      newNickname() {
-        return 'Player' + Math.floor(Math.random() * 10000);
-      },
-      
-      tryChangeNickname() {
-        let nickname = document.getElementById('nickname');
-        
-        if (nickname.value !== '') {
-          socket.emit('update nickname', { id: socket.id, val: nickname.value });
-          console.log('submitting:', nickname.value);
-        } else {
-          document.getElementById('nickname-required').show();
-        }
       },
       
       attached() {
-        let gameID = this.getID() || sessionStorage.getItem('gameID');
-        let nickname = sessionStorage.getItem('nickname') || this.newNickname();
-        this.nickname = nickname;
         
-        if (!gameID) {
-          window.location.hash = '#join';
-        } else {
-          sessionStorage.gameID = gameID;
-          
-          if (! sessionStorage.nickname) {
-            sessionStorage.setItem('nickname', nickname);
-          }
-          
-          if (!sessionStorage.joined) {
-            socket.emit('join game', {
-              id: sessionStorage.gameID,
-              nickname
-            });
-          }
-          
-          document.getElementById('gameID').innerText = gameID;
-        }
       }
     });
   </script>
