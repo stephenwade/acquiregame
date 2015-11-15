@@ -4,6 +4,8 @@
 <link rel="import" href="../paper-input/paper-input.html">
 <link rel="import" href="../paper-icon-button/paper-icon-button.html">
 <link rel="import" href="../iron-icons/iron-icons.html">
+<link rel="import" href="../iron-a11y-keys/iron-a11y-keys.html">
+<link rel="import" href="../paper-toast/paper-toast.html">
 
 <link rel="import" href="../polymer/polymer.html">
 
@@ -35,13 +37,16 @@
       <main>
         You have joined game <span id="gameID"></span>.
         <paper-input
+          id="nickname"
           type="text"
           label="Nickname"
           value="{{nickname}}"></paper-input>
-        <paper-button id="send-button">Send</paper-button>
+        <paper-button id="send-button" on-click="tryChangeNickname">Send</paper-button>
+        <iron-a11y-keys target="{{}}" keys="enter" on-keys-pressed="tryChangeNickname"></iron-a11y-keys>
         <div id="messages"></div>
       </main>
     </paper-header-panel>
+    <paper-toast id="nickname-required" text="Nickname required."></paper-toast>
   </template>
   
   <script>
@@ -77,6 +82,17 @@
         return 'Player' + Math.floor(Math.random() * 10000);
       },
       
+      tryChangeNickname() {
+        let nickname = document.getElementById('nickname');
+        
+        if (nickname.value !== '') {
+          socket.emit('update nickname', { id: socket.id, val: nickname.value });
+          console.log('submitting:', nickname.value);
+        } else {
+          document.getElementById('nickname-required').show();
+        }
+      },
+      
       attached() {
         let gameID = this.getID() || sessionStorage.getItem('gameID');
         let nickname = sessionStorage.getItem('nickname') || this.newNickname();
@@ -102,18 +118,6 @@
           
           document.getElementById('messages').value = nickname;
         }
-        
-        document.getElementById('send-button').addEventListener('click', () => {
-          console.log('clicked');
-          var input = $('paper-input')[0];
-          var val = input.value;
-          
-          if (val !== '') {
-            socket.emit('update nickname', { id: socket.id, val });
-            console.log('submitting:', val);
-          }
-        });
-        
       }
     });
   </script>
