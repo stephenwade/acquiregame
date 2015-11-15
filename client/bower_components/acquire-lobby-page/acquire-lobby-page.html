@@ -64,7 +64,7 @@
       },
       
       getID() {
-        let match = /#play\/(.*)/.exec(window.location.hash);
+        let match = /#lobby\/(.*)/.exec(window.location.hash);
         if (match) {
           return match[1];
         } else {
