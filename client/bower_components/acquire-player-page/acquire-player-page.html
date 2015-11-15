@@ -43,7 +43,6 @@
           value="{{nickname}}"></paper-input>
         <paper-button id="send-button" on-click="tryChangeNickname">Send</paper-button>
         <iron-a11y-keys target="{{}}" keys="enter" on-keys-pressed="tryChangeNickname"></iron-a11y-keys>
-        <div id="messages"></div>
       </main>
     </paper-header-panel>
     <paper-toast id="nickname-required" text="Nickname required."></paper-toast>
@@ -57,11 +56,6 @@
       
       created() {
         console.log(sessionStorage.gameID);
-        
-        socket.on('chat message', function(msg) {
-          console.log(msg);
-          $('#messages').append($('<p>').text(msg));
-        });
         
         socket.on('invalid game', function() {
           console.log('invalid game');
@@ -115,8 +109,6 @@
           }
           
           document.getElementById('gameID').innerText = gameID;
-          
-          document.getElementById('messages').value = nickname;
         }
       }
     });
