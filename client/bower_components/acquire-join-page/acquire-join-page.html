@@ -66,16 +66,16 @@
         let gameIDInput   = document.getElementById('gameID');
         let nicknameInput = document.getElementById('nickname');
         
-        sessionStorage.gameID   = gameIDInput.value;
-        sessionStorage.nickname = nicknameInput.value;
-        sessionStorage.joined   = true;
+        Acquire.gameID   = gameIDInput.value;
+        Acquire.nickname = nicknameInput.value;
+        Acquire.joined   = true;
         
         if (! gameIDInput.validate() || gameIDInput.value.length != 4) {
           document.getElementById('invalid-id').show();
         } else if (! nicknameInput.validate()) {
           document.getElementById('missing-nickname').show();
         } else {
-          socket.emit('join game', { id: sessionStorage.gameID, nickname: sessionStorage.nickname });
+          socket.emit('join game', { id: Acquire.gameID, nickname: Acquire.nickname });
         }
       }
     });

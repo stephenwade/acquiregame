@@ -55,7 +55,7 @@
       is: 'acquire-lobby-page',
       
       created() {
-        console.log(sessionStorage.gameID);
+        console.log(Acquire.gameID);
         
         socket.on('invalid game', function() {
           console.log('invalid game');
@@ -88,22 +88,22 @@
       },
       
       attached() {
-        let gameID = this.getID() || sessionStorage.getItem('gameID');
-        let nickname = sessionStorage.getItem('nickname') || this.newNickname();
+        let gameID = this.getID() || Acquire.getItem('gameID');
+        let nickname = Acquire.nickname || this.newNickname();
         this.nickname = nickname;
         
         if (!gameID) {
           window.location.hash = '#join';
         } else {
-          sessionStorage.gameID = gameID;
+          Acquire.gameID = gameID;
           
-          if (! sessionStorage.nickname) {
-            sessionStorage.setItem('nickname', nickname);
+          if (! Acquire.nickname) {
+            Acquire.nickname = nickname;
           }
           
-          if (!sessionStorage.joined) {
+          if (!Acquire.joined) {
             socket.emit('join game', {
-              id: sessionStorage.gameID,
+              id: Acquire.gameID,
               nickname
             });
           }

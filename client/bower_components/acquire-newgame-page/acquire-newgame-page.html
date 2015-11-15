@@ -58,8 +58,8 @@
         socket.emit('new game');
         
         socket.on('game created', function(msg) {
-          sessionStorage.gameID = msg;
-          $('#game-ID').html(sessionStorage.gameID);
+          Acquire.gameID = msg;
+          $('#game-ID').html(Acquire.gameID);
         });
         
         socket.on('setup state', function(msg) {
@@ -69,7 +69,7 @@
       },
       
       startGame: function() {
-        window.location.hash = '#board/' + sessionStorage.gameID;
+        window.location.hash = '#board/' + Acquire.gameID;
       }
     });
   </script>
