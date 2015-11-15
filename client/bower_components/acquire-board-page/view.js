@@ -15,9 +15,9 @@ class BoardView {
       
       for (let y = 0; y < 9; y++) {
         this.board[x][y] = new BoardCell(this.context, y, x);
-        if (Math.random() >= 0.5) {
-          this.board[x][y].flip(now);
-        }
+        //if (Math.random() >= 0.5) {
+          //this.board[x][y].flip(now);
+        //}
       }
     }
   }
@@ -80,11 +80,17 @@ class BoardView {
   }
   
   animatePlayerOrder(msg) {
-    console.log('players:', msg.players);
-    console.log('starting tiles:', msg.startingTiles);
-    
-    // animate picking player order
+    //console.log('players:', msg.players);
+    //console.log('starting tiles:', msg.startingTiles);
     
     socket.emit('board ready');
+    
+    console.log('data:', msg);
+    // animate picking player order
+    let i = 0;
+    for (let player of msg) {
+      this.board[player.tile.col][player.tile.row].flip(new Date().getTime() + i * 1000);
+      i++;
+    };
   }
 };

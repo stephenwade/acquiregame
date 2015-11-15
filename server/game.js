@@ -55,7 +55,24 @@ class Game {
       return { id: player.id, tile: orderTiles[i] }
     });
     
+    let max = order[0].tile;
+    let maxPlayer = order[0];
+    
+    for (let player of order) {
+      if (player.tile.row < max.row) {
+        maxPlayer = player;
+        max = player.tile;
+      } else if (player.tile.row === max.row) {
+        if (player.tile.col < max.col) {
+          maxPlayer = player;
+          max = player.tile;
+        }
+      }
+    }
+    
+    maxPlayer.first = true;
     console.log(order);
+    io.to(this.id).emit('game started', order);
     // [{player, tile}, {player, tile}, {player, tile}, {player, tile}]
     // draw a few tiles to pick the first player
     // calculate player order, reorder players array

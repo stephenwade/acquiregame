@@ -88,6 +88,7 @@ class BoardCell {
   }
   
   flip(startTime) {
+    console.log('flipping', this.row, this.col, 'at', startTime);
     this.filled = !this.filled;
     
     this.startTime = startTime;
@@ -99,6 +100,9 @@ class BoardCell {
   progress() {
     let currentTime = new Date().getTime();
     if (this.endTime) {
+      if (currentTime < this.startTime) {
+        return 1;
+      }
       let progress = (this.endTime - currentTime) / (this.endTime - this.startTime);
       
       if (progress < 0) {
