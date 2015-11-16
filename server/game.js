@@ -52,7 +52,7 @@ class Game {
     let orderTiles = this.tileStore.getTiles(this.players.length);
     
     let order = this.players.map((player, i) => {
-      return { id: player.id, tile: orderTiles[i] }
+      return { nickname: player.nickname , tile: orderTiles[i] }
     });
     
     let max = order[0].tile;
