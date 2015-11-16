@@ -82,7 +82,8 @@ class Game {
   boardReady() {
     for (let player of this.players) {
       player.addTiles(this.tileStore.getTiles(6));
-      io.to(player.id).emit('new tiles', player.tiles.map( (tile) => tile.label ))
+      //io.to(player.id).emit('new tiles', player.tiles.map( (tile) => tile.label ))
+      io.sockets.connected[player.id].emit('new tiles', player.tiles);
       console.log(player.id, 'has tiles', player.tiles);
     }
     

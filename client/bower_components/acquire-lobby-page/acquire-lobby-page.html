@@ -61,6 +61,14 @@
           console.log('invalid game');
           window.location.hash = '#join';
         });
+        
+        socket.on('game started', () => {
+          console.log('beginning');
+          
+          let gameID = this.getID() || Acquire.getItem('gameID');
+          
+          window.location.hash = '#play/' + gameID;
+        });
       },
       
       getID() {

@@ -34,6 +34,7 @@ class BoardView {
   
   detatch() {
     window.cancelAnimationFrame(this.drawFrame);
+    socket.removeListener('game started');
   }
   
   draw() {
@@ -160,9 +161,6 @@ class BoardView {
   }
   
   animatePlayerOrder(msg) {
-    
-    socket.emit('board ready');
-    
     console.log('data:', msg);
     
     // animate picking player order
@@ -177,5 +175,7 @@ class BoardView {
       cell.flip(displayTime);
       i++;
     };
+    
+    setTimeout(() => { socket.emit('board ready') }, 3000);
   }
 };
