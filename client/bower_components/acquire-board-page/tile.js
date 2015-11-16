@@ -43,8 +43,21 @@ class BoardCell {
     this.frame = this.progress();
     
     this.drawOuterBox();
-    this.drawInnerBox();
-    this.drawText();
+    
+    this.context.save();
+    
+      let path = Math.abs(this.frame * 2 - 1);
+      
+      let middle = this.width / 2;
+      let indent = middle * (1 - path);
+      
+      this.context.translate(this.x + indent, this.y);
+      this.context.scale(path, 1);
+      
+      this.drawInnerBox();
+      this.drawText();
+    
+    this.context.restore();
   }
   
   drawOuterBox() {
@@ -56,31 +69,14 @@ class BoardCell {
   drawInnerBox() {
     let colorId = this.frame < 0.5 ? 'filledBackground' : 'emptyBackground';
     
-    let x = this.x + this.padding + this.width * this.frame;
-    let y = this.y + this.padding;
-    let width = this.width * -(this.frame * 2 - 1);
-    let height = this.width;
-    
     this.context.fillStyle = this.colors[colorId];
-    this.context.fillRect(x, y, width, height);
+    this.context.fillRect(this.padding, this.padding, this.width, this.width);
   }
   
   drawText() {
-    this.context.save();
+    var imgId = this.frame < 0.5 ? 'filledText' : 'emptyText';
     
-    this.context.translate(this.x + this.size / 2, 0);
-    this.context.scale(Math.abs(this.frame * 2 - 1), 1);
-    
-    var img;
-    
-    if (this.frame < 0.5) {
-      img = this.filledText.canvas;
-    } else {
-      img = this.emptyText.canvas;
-    }
-    
-    this.context.drawImage(img, -(this.size / 2) | 0, this.y | 0);
-    this.context.restore();
+    this.context.drawImage(this[imgId].canvas, 0, 0);
   }
   
   cellText() {
