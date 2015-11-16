@@ -100,11 +100,13 @@ class BoardCell {
   
   progress() {
     let currentTime = new Date().getTime();
+    
+    // Has an animation been set?
     if (this.endTime) {
-      if (currentTime < this.startTime) {
-        return 1;
-      }
-      let progress = (this.endTime - currentTime) / (this.endTime - this.startTime);
+      let timeRemaining = this.endTime - currentTime;
+      let totalTime     = this.endTime - this.startTime;
+      
+      let progress = timeRemaining / totalTime;
       
       if (progress < 0) {
         progress = 0;
