@@ -50,24 +50,32 @@
     Polymer({
       is: 'acquire-join-page',
       
+      created: () => {
+        socket.on('joined game', function(msg) {
+          console.log('joined game');
+          window.location.hash = '#lobby/' + msg;
+        });
+        
+        socket.on('invalid game', function() {
+          console.log('invalid game');
+          document.getElementById('join-error').show();
+        });
+      },
+      
       tryJoin: function() {
-        let gameIDInput = document.getElementById('gameID');
-        gameID = gameIDInput.value;
+        let gameIDInput   = document.getElementById('gameID');
         let nicknameInput = document.getElementById('nickname');
-        nickname = nicknameInput.value;
-        socket.emit('join game', { id: gameID, nickname: nickname });
+        
+        Acquire.gameID   = gameIDInput.value;
+        Acquire.nickname = nicknameInput.value;
+        Acquire.joined   = true;
+        
         if (! gameIDInput.validate() || gameIDInput.value.length != 4) {
           document.getElementById('invalid-id').show();
         } else if (! nicknameInput.validate()) {
           document.getElementById('missing-nickname').show();
         } else {
-          socket.on('joined game', function(msg) {
-            window.location.hash = '#play/' + msg;
-          });
-          
-          socket.on('invalid game', function() {
-            document.getElementById('join-error').show();
-          });
+          socket.emit('join game', { id: Acquire.gameID, nickname: Acquire.nickname });
         }
       }
     });
