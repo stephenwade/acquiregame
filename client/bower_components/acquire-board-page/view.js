@@ -76,13 +76,16 @@ class BoardView {
     this.context.tempState( () => {
       let x = (message.col + 1) * this.size;
       let y = (message.row + 0.5) * this.size;
-      let width = this.context.measureText(message.text).width;
+      let textWidth = this.context.measureText(message.text).width;
       let height = 30;
       let padding = 5;
       let arrowWidth = height / 2;
+      let bodyWidth = textWidth + padding;
       let borderWidth = 2;
       
-      let direction = (x + width + padding + arrowWidth + borderWidth * 2 < this.canvas.width) ? 'left' : 'right';
+      let rightEdge = x + bodyWidth + arrowWidth + borderWidth * 2
+      
+      let direction = (rightEdge < this.canvas.width) ? 'left' : 'right';
       
       this.context.fillStyle = '#000000';
       this.context.strokeStyle = '#6666cc';
@@ -91,7 +94,7 @@ class BoardView {
       if (direction == 'left') {
         this.context.translate(x, y);
       
-        this.drawPointer(0, 0, width + padding, height, borderWidth, '#000000', '#6666cc');
+        this.drawPointer(0, 0, bodyWidth, height, borderWidth, '#000000', '#6666cc');
         
         this.context.fillStyle = '#ffffff';
         this.context.fillText(message.text, arrowWidth, 0);
@@ -101,12 +104,11 @@ class BoardView {
         this.context.tempState( () => {
           this.context.scale(-1, 1);
           
-          this.drawPointer(0, 0, width + padding, height, borderWidth, '#000000', '#6666cc');
+          this.drawPointer(0, 0, bodyWidth, height, borderWidth, '#000000', '#6666cc');
         });
         
-        this.context.textBaseline = 'middle';
         this.context.fillStyle = '#ffffff';
-        this.context.fillText(message.text, -arrowWidth - width, 0);
+        this.context.fillText(message.text, -arrowWidth - textWidth, 0);
       }
       
     });
