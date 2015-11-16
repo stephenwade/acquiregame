@@ -54,16 +54,15 @@ class BoardCell {
   }
   
   drawInnerBox() {
-    let id = this.frame < 0.5 ? 'filledBackground' : 'emptyBackground';
+    let colorId = this.frame < 0.5 ? 'filledBackground' : 'emptyBackground';
     
     let x = this.x + this.padding + this.width * this.frame;
+    let y = this.y + this.padding;
     let width = this.width * -(this.frame * 2 - 1);
+    let height = this.width;
     
-    this.context.fillStyle = this.colors[id];
-    this.context.fillRect(x,
-                          this.y + this.padding,
-                          width,
-                          this.width);
+    this.context.fillStyle = this.colors[colorId];
+    this.context.fillRect(x, y, width, height);
   }
   
   drawText() {
