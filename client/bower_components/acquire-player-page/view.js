@@ -17,6 +17,7 @@ class PlayerView {
   attach() {
     var self = this;
     this.drawFrame = window.requestAnimationFrame( () => self.draw() );
+    socket.on('tile played', (msg) => self.removeTile(msg) );
   }
   
   detatch() {
@@ -38,6 +39,8 @@ class PlayerView {
   }
   
   drawHand() {
+    this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+    
     this.context.fillStyle = '#555555';
     this.context.fillRect(20, 90, 50, 50);
     
@@ -62,5 +65,32 @@ class PlayerView {
     this.canvas.height = window.innerHeight;
     
     this.size = Math.min(this.canvas.width / 12, this.canvas.height / 9);
+  }
+  
+  playTile(i) {
+    socket.emit('tile chosen', this.hand[i]);
+  }
+  
+  removeTile(tile) {
+    for (let i = 0; i < this.hand.length; i++) {
+      if (this.hand[i].row === tile.row && this.hand[i].col === tile.col) {
+        this.hand.splice(i, 1);
+      }
+    }
+  }
+  
+  findClickSubject(event) {
+    let rect = this.canvas.getBoundingClientRect();
+    
+    let x = event.clientX - rect.left;
+    let y = event.clientY - rect.top;
+    
+    if (y >= 20 && y <= 70) {
+      for (let i = 0; i < this.hand.length; i++) {
+        if (x >= 20 + i * 70 && x <= 70 + i * 70) {
+          this.playTile(i);
+        }
+      } 
+    }
   }
 };

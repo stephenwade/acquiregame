@@ -1,7 +1,8 @@
 'use strict';
 
-var io = require('./shared').io;
+var io        = require('./shared').io;
 var TileStore = require('./tileStore');
+var Board     = require('./board');
 
 class Game {
   constructor(id) {
@@ -9,6 +10,7 @@ class Game {
     this.players = [];
     this.currentPlayer = false;
     
+    this.board = new Board();
     this.tileStore = new TileStore();
   }
   
@@ -100,7 +102,21 @@ class Game {
     // announce the next turn
   }
   
+  findPlayer(id) {
+    for (let player of this.players) {
+      if (player.id === id) {
+        return player;
+      }
+    }
+  }
+  
   tileChosen(id, msg) {
+    let player = this.findPlayer(id);
+    
+    if (this.board.playTile(msg.row, msg.col)) {
+      console.log(player.nickname, 'played', msg);
+      io.to(this.id).emit('tile played', msg);
+    }
     // is it your turn?
     // do you have that tile?
     // put the tile on the board

@@ -30,6 +30,7 @@ class BoardView {
     
     socket.emit('start game');
     socket.on('game started', (msg) => self.animatePlayerOrder(msg) );
+    socket.on('tile played', (msg) => self.playTile(msg) );
   }
   
   detatch() {
@@ -148,6 +149,11 @@ class BoardView {
     if (this.canvas.webkitRequestFullScreen) {
       this.canvas.webkitRequestFullScreen();
     }
+  }
+  
+  playTile(tile) {
+    this.board[tile.col][tile.row].flip(new Date().getTime());
+    this.displayMessage('Player played', tile.row, tile.col);
   }
   
   findClickSubject(event) {

@@ -50,11 +50,14 @@
         
         this.resizeHandler = () => this.view.resize();
         window.addEventListener('resize', this.resizeHandler);
+        this.canvasClickHandler = (event) => this.view.findClickSubject(event)
+        this.$.canvas.addEventListener('click', this.canvasClickHandler );
       },
       
       detached() {
         this.view.detatch();
         window.removeEventListener('resize', this.resizeHandler);
+        this.$.canvas.removeEventListener('click', this.canvasClickHandler);
       }
     });
   </script>
