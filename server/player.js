@@ -17,6 +17,16 @@ class Player {
   addTiles(tiles) {
     tiles.forEach( (tile) => this.addTile(tile) );
   }
+  
+  hasTile(row, col) {
+    let result = false;
+    this.tiles.forEach( (t) => {
+      if (t.row == row && t.col == col) {
+        result = true;
+      }
+    } );
+    return result;
+  }
 };
 
 module.exports = Player;

@@ -120,9 +120,11 @@ class Game {
     if (player.order != this.currentPlayer) {
       io.sockets.connected[player.player.id].emit('error: out of turn');
     } else {
-      if (this.board.playTile(msg.row, msg.col)) {
-        console.log(player.nickname, 'played', msg);
-        io.to(this.id).emit('tile played', msg);
+      if (player.player.hasTile(msg.row, msg.col)) {
+        if (this.board.playTile(msg.row, msg.col)) {
+          console.log(player.nickname, 'played', msg);
+          io.to(this.id).emit('tile played', msg);
+        }
       }
     }
     // do you have that tile?
