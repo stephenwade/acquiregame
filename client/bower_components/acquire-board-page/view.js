@@ -128,6 +128,7 @@ class BoardView {
     animation.begin(time || new Date().getTime());
     
     this.messages.push({ text, row, col, animation });
+    console.log('displayed message', text);
   }
   
   resize() {
@@ -171,7 +172,7 @@ class BoardView {
       let cell = this.board[player.tile.col][player.tile.row];
       let displayTime = currentTime + i * 1000;
       
-      this.displayMessage(player.nickname, cell.row, cell.col, displayTime);
+      this.displayMessage(player.player.nickname, cell.row, cell.col, displayTime);
       cell.flip(displayTime);
       i++;
     };

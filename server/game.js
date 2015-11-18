@@ -7,6 +7,7 @@ class Game {
   constructor(id) {
     this.id = id;
     this.players = [];
+    this.currentPlayer = false;
     
     this.tileStore = new TileStore();
   }
@@ -46,36 +47,41 @@ class Game {
     return (len >= 3 && len <= 6);
   }
   
+  firstPlayer() {
+    let orderTiles = this.tileStore.getTiles(this.players.length);
+    
+    let order = [];
+    
+    let max = orderTiles[0];
+    let firstPlayer = 0;
+    
+    for (let i = 0; i < this.players.length; i++) {
+      let pairing = { player: this.players[i] , tile: orderTiles[i] }
+      
+      if (pairing.tile.row < max.row) {
+        firstPlayer = i;
+        max = pairing.tile;
+      } else if (pairing.tile.row === max.row) {
+        if (pairing.tile.col < max.col) {
+          firstPlayer = i;
+          max = pairing.tile;
+        }
+      }
+      
+      order.push(pairing);
+    }
+    
+    this.currentPlayer = firstPlayer;
+    return order;
+  }
+  
   startGame() {
     console.log('start game');
     
-    let orderTiles = this.tileStore.getTiles(this.players.length);
+    let order = this.firstPlayer();
     
-    let order = this.players.map((player, i) => {
-      return { nickname: player.nickname , tile: orderTiles[i] }
-    });
-    
-    let max = order[0].tile;
-    let maxPlayer = order[0];
-    
-    for (let player of order) {
-      if (player.tile.row < max.row) {
-        maxPlayer = player;
-        max = player.tile;
-      } else if (player.tile.row === max.row) {
-        if (player.tile.col < max.col) {
-          maxPlayer = player;
-          max = player.tile;
-        }
-      }
-    }
-    
-    maxPlayer.first = true;
     console.log(order);
     io.to(this.id).emit('game started', order);
-    // [{player, tile}, {player, tile}, {player, tile}, {player, tile}]
-    // draw a few tiles to pick the first player
-    // calculate player order, reorder players array
     // tell the board about players
   }
   
