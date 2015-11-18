@@ -21,6 +21,8 @@
     </canvas>
   </template>
   
+  <script src="./view.js"></script>
+  
   <script>
     'use strict';
     
@@ -32,6 +34,12 @@
       },
       
       attached() {
+        if (! this.view) {
+          this.view = new PlayerView(this.$.canvas);
+        }
+        this.view.attach();
+        this.view.resize();
+        
         var self = this;
         
         socket.on('new tiles', (msg) => {
@@ -39,9 +47,13 @@
           console.log('new tiles!', self.hand);
         });
         
-        socket.on('celebrate good times!', () => {
-          console.log('Come on!');
-        });
+        this.resizeHandler = () => this.view.resize();
+        window.addEventListener('resize', this.resizeHandler);
+      },
+      
+      detached() {
+        this.view.detatch();
+        window.removeEventListener('resize', this.resizeHandler);
       }
     });
   </script>
