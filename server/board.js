@@ -18,10 +18,12 @@ class Board {
   
   playTile(row, col) {
     // Logic to verify the tile is playable.
-    console.l
     
     this.grid[row][col].filled = true;
-    return true; // false if tile is invalid
+    return { success: true, orphan: true };
+    // success possibilities: orphan, newChain, expandChain, merger
+    // if invalid, return { success: false, err: 'error message' }
+    // for example: { success: false, err: 'Can’t create more than seven chains.'}
   }
 };
 
