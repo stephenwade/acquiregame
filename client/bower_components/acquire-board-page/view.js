@@ -30,10 +30,12 @@ class BoardView {
     
     socket.emit('start game');
     socket.on('game started', (msg) => self.animatePlayerOrder(msg) );
+    socket.on('tile played', (msg) => self.playTile(msg) );
   }
   
   detatch() {
     window.cancelAnimationFrame(this.drawFrame);
+    socket.removeListener('game started');
   }
   
   draw() {
@@ -127,6 +129,7 @@ class BoardView {
     animation.begin(time || new Date().getTime());
     
     this.messages.push({ text, row, col, animation });
+    console.log('displayed message', text);
   }
   
   resize() {
@@ -140,13 +143,17 @@ class BoardView {
         this.board[x][y].updateSize(this.size);
       }
     }
-    //this.draw();
   }
   
   fullscreen() {
     if (this.canvas.webkitRequestFullScreen) {
       this.canvas.webkitRequestFullScreen();
     }
+  }
+  
+  playTile(tile) {
+    this.board[tile.col][tile.row].flip(new Date().getTime());
+    this.displayMessage('Player played', tile.row, tile.col);
   }
   
   findClickSubject(event) {
@@ -160,9 +167,6 @@ class BoardView {
   }
   
   animatePlayerOrder(msg) {
-    
-    socket.emit('board ready');
-    
     console.log('data:', msg);
     
     // animate picking player order
@@ -173,9 +177,11 @@ class BoardView {
       let cell = this.board[player.tile.col][player.tile.row];
       let displayTime = currentTime + i * 1000;
       
-      this.displayMessage(player.nickname, cell.row, cell.col, displayTime);
+      this.displayMessage(player.player.nickname, cell.row, cell.col, displayTime);
       cell.flip(displayTime);
       i++;
     };
+    
+    setTimeout(() => { socket.emit('board ready') }, 3000);
   }
 };

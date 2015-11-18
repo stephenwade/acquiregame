@@ -1,13 +1,16 @@
 'use strict';
 
-var io = require('./shared').io;
+var io        = require('./shared').io;
 var TileStore = require('./tileStore');
+var Board     = require('./board');
 
 class Game {
   constructor(id) {
     this.id = id;
     this.players = [];
+    this.currentPlayer = false;
     
+    this.board = new Board();
     this.tileStore = new TileStore();
   }
   
@@ -46,43 +49,49 @@ class Game {
     return (len >= 3 && len <= 6);
   }
   
+  firstPlayer() {
+    let orderTiles = this.tileStore.getTiles(this.players.length);
+    
+    let order = [];
+    
+    let max = orderTiles[0];
+    let firstPlayer = 0;
+    
+    for (let i = 0; i < this.players.length; i++) {
+      let pairing = { player: this.players[i] , tile: orderTiles[i] }
+      
+      if (pairing.tile.row < max.row) {
+        firstPlayer = i;
+        max = pairing.tile;
+      } else if (pairing.tile.row === max.row) {
+        if (pairing.tile.col < max.col) {
+          firstPlayer = i;
+          max = pairing.tile;
+        }
+      }
+      
+      order.push(pairing);
+    }
+    
+    this.currentPlayer = firstPlayer;
+    return order;
+  }
+  
   startGame() {
     console.log('start game');
     
-    let orderTiles = this.tileStore.getTiles(this.players.length);
+    let order = this.firstPlayer();
     
-    let order = this.players.map((player, i) => {
-      return { nickname: player.nickname , tile: orderTiles[i] }
-    });
-    
-    let max = order[0].tile;
-    let maxPlayer = order[0];
-    
-    for (let player of order) {
-      if (player.tile.row < max.row) {
-        maxPlayer = player;
-        max = player.tile;
-      } else if (player.tile.row === max.row) {
-        if (player.tile.col < max.col) {
-          maxPlayer = player;
-          max = player.tile;
-        }
-      }
-    }
-    
-    maxPlayer.first = true;
     console.log(order);
     io.to(this.id).emit('game started', order);
-    // [{player, tile}, {player, tile}, {player, tile}, {player, tile}]
-    // draw a few tiles to pick the first player
-    // calculate player order, reorder players array
     // tell the board about players
   }
   
   boardReady() {
     for (let player of this.players) {
       player.addTiles(this.tileStore.getTiles(6));
-      io.to(player.id).emit('new tiles', player.tiles.map( (tile) => tile.label ))
+      //io.to(player.id).emit('new tiles', player.tiles.map( (tile) => tile.label ))
+      io.sockets.connected[player.id].emit('new tiles', player.tiles);
       console.log(player.id, 'has tiles', player.tiles);
     }
     
@@ -93,7 +102,21 @@ class Game {
     // announce the next turn
   }
   
+  findPlayer(id) {
+    for (let player of this.players) {
+      if (player.id === id) {
+        return player;
+      }
+    }
+  }
+  
   tileChosen(id, msg) {
+    let player = this.findPlayer(id);
+    
+    if (this.board.playTile(msg.row, msg.col)) {
+      console.log(player.nickname, 'played', msg);
+      io.to(this.id).emit('tile played', msg);
+    }
     // is it your turn?
     // do you have that tile?
     // put the tile on the board
