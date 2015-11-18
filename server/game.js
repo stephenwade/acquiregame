@@ -121,14 +121,25 @@ class Game {
       io.sockets.connected[player.player.id].emit('error: out of turn');
     } else {
       if (player.player.hasTile(msg.row, msg.col)) {
-        if (this.board.playTile(msg.row, msg.col)) {
+        let result = this.board.playTile(msg.row, msg.col);
+        if (result.success) {
           console.log(player.nickname, 'played', msg);
           io.to(this.id).emit('tile played', msg);
+          
+          if (result.orphan || result.expandChain) {
+            // move to buying stock phase
+          }
+          if (result.newChain) {
+            // create a new chain
+          }
+          if (result.merger) {
+            // resolve merger
+          }
+        } else {
+          io.sockets.connected[player.player.id].emit('error: invalid move', result.err);
         }
       }
     }
-    // do you have that tile?
-    // put the tile on the board
   }
   
   mergerChosen(id, msg) {
