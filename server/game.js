@@ -103,21 +103,28 @@ class Game {
   }
   
   findPlayer(id) {
-    for (let player of this.players) {
-      if (player.id === id) {
-        return player;
+    // for (let player of this.players) {
+    //   if (player.id === id) {
+    //     return player;
+    //   }
+    // }
+    for (let i = 0; i < this.players.length; i++) {
+      if (this.players[i].id === id) {
+        return { player: this.players[i], order: i };
       }
     }
   }
   
   tileChosen(id, msg) {
     let player = this.findPlayer(id);
-    
-    if (this.board.playTile(msg.row, msg.col)) {
-      console.log(player.nickname, 'played', msg);
-      io.to(this.id).emit('tile played', msg);
+    if (player.order != this.currentPlayer) {
+      io.sockets.connected[player.player.id].emit('error: out of turn');
+    } else {
+      if (this.board.playTile(msg.row, msg.col)) {
+        console.log(player.nickname, 'played', msg);
+        io.to(this.id).emit('tile played', msg);
+      }
     }
-    // is it your turn?
     // do you have that tile?
     // put the tile on the board
   }
