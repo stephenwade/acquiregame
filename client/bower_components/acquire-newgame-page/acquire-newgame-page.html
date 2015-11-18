@@ -40,6 +40,7 @@
       </paper-toolbar>
       <main>
         <p>Players can connect to this game using ID <span id="game-ID"></span>.</p>
+        <p>Send this link to your friends: <a id="game-link"></a></p>
         <p>Waiting for players to connect…</p>
         <p>Players:</p>
         <div id="players"></div>
@@ -59,7 +60,10 @@
         
         socket.on('game created', function(msg) {
           Acquire.gameID = msg;
-          $('#game-ID').html(Acquire.gameID);
+          $('#game-ID').html(msg);
+          let gameLink = window.location.origin + '/#lobby/' + msg;
+          $('#game-link').attr('href', gameLink);
+          $('#game-link').html(gameLink);
         });
         
         socket.on('setup state', function(msg) {
