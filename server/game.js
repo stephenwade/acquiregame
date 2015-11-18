@@ -14,6 +14,20 @@ class Game {
     this.tileStore = new TileStore();
   }
   
+  broadcast(ev, data) {
+    if (typeof data === undefined)
+      io.to(this.id).emit(ev);
+    else
+      io.to(this.id).emit(ev, data);
+  }
+  
+  whisper(to, ev, data) {
+    if (typeof data === undefined)
+      io.sockets.connected[to].emit(ev);
+    else
+      io.sockets.connected[to].emit(ev, data);
+  }
+  
   addPlayer(player) {
     this.players.push(player);
     this.pushSetupState();
@@ -38,7 +52,7 @@ class Game {
   }
   
   pushSetupState() {
-    io.to(this.id).emit('setup state', {
+    this.broadcast('setup state', {
       players: this.players,
       isReady: this.isReady()
     });
@@ -83,19 +97,18 @@ class Game {
     let order = this.firstPlayer();
     
     console.log(order);
-    io.to(this.id).emit('game started', order);
+    this.broadcast('game started', order);
     // tell the board about players
   }
   
   boardReady() {
     for (let player of this.players) {
       player.addTiles(this.tileStore.getTiles(6));
-      //io.to(player.id).emit('new tiles', player.tiles.map( (tile) => tile.label ))
-      io.sockets.connected[player.id].emit('new tiles', player.tiles);
+      this.whisper(player.id, 'new tiles', player.tiles);
       console.log(player.id, 'has tiles', player.tiles);
     }
     
-    // io.to(this.id).emit('next turn', /* whose ~line~ turn is it anyway? */ )
+    // this.broadcast('next turn', /* whose ~line~ turn is it anyway? */ )
     
     // draw new tiles for everyone
     // tell each player what their tiles are
@@ -118,13 +131,14 @@ class Game {
   tileChosen(id, msg) {
     let player = this.findPlayer(id);
     if (player.order != this.currentPlayer) {
-      io.sockets.connected[player.player.id].emit('error: out of turn');
+      // io.sockets.connected[player.player.id].emit('error: out of turn');
+      this.whisper(player.player.id, 'error: out of turn');
     } else {
       if (player.player.hasTile(msg.row, msg.col)) {
         let result = this.board.playTile(msg.row, msg.col);
         if (result.success) {
           console.log(player.nickname, 'played', msg);
-          io.to(this.id).emit('tile played', msg);
+          this.broadcast('tile played', msg);
           
           if (result.orphan || result.expandChain) {
             // move to buying stock phase
@@ -136,7 +150,8 @@ class Game {
             // resolve merger
           }
         } else {
-          io.sockets.connected[player.player.id].emit('error: invalid move', result.err);
+          // io.sockets.connected[player.player.id].emit('error: invalid move', result.err);
+          this.whisper(player.player.id, 'error: invalid move', result.err);
         }
       }
     }
