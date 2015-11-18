@@ -28,11 +28,20 @@
       is: 'acquire-player-page',
       
       created() {
-        
+        this.hand = [];
       },
       
       attached() {
+        var self = this;
         
+        socket.on('new tiles', (msg) => {
+          self.hand += msg;
+          console.log('new tiles!', self.hand);
+        });
+        
+        socket.on('celebrate good times!', () => {
+          console.log('Come on!');
+        });
       }
     });
   </script>
