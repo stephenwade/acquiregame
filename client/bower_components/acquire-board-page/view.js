@@ -141,7 +141,6 @@ class BoardView {
         this.board[x][y].updateSize(this.size);
       }
     }
-    //this.draw();
   }
   
   fullscreen() {

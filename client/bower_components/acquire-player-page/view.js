@@ -10,6 +10,8 @@ class PlayerView {
     this.context = canvas.getContext('2d');
     
     this.size = 0;
+    
+    this.hand = [];
   }
   
   attach() {
@@ -21,13 +23,31 @@ class PlayerView {
     window.cancelAnimationFrame(this.drawFrame);
   }
   
+  addTiles(tiles) {
+    for (let tile of tiles) {
+      this.hand.push(tile);
+    }
+  }
+  
   draw() {
-    
-    this.context.fillStyle = '#ff0000';
-    this.context.fillRect(20, 20, 50, 50);
+    this.drawHand();
     
     var self = this;
     window.requestAnimationFrame( () => self.draw() );
+  }
+  
+  drawHand() {
+    this.context.fillStyle = '#555555';
+    this.context.fillRect(20, 90, 50, 50);
+    
+    for (let i = 0; i < this.hand.length; i++) {
+      this.drawTile(this.hand[i], i);
+    }
+  }
+  
+  drawTile(tile, spot) {
+    this.context.fillStyle = '#555555';
+    this.context.fillRect(20 + spot * 70, 20, 50, 50);
   }
   
   resize() {

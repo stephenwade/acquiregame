@@ -43,6 +43,7 @@
         var self = this;
         
         socket.on('new tiles', (msg) => {
+          self.view.addTiles(msg);
           self.hand += msg;
           console.log('new tiles!', self.hand);
         });
