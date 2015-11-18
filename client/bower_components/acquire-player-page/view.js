@@ -26,6 +26,7 @@ class PlayerView {
   addTiles(tiles) {
     for (let tile of tiles) {
       this.hand.push(tile);
+      console.log(tile);
     }
   }
   
@@ -48,6 +49,12 @@ class PlayerView {
   drawTile(tile, spot) {
     this.context.fillStyle = '#555555';
     this.context.fillRect(20 + spot * 70, 20, 50, 50);
+    
+    this.context.fillStyle = '#ffffff';
+    this.context.textAlign = 'center';
+    this.context.textBaseline = 'middle';
+    this.context.font = (this.size / 3).toString() + 'px Roboto';
+    this.context.fillText(tile.label, 45 + spot * 70, 45, 50, 50);
   }
   
   resize() {
