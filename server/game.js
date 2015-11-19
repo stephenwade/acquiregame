@@ -8,7 +8,8 @@ class Game {
   constructor(id) {
     this.id = id;
     this.players = [];
-    this.currentPlayer = false;
+    this.currentPlayer = undefined;
+    this.turnState = undefined;
     
     this.board = new Board();
     this.tileStore = new TileStore();
@@ -113,6 +114,12 @@ class Game {
     // announce the next turn
   }
   
+  nextTurn() {
+    if (++this.currentPlayer >= this.players.length)
+      this.currentPlayer = 0;
+    // this.broadcast('next turn', /* whose ~line~ turn is it anyway? */ )
+  }
+  
   findPlayer(id) {
     // for (let player of this.players) {
     //   if (player.id === id) {
@@ -129,7 +136,7 @@ class Game {
   tileChosen(id, msg) {
     let player = this.findPlayer(id);
     if (player.order != this.currentPlayer) {
-      this.whisper(player.player.id, 'error: out of turn');
+      this.whisper(player.player.id, 'invalid move', 'It’s not your turn.');
     } else {
       if (player.player.hasTile(msg.row, msg.col)) {
         let result = this.board.playTile(msg.row, msg.col);
@@ -146,8 +153,9 @@ class Game {
           if (result.merger) {
             // resolve merger
           }
+          this.nextTurn();
         } else {
-          this.whisper(player.player.id, 'error: invalid move', result.err);
+          this.whisper(player.player.id, 'invalid move', result.err);
         }
       }
     }
