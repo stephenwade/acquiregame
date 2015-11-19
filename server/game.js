@@ -110,8 +110,6 @@ class Game {
     
     // this.broadcast('next turn', /* whose ~line~ turn is it anyway? */ )
     
-    // draw new tiles for everyone
-    // tell each player what their tiles are
     // announce the next turn
   }
   
@@ -131,7 +129,6 @@ class Game {
   tileChosen(id, msg) {
     let player = this.findPlayer(id);
     if (player.order != this.currentPlayer) {
-      // io.sockets.connected[player.player.id].emit('error: out of turn');
       this.whisper(player.player.id, 'error: out of turn');
     } else {
       if (player.player.hasTile(msg.row, msg.col)) {
@@ -150,7 +147,6 @@ class Game {
             // resolve merger
           }
         } else {
-          // io.sockets.connected[player.player.id].emit('error: invalid move', result.err);
           this.whisper(player.player.id, 'error: invalid move', result.err);
         }
       }
