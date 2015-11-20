@@ -23,15 +23,16 @@ function consoleListen() {
   stdin.addListener('data', (buffer) => handleInput(buffer.toString().trim()) )
 }
 
+function log(output) {
+  console.log('\n' + output + '\n');
+}
+
 var debugCommands = {
   loadgame: (input) => {
     console.log('pretending to load game', input[0]);
   },
   help: () => {
-    console.log();
-    console.log('available commands:')
-    Object.keys(debugCommands).forEach( (c) => console.log('-', c));
-    console.log();
+    log('available commands:\n' + Object.keys(debugCommands).map( (c) => '- ' + c ).join('\n'));
   }
 }
 
@@ -50,15 +51,9 @@ function handleInput(i) {
         .map( (c) => {
           return { command: c, dist: levenshtein(command, c) }
         } )
-        // .sort( (a, b) => {
-        //   if (a.dist < b.dist) return -1;
-        //   if (a.dist > b.dist) return 1;
-        //   return 0;
-        .sort( (a, b) => (a.dist < b.dist) ? -1 : ((a.dist > b.dist) ? 1 : 0) )[0];
-      console.log();
-      console.log('Unknown command. Did you mean');
-      console.log('    ' + bestGuess.command);
-      console.log();
+        .sort( (a, b) => (a.dist < b.dist) ? -1 : ((a.dist > b.dist) ? 1 : 0) )
+        [0];
+      log('Unknown command. Did you mean\n    ' + bestGuess.command);
     }
   } else handleInput('help');
 }
