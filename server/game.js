@@ -8,7 +8,8 @@ class Game {
   constructor(id) {
     this.id = id;
     this.players = [];
-    this.currentPlayer = false;
+    this.currentPlayer = undefined;
+    this.turnState = undefined;
     
     this.board = new Board();
     this.tileStore = new TileStore();
@@ -110,9 +111,12 @@ class Game {
     
     // this.broadcast('next turn', /* whose ~line~ turn is it anyway? */ )
     
-    // draw new tiles for everyone
-    // tell each player what their tiles are
     // announce the next turn
+  }
+  
+  nextTurn() {
+    this.currentPlayer = ++this.currentPlayer % this.players.count;
+    // this.broadcast('next turn', /* whose ~line~ turn is it anyway? */ )
   }
   
   findPlayer(id) {
@@ -131,8 +135,7 @@ class Game {
   tileChosen(id, msg) {
     let player = this.findPlayer(id);
     if (player.order != this.currentPlayer) {
-      // io.sockets.connected[player.player.id].emit('error: out of turn');
-      this.whisper(player.player.id, 'error: out of turn');
+      this.whisper(player.player.id, 'invalid move', 'It’s not your turn.');
     } else {
       if (player.player.hasTile(msg.row, msg.col)) {
         let result = this.board.playTile(msg.row, msg.col);
@@ -149,9 +152,9 @@ class Game {
           if (result.merger) {
             // resolve merger
           }
+          this.nextTurn();
         } else {
-          // io.sockets.connected[player.player.id].emit('error: invalid move', result.err);
-          this.whisper(player.player.id, 'error: invalid move', result.err);
+          this.whisper(player.player.id, 'invalid move', result.err);
         }
       }
     }
