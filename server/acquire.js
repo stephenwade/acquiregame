@@ -28,7 +28,7 @@ function log(output) {
 }
 
 var debugCommands = {
-  loadgame: (input) => {
+  load: (input) => {
     console.log('pretending to load game', input[0]);
   },
   help: () => {
