@@ -115,8 +115,7 @@ class Game {
   }
   
   nextTurn() {
-    if (++this.currentPlayer >= this.players.length)
-      this.currentPlayer = 0;
+    this.currentPlayer = ++this.currentPlayer % this.players.count;
     // this.broadcast('next turn', /* whose ~line~ turn is it anyway? */ )
   }
   
