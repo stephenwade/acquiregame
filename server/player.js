@@ -24,13 +24,7 @@ class Player {
   }
   
   hasTile(row, col) {
-    let result = false;
-    this.tiles.forEach( (t) => {
-      if (t.row == row && t.col == col) {
-        result = true;
-      }
-    } );
-    return result;
+    return this.tiles.some( (t) => t.row == row && t.col == col );
   }
 };
 
