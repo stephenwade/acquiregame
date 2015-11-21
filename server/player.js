@@ -10,6 +10,11 @@ class Player {
     // etc.
   }
   
+  disconnected() {
+    this.id = undefined;
+    console.log(this.nickname, 'lost connection');
+  }
+  
   addTile(tile) {
     this.tiles.push(tile);
   }

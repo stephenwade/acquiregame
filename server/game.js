@@ -9,6 +9,7 @@ class Game {
     this.id = id;
     this.players = [];
     this.currentPlayer = undefined;
+    this.gameState = 'lobby';
     this.turnState = undefined;
     
     this.board = new Board();
@@ -23,10 +24,13 @@ class Game {
   }
   
   whisper(to, ev, data) {
-    if (typeof data === undefined)
-      io.sockets.connected[to].emit(ev);
-    else
-      io.sockets.connected[to].emit(ev, data);
+    if (typeof to !== undefined) {
+      if (typeof data === undefined) {
+        io.sockets.connected[to].emit(ev);
+      } else {
+        io.sockets.connected[to].emit(ev, data);
+      }
+    }
   }
   
   addPlayer(player) {
@@ -41,6 +45,14 @@ class Game {
       }
     }
     this.pushSetupState();
+  }
+  
+  disconnectPlayer(id) {
+    for (let i = 0; i < this.players.length; i++) {
+      if (id === this.players[i].id) {
+        this.players[i].disconnected();
+      }
+    }
   }
   
   updateNickname(id, newName) {
@@ -98,8 +110,8 @@ class Game {
     let order = this.firstPlayer();
     
     console.log(order);
+    this.gameState = 'main';
     this.broadcast('game started', order);
-    // tell the board about players
   }
   
   boardReady() {
