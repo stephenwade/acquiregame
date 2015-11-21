@@ -1,8 +1,9 @@
 'use strict';
 
 class Player {
-  constructor(id, nickname) {
+  constructor(id, uuid, nickname) {
     this.id = id;
+    this.uuid = uuid;
     this.nickname = nickname;
     this.tiles = [];
     // money

@@ -55,6 +55,22 @@ class Game {
     }
   }
   
+  rejoinPlayer(msg) {
+    for (let i = 0; i < this.players.length; i++) {
+      if (msg.uuid === this.players[i].uuid) {
+        this.players[i].id = msg.id;
+        whisper(this.players[i].id, 'game state', this.dumpGameState());
+        return true;
+      }
+    }
+    return false;
+  }
+  
+  dumpGameState() {
+    console.log('pretending to dump game state');
+    return {};
+  }
+  
   updateNickname(id, newName) {
     for (let i = 0; i < this.players.length; i++) {
       if (this.players[i].id === id) {
