@@ -24,7 +24,7 @@ class Game {
   }
   
   whisper(to, ev, data) {
-    if (typeof to !== undefined) {
+    if (typeof io.sockets.connected[to] !== undefined) {
       if (typeof data === undefined) {
         io.sockets.connected[to].emit(ev);
       } else {
