@@ -149,14 +149,15 @@ class Game {
       console.log(player.id, 'has tiles', player.tiles);
     }
     
-    // this.broadcast('next turn', /* whose ~line~ turn is it anyway? */ )
-    
-    // announce the next turn
+    this.nextTurn(true);
   }
   
-  nextTurn() {
-    this.currentPlayer = ++this.currentPlayer % this.players.count;
-    // this.broadcast('next turn', /* whose ~line~ turn is it anyway? */ )
+  nextTurn(firstTurn) {
+    if (! firstTurn) this.currentPlayer = ++this.currentPlayer % this.players.count;
+    let player = this.players[this.currentPlayer];
+    this.broadcast('next turn', player.uuid);
+    this.whisper(player.id, 'play a tile');
+    player.waitingFor = { ev: 'play a tile' };
   }
   
   findPlayer(id) {
