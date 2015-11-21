@@ -53,8 +53,10 @@ class Connection {
       this.game = game;
       this.gameID = msg.id;
       this.socket.join(msg.id);
-      this.game.addPlayer(new Player(this.socket.id, uuid(), he.escape(msg.nickname)));
+      let newUUID = uuid();
+      this.game.addPlayer(new Player(this.socket.id, newUUID, he.escape(msg.nickname)));
       this.socket.emit('joined game', msg.id);
+      this.socket.emit('assigned UUID', newUUID);
     } else {
       this.socket.emit('invalid game');
     }

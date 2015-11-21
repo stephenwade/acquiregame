@@ -57,6 +57,8 @@
       created() {
         console.log(Acquire.gameID);
         
+        socket.on('assigned UUID', (msg) => localStorage.acquireUUID = msg);
+        
         socket.on('invalid game', function() {
           console.log('invalid game');
           window.location.hash = '#join';
