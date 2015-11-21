@@ -5,10 +5,18 @@ class Player {
     this.id = id;
     this.uuid = uuid;
     this.nickname = nickname;
+    this.waitingFor = undefined;
     this.tiles = [];
     // money
     // stock
     // etc.
+  }
+  
+  dumpPlayerState() {
+    return {
+      nickname: this.nickname,
+      tiles: this.tiles
+    };
   }
   
   disconnected() {
