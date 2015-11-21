@@ -153,7 +153,7 @@ class Game {
   }
   
   nextTurn(firstTurn) {
-    if (! firstTurn) this.currentPlayer = ++this.currentPlayer % this.players.count;
+    if (! firstTurn) this.currentPlayer = ++this.currentPlayer % this.players.length;
     let player = this.players[this.currentPlayer];
     this.broadcast('next turn', player.uuid);
     this.whisper(player.id, 'play a tile');
