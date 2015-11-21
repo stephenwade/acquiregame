@@ -17,7 +17,7 @@ class Board {
   }
   
   playTile(row, col) {
-    let neighbors = getNeighbors(row, col);
+    let neighbors = this.getNeighbors(row, col);
     
     if (neighbors.every( (cell) => ! grid[cell.row][cell.col].filled )) {
       this.grid[row][col].filled = true;
