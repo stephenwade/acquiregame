@@ -51,6 +51,8 @@
       is: 'acquire-join-page',
       
       created: () => {
+        socket.on('assigned UUID', (msg) => localStorage.acquireUUID = msg);
+        
         socket.on('joined game', function(msg) {
           console.log('joined game');
           window.location.hash = '#lobby/' + msg;

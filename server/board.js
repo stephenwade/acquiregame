@@ -17,24 +17,24 @@ class Board {
   }
   
   playTile(row, col) {
-    let neighbors = getNeighbors(row, col);
+    let neighbors = this.getNeighbors(row, col);
     
-    if (neighbors.every( (cell) => ! grid[cell.row][cell.col].filled )) {
+    if (neighbors.every( (cell) => ! this.grid[cell.row][cell.col].filled )) {
       this.grid[row][col].filled = true;
       return { success: true, orphan: true }
     } else {
-      if (neighbors.every( (cell) => ! grid[cell.row][cell.col].chain )) {
+      if (neighbors.every( (cell) => ! this.grid[cell.row][cell.col].chain )) {
         this.grid[row][col].filled = true;
         return { success: true, newChain: true }
       } else {
-        let chainMembers = neighbors.filter( (cell) => grid[cell.row][cell.col].chain );
+        let chainMembers = neighbors.filter( (cell) => this.grid[cell.row][cell.col].chain );
         
         if (chainMembers.length == 1) {
           this.grid[row][col].filled = true;
           return { success: true, expandChain: true }
         } else {
           let firstChain = this.grid[row][col].chain;
-          if (neighbors.slice(1).each( (cell) => grid[cell.row][cell.col].chain == firstChain )) {
+          if (neighbors.slice(1).each( (cell) => this.grid[cell.row][cell.col].chain == firstChain )) {
             this.grid[row][col].filled = true;
             return { success: true, expandChain: true }
           } else {

@@ -9,6 +9,7 @@ class Game {
     this.id = id;
     this.players = [];
     this.currentPlayer = undefined;
+    this.gameState = 'lobby';
     this.turnState = undefined;
     
     this.board = new Board();
@@ -23,10 +24,13 @@ class Game {
   }
   
   whisper(to, ev, data) {
-    if (typeof data === undefined)
-      io.sockets.connected[to].emit(ev);
-    else
-      io.sockets.connected[to].emit(ev, data);
+    if (typeof io.sockets.connected[to] !== undefined) {
+      if (typeof data === undefined) {
+        io.sockets.connected[to].emit(ev);
+      } else {
+        io.sockets.connected[to].emit(ev, data);
+      }
+    }
   }
   
   addPlayer(player) {
@@ -41,6 +45,42 @@ class Game {
       }
     }
     this.pushSetupState();
+  }
+  
+  disconnectPlayer(id) {
+    for (let i = 0; i < this.players.length; i++) {
+      if (id === this.players[i].id) {
+        this.players[i].disconnected();
+      }
+    }
+  }
+  
+  rejoinPlayer(msg) {
+    for (let i = 0; i < this.players.length; i++) {
+      if (msg.uuid === this.players[i].uuid) {
+        this.players[i].id = msg.id;
+        this.whisper(msg.id, 'game state', {
+          game: this.dumpGameState(),
+          player: this.players[i].dumpPlayerState()
+        });
+        return true;
+        let waitingFor = this.players[i].waitingFor;
+        if (waitingFor) {
+          this.whisper(msg.id, waitingFor.ev, waitingFor.data);
+        }
+      }
+    }
+    return false;
+  }
+  
+  dumpGameState() {
+    return {
+      players: this.players,
+      currentPlayer: this.players[i].id,
+      gameState: this.gameState,
+      turnState: this.turnState,
+      board: this.board.grid
+    };
   }
   
   updateNickname(id, newName) {
@@ -98,8 +138,8 @@ class Game {
     let order = this.firstPlayer();
     
     console.log(order);
+    this.gameState = 'main';
     this.broadcast('game started', order);
-    // tell the board about players
   }
   
   boardReady() {
@@ -109,14 +149,15 @@ class Game {
       console.log(player.id, 'has tiles', player.tiles);
     }
     
-    // this.broadcast('next turn', /* whose ~line~ turn is it anyway? */ )
-    
-    // announce the next turn
+    this.nextTurn(true);
   }
   
-  nextTurn() {
-    this.currentPlayer = ++this.currentPlayer % this.players.count;
-    // this.broadcast('next turn', /* whose ~line~ turn is it anyway? */ )
+  nextTurn(firstTurn) {
+    if (! firstTurn) this.currentPlayer = ++this.currentPlayer % this.players.length;
+    let player = this.players[this.currentPlayer];
+    this.broadcast('next turn', player.uuid);
+    this.whisper(player.id, 'play a tile');
+    player.waitingFor = { ev: 'play a tile' };
   }
   
   findPlayer(id) {

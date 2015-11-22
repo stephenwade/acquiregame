@@ -1,13 +1,27 @@
 'use strict';
 
 class Player {
-  constructor(id, nickname) {
+  constructor(id, uuid, nickname) {
     this.id = id;
+    this.uuid = uuid;
     this.nickname = nickname;
+    this.waitingFor = undefined;
     this.tiles = [];
     // money
     // stock
     // etc.
+  }
+  
+  dumpPlayerState() {
+    return {
+      nickname: this.nickname,
+      tiles: this.tiles
+    };
+  }
+  
+  disconnected() {
+    this.id = undefined;
+    console.log(this.nickname, 'lost connection');
   }
   
   addTile(tile) {
@@ -19,13 +33,7 @@ class Player {
   }
   
   hasTile(row, col) {
-    let result = false;
-    this.tiles.forEach( (t) => {
-      if (t.row == row && t.col == col) {
-        result = true;
-      }
-    } );
-    return result;
+    return this.tiles.some( (t) => t.row == row && t.col == col );
   }
 };
 
