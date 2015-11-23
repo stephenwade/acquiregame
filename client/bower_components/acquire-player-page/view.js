@@ -41,9 +41,6 @@ class PlayerView {
   drawHand() {
     this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
     
-    this.context.fillStyle = '#555555';
-    this.context.fillRect(20, 90, 50, 50);
-    
     for (let i = 0; i < this.hand.length; i++) {
       this.drawTile(this.hand[i], i);
     }
