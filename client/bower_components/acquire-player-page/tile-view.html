@@ -1,0 +1,60 @@
+<template id="tileView">
+  <style>
+    :host {
+      position: relative;
+      display: inline-block;
+      
+      background-color: #555555;
+      border-radius: 3px;
+      overflow: hidden;
+      
+      color: #ffffff;
+      font: 100% Roboto;
+      text-align: center;
+      
+      -webkit-user-select: none;
+      cursor: pointer;
+    }
+    
+    #label {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      
+      white-space: nowrap;
+    }
+  </style>
+  <div id="label"><content></content></div>
+</template>
+
+<script>
+  'use strict';
+
+  (() => {
+    let template = document.currentScript.ownerDocument.querySelector('template');
+    let TileViewProto = Object.create(HTMLElement.prototype);
+    
+    Object.assign(TileViewProto, {
+      createdCallback() {
+        this.root = this.createShadowRoot();
+        this.root.appendChild(document.importNode(template.content, true));
+        
+        var self = this;
+        this.clickHandler = (event) => {
+          console.log(self.tile);
+        };
+      },
+      
+      attachedCallback() {
+        this.addEventListener('click', this.clickHandler);
+      },
+      
+      detachedCallback() {
+        this.removeEventListener('click', this.clickHandler);
+      }
+    });
+    
+    window.TileView = document.registerElement('tile-view', { prototype: TileViewProto });
+  })();
+</script>
