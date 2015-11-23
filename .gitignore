@@ -1,3 +1,6 @@
+# Debug trigger file
+debug
+
 # Logs
 logs
 *.log

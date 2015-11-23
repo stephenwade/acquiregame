@@ -30,10 +30,12 @@ class BoardView {
     
     socket.emit('start game');
     socket.on('game started', (msg) => self.animatePlayerOrder(msg) );
+    socket.on('tile played', (msg) => self.playTile(msg) );
   }
   
   detatch() {
     window.cancelAnimationFrame(this.drawFrame);
+    socket.removeListener('game started');
   }
   
   draw() {
@@ -76,13 +78,16 @@ class BoardView {
     this.context.tempState( () => {
       let x = (message.col + 1) * this.size;
       let y = (message.row + 0.5) * this.size;
-      let width = this.context.measureText(message.text).width;
+      let textWidth = this.context.measureText(message.text).width;
       let height = 30;
       let padding = 5;
       let arrowWidth = height / 2;
+      let bodyWidth = textWidth + padding;
       let borderWidth = 2;
       
-      let direction = (x + width + padding + arrowWidth + borderWidth * 2 < this.canvas.width) ? 'left' : 'right';
+      let rightEdge = x + bodyWidth + arrowWidth + borderWidth * 2
+      
+      let direction = (rightEdge < this.canvas.width) ? 'left' : 'right';
       
       this.context.fillStyle = '#000000';
       this.context.strokeStyle = '#6666cc';
@@ -91,7 +96,7 @@ class BoardView {
       if (direction == 'left') {
         this.context.translate(x, y);
       
-        this.drawPointer(0, 0, width + padding, height, borderWidth, '#000000', '#6666cc');
+        this.drawPointer(0, 0, bodyWidth, height, borderWidth, '#000000', '#6666cc');
         
         this.context.fillStyle = '#ffffff';
         this.context.fillText(message.text, arrowWidth, 0);
@@ -101,12 +106,11 @@ class BoardView {
         this.context.tempState( () => {
           this.context.scale(-1, 1);
           
-          this.drawPointer(0, 0, width + padding, height, borderWidth, '#000000', '#6666cc');
+          this.drawPointer(0, 0, bodyWidth, height, borderWidth, '#000000', '#6666cc');
         });
         
-        this.context.textBaseline = 'middle';
         this.context.fillStyle = '#ffffff';
-        this.context.fillText(message.text, -arrowWidth - width, 0);
+        this.context.fillText(message.text, -arrowWidth - textWidth, 0);
       }
       
     });
@@ -125,6 +129,7 @@ class BoardView {
     animation.begin(time || new Date().getTime());
     
     this.messages.push({ text, row, col, animation });
+    console.log('displayed message', text);
   }
   
   resize() {
@@ -138,13 +143,17 @@ class BoardView {
         this.board[x][y].updateSize(this.size);
       }
     }
-    //this.draw();
   }
   
   fullscreen() {
     if (this.canvas.webkitRequestFullScreen) {
       this.canvas.webkitRequestFullScreen();
     }
+  }
+  
+  playTile(tile) {
+    this.board[tile.col][tile.row].flip(new Date().getTime());
+    this.displayMessage('Player played', tile.row, tile.col);
   }
   
   findClickSubject(event) {
@@ -158,9 +167,6 @@ class BoardView {
   }
   
   animatePlayerOrder(msg) {
-    
-    socket.emit('board ready');
-    
     console.log('data:', msg);
     
     // animate picking player order
@@ -171,9 +177,11 @@ class BoardView {
       let cell = this.board[player.tile.col][player.tile.row];
       let displayTime = currentTime + i * 1000;
       
-      this.displayMessage(player.nickname, cell.row, cell.col, displayTime);
+      this.displayMessage(player.player.nickname, cell.row, cell.col, displayTime);
       cell.flip(displayTime);
       i++;
     };
+    
+    setTimeout(() => { socket.emit('board ready') }, 3000);
   }
 };
