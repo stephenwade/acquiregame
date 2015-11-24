@@ -42,6 +42,7 @@
         
         var self = this;
         this.clickHandler = (event) => { self.submitTile(); };
+        socket.on('tile played', (tile) => { self.confirmPlay(tile); });
       },
       
       attachedCallback() {
@@ -61,8 +62,10 @@
         socket.emit('tile chosen', this.tile);
       },
       
-      playConfirmed() {
-        this.remove();
+      confirmPlay(tile) {
+        if (tile.row === this.tile.row && tile.col === this.tile.col) {
+          this.remove();
+        }
       }
     });
     
