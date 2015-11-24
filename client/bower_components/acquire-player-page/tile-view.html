@@ -33,15 +33,16 @@
 
   (() => {
     let template = document.currentScript.ownerDocument.querySelector('template');
-    let TileViewProto = Object.create(HTMLElement.prototype);
+    let prototype = Object.create(HTMLElement.prototype);
     
-    Object.assign(TileViewProto, {
+    Object.assign(prototype, {
       createdCallback() {
         this.root = this.createShadowRoot();
         this.root.appendChild(document.importNode(template.content, true));
         
         var self = this;
         this.clickHandler = (event) => { self.submitTile(); };
+        
         socket.on('tile played', (tile) => { self.confirmPlay(tile); });
       },
       
@@ -69,6 +70,6 @@
       }
     });
     
-    window.TileView = document.registerElement('tile-view', { prototype: TileViewProto });
+    window.TileView = document.registerElement('tile-view', { prototype });
   })();
 </script>
