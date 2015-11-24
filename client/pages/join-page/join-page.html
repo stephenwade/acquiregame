@@ -9,7 +9,7 @@
 
 <link rel="import" href="../../bower_components/polymer/polymer.html">
 
-<dom-module id="acquire-join-page">
+<dom-module id="join-page">
 
   <template>
     <style>
@@ -48,7 +48,7 @@
     'use strict';
       
     Polymer({
-      is: 'acquire-join-page',
+      is: 'join-page',
       
       created: () => {
         socket.on('assigned UUID', (msg) => localStorage.acquireUUID = msg);

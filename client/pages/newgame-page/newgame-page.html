@@ -7,7 +7,7 @@
 
 <link rel="import" href="../../bower_components/polymer/polymer.html">
 
-<dom-module id="acquire-newgame-page">
+<dom-module id="newgame-page">
 
   <template>
     <style>
@@ -53,7 +53,7 @@
     'use strict';
     
     Polymer({
-      is: 'acquire-newgame-page',
+      is: 'newgame-page',
       
       attached: function() {
         socket.on('game created', function(msg) {
