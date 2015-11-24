@@ -8,10 +8,29 @@ class Game {
   constructor(id) {
     this.id = id;
     this.players = [];
-    this.currentPlayer = false;
+    this.currentPlayer = undefined;
+    this.gameState = 'lobby';
+    this.turnState = undefined;
     
     this.board = new Board();
     this.tileStore = new TileStore();
+  }
+  
+  broadcast(ev, data) {
+    if (typeof data === undefined)
+      io.to(this.id).emit(ev);
+    else
+      io.to(this.id).emit(ev, data);
+  }
+  
+  whisper(to, ev, data) {
+    if (typeof io.sockets.connected[to] !== undefined) {
+      if (typeof data === undefined) {
+        io.sockets.connected[to].emit(ev);
+      } else {
+        io.sockets.connected[to].emit(ev, data);
+      }
+    }
   }
   
   addPlayer(player) {
@@ -28,6 +47,42 @@ class Game {
     this.pushSetupState();
   }
   
+  disconnectPlayer(id) {
+    for (let i = 0; i < this.players.length; i++) {
+      if (id === this.players[i].id) {
+        this.players[i].disconnected();
+      }
+    }
+  }
+  
+  rejoinPlayer(msg) {
+    for (let i = 0; i < this.players.length; i++) {
+      if (msg.uuid === this.players[i].uuid) {
+        this.players[i].id = msg.id;
+        this.whisper(msg.id, 'game state', {
+          game: this.dumpGameState(),
+          player: this.players[i].dumpPlayerState()
+        });
+        return true;
+        let waitingFor = this.players[i].waitingFor;
+        if (waitingFor) {
+          this.whisper(msg.id, waitingFor.ev, waitingFor.data);
+        }
+      }
+    }
+    return false;
+  }
+  
+  dumpGameState() {
+    return {
+      players: this.players,
+      currentPlayer: this.players[i].id,
+      gameState: this.gameState,
+      turnState: this.turnState,
+      board: this.board.grid
+    };
+  }
+  
   updateNickname(id, newName) {
     for (let i = 0; i < this.players.length; i++) {
       if (this.players[i].id === id) {
@@ -38,7 +93,7 @@ class Game {
   }
   
   pushSetupState() {
-    io.to(this.id).emit('setup state', {
+    this.broadcast('setup state', {
       players: this.players,
       isReady: this.isReady()
     });
@@ -83,43 +138,67 @@ class Game {
     let order = this.firstPlayer();
     
     console.log(order);
-    io.to(this.id).emit('game started', order);
-    // tell the board about players
+    this.gameState = 'main';
+    this.broadcast('game started', order);
   }
   
   boardReady() {
     for (let player of this.players) {
       player.addTiles(this.tileStore.getTiles(6));
-      //io.to(player.id).emit('new tiles', player.tiles.map( (tile) => tile.label ))
-      io.sockets.connected[player.id].emit('new tiles', player.tiles);
+      this.whisper(player.id, 'new tiles', player.tiles);
       console.log(player.id, 'has tiles', player.tiles);
     }
     
-    // io.to(this.id).emit('next turn', /* whose ~line~ turn is it anyway? */ )
-    
-    // draw new tiles for everyone
-    // tell each player what their tiles are
-    // announce the next turn
+    this.nextTurn(true);
+  }
+  
+  nextTurn(firstTurn) {
+    if (! firstTurn) this.currentPlayer = ++this.currentPlayer % this.players.length;
+    let player = this.players[this.currentPlayer];
+    this.broadcast('next turn', player.uuid);
+    this.whisper(player.id, 'play a tile');
+    player.waitingFor = { ev: 'play a tile' };
   }
   
   findPlayer(id) {
-    for (let player of this.players) {
-      if (player.id === id) {
-        return player;
+    // for (let player of this.players) {
+    //   if (player.id === id) {
+    //     return player;
+    //   }
+    // }
+    for (let i = 0; i < this.players.length; i++) {
+      if (this.players[i].id === id) {
+        return { player: this.players[i], order: i };
       }
     }
   }
   
   tileChosen(id, msg) {
     let player = this.findPlayer(id);
-    
-    if (this.board.playTile(msg.row, msg.col)) {
-      console.log(player.nickname, 'played', msg);
-      io.to(this.id).emit('tile played', msg);
+    if (player.order != this.currentPlayer) {
+      this.whisper(player.player.id, 'invalid move', 'It’s not your turn.');
+    } else {
+      if (player.player.hasTile(msg.row, msg.col)) {
+        let result = this.board.playTile(msg.row, msg.col);
+        if (result.success) {
+          console.log(player.nickname, 'played', msg);
+          this.broadcast('tile played', msg);
+          
+          if (result.orphan || result.expandChain) {
+            // move to buying stock phase
+          }
+          if (result.newChain) {
+            // create a new chain
+          }
+          if (result.merger) {
+            // resolve merger
+          }
+          this.nextTurn();
+        } else {
+          this.whisper(player.player.id, 'invalid move', result.err);
+        }
+      }
     }
-    // is it your turn?
-    // do you have that tile?
-    // put the tile on the board
   }
   
   mergerChosen(id, msg) {
