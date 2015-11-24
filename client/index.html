@@ -27,12 +27,12 @@
 <script>
   'use strict';
   
-  function reconnectAttempt() {
-    document.querySelector('#socket-reconnecting').show()
-  }
-  function reconnect() {
-    document.querySelector('#socket-reconnected').show()
-  }
+  var socket = new Socket(window.location.hostname + ':8001');
+  
+  window.addEventListener('WebComponentsReady', function(e) {
+    this.socket.on('connect_error', () => document.querySelector('#socket-reconnecting').show());
+    this.socket.on('reconnect',     () => document.querySelector('#socket-reconnected').show());
+  });
 </script>
 
 
