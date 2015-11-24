@@ -7,15 +7,18 @@
   
   <title>Acquire</title>
   
-  <script src="bower_components/socket.io-client/socket.io.js"></script>
   <script src="bower_components/jquery/dist/jquery.min.js"></script>
+  
+  <script src="bower_components/socket.io-client/socket.io.js"></script>
+  <script src="acquire-socket/acquire-socket.js"></script>
   
   <script src="bower_components/webcomponentsjs/webcomponents-lite.min.js"></script>
   
-  <link rel="import" href="bower_components/acquire-router/acquire-router.html">
+  <link rel="import" href="acquire-router/acquire-router.html">
   <link rel="import" href="bower_components/paper-toast/paper-toast.html">
+  <link rel="import" href="bower_components/iron-flex-layout/iron-flex-layout.html">
 </head>
-<body unresolved class="fullbleed">
+<body class="fullbleed">
 
 <acquire-router></acquire-router>
 <paper-toast id="socket-reconnecting" text="Lost connection. Reconnecting…" duration="60000"></paper-toast>
@@ -25,11 +28,14 @@
 <script>
   'use strict';
   
-  var socket = io(window.location.hostname + ':8001');
-  socket.on('reconnect_attempt', () => document.querySelector('#socket-reconnecting').show());
-  socket.on('reconnect',         () => document.querySelector('#socket-reconnected').show());
-  socket.on('error', () => {});
+  var socket = new Socket(window.location.hostname + ':8001');
+  
+  window.addEventListener('WebComponentsReady', function(e) {
+    this.socket.on('connect_error', () => document.querySelector('#socket-reconnecting').show());
+    this.socket.on('reconnect',     () => document.querySelector('#socket-reconnected').show());
+  });
 </script>
+
 
 </body>
 </html>

@@ -1,0 +1,133 @@
+<link rel="import" href="./tile-view.html">
+
+<template id="playerView">
+  <style>
+    html, body, :host {
+      display: block;
+      
+      width: 100%;
+      height: 100%;
+      padding: 0;
+      margin: 0;
+      
+      overflow: hidden;
+    }
+    
+    #tiles {
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+      
+      margin: 1em;
+    }
+    
+    tile-view {
+      width: 15%;
+      height: 15vw;
+      
+      font-size: 4vw;
+    }
+    
+    #turnState {
+      position: absolute;
+      bottom: 0;
+      
+      width: 100%;
+      
+      margin-left: auto;
+      margin-right: auto;
+      
+      background-color: #555555;
+      
+      color: #ffffff;
+      text-align: center;
+      
+      transition: ease 1s;
+    }
+  </style>
+  
+  <div id="tiles"></div>
+  <div id="portfolio"></div>
+  <div id="turnState"></div>
+</template>
+
+<script src="./player.js"></script>
+<script>
+  'use strict';
+  
+  HTMLCollection.prototype[Symbol.iterator] = Array.prototype[Symbol.iterator];
+  
+  (() => {
+    let template = document.currentScript.ownerDocument.querySelector('#playerView');
+    let prototype = Object.create(HTMLElement.prototype);
+    
+    Object.assign(prototype, {
+      createdCallback() {
+        this.root = this.createShadowRoot();
+        this.root.appendChild(document.importNode(template.content, true));
+        
+        this.player = new Player();
+      },
+      
+      attachedCallback() {
+        var self = this;
+        
+        // Events
+        socket.on('new tiles', (tiles) => { self.addTiles(tiles) });
+        
+        // States
+        socket.on('play a tile', (tiles) => {
+          self.player.chooseTile();
+          self.displayTurnStatus();
+        });
+        socket.on('tile played',   (tile)  => { self.checkTiles(tile) });
+      },
+      
+      detachedCallback() {
+      },
+      
+      addTiles(tiles) {
+        for (let tile of tiles) {
+          console.log(tile);
+          this.player.hand.push(tile);
+          
+          var view = new TileView();
+          view.setTile(tile);
+          view.setPlayer(this.player);
+          var rack = this.root.querySelector('#tiles');
+          rack.appendChild(view);
+        }
+      },
+      
+      checkTiles(tile) {
+        let tileViews = this.root.querySelector('#tiles');
+        
+        for (let view of tileViews.children) {
+          if (view.confirmPlay(tile)) {
+            this.player.tileChosen();
+            this.displayTurnStatus();
+          }
+        }
+      },
+      
+      displayTurnStatus() {
+        console.log('displaying!');
+        let turnStateView = this.root.querySelector('#turnState');
+        switch (this.player.state) {
+          case 'waiting':
+            turnStateView.style.display = 'none';
+            break;
+          case 'choosing tile':
+            turnStateView.style.display = 'block';
+            turnStateView.innerText = 'Choose a Tile';
+            break;
+          default:
+            turnStateView.style.display = 'block';
+            turnStateView.innerText = 'State Unknown';
+        }
+      },
+    });
+    
+    window.PlayerPage = document.registerElement('player-page', { prototype });
+  })();
+</script>

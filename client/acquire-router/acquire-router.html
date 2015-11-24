@@ -1,0 +1,60 @@
+<link rel="import" href="../pages/home-page/home-page.html">
+<link rel="import" href="../pages/join-page/join-page.html">
+<link rel="import" href="../pages/newgame-page/newgame-page.html">
+<link rel="import" href="../pages/lobby-page/lobby-page.html">
+<link rel="import" href="../pages/player-page/player-page.html">
+<link rel="import" href="../pages/board-page/board-page.html">
+
+<link rel="import" href="../bower_components/polymer/polymer.html">
+
+<dom-module id="acquire-router">
+  <script>
+    'use strict';
+    
+    window.Acquire = {};
+    
+    (() => {
+      var pageNames = {
+        'home':  'home-page',
+        'new':   'newgame-page',
+        'join':  'join-page',
+        'lobby': 'lobby-page',
+        'play':  'player-page',
+        'board': 'board-page'
+      };
+      var pages = {};
+      var activePage = 'none';
+      
+      Polymer({
+        is: 'acquire-router',
+        
+        attached: function() {
+          this.async(function() { // https://www.polymer-project.org/1.0/docs/devguide/registering-elements.html#initialization-order
+            this.handleHash();
+            $(window).on('hashchange', this.handleHash);
+          });
+        },
+        
+        handleHash: function () {
+          let hash = window.location.hash.replace(/^#/, '').split('/')[0];
+          
+          console.log('hashing...');
+          if (hash !== activePage) {
+            if (pageNames[hash] === undefined) {
+              window.location.hash = '#home';
+            }
+            
+            if (activePage !== 'none')
+              $(pages[activePage]).remove();
+            
+            if (pages[hash] === undefined)
+              pages[hash] = document.createElement(pageNames[hash]);
+            
+            activePage = hash;
+            $(pages[hash]).appendTo('acquire-router');
+          }
+        }
+      });
+    })();
+  </script>
+</dom-module>
