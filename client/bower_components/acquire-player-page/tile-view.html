@@ -1,0 +1,75 @@
+<template id="tileView">
+  <style>
+    :host {
+      position: relative;
+      display: inline-block;
+      
+      background-color: #555555;
+      border-radius: 3px;
+      overflow: hidden;
+      
+      color: #ffffff;
+      font: 100% Roboto;
+      text-align: center;
+      
+      -webkit-user-select: none;
+      cursor: pointer;
+    }
+    
+    #label {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      
+      white-space: nowrap;
+    }
+  </style>
+  <div id="label"></div>
+</template>
+
+<script>
+  'use strict';
+
+  (() => {
+    let template = document.currentScript.ownerDocument.querySelector('template');
+    let prototype = Object.create(HTMLElement.prototype);
+    
+    Object.assign(prototype, {
+      createdCallback() {
+        this.root = this.createShadowRoot();
+        this.root.appendChild(document.importNode(template.content, true));
+        
+        var self = this;
+        this.clickHandler = (event) => { self.submitTile(); };
+        
+        socket.on('tile played', (tile) => { self.confirmPlay(tile); });
+      },
+      
+      attachedCallback() {
+        this.addEventListener('click', this.clickHandler);
+      },
+      
+      detachedCallback() {
+        this.removeEventListener('click', this.clickHandler);
+      },
+      
+      setTile(tile) {
+        this.tile = tile;
+        this.root.querySelector('#label').innerText = tile.label;
+      },
+      
+      submitTile() {
+        socket.emit('tile chosen', this.tile);
+      },
+      
+      confirmPlay(tile) {
+        if (tile.row === this.tile.row && tile.col === this.tile.col) {
+          this.remove();
+        }
+      }
+    });
+    
+    window.TileView = document.registerElement('tile-view', { prototype });
+  })();
+</script>
