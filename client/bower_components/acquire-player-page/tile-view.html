@@ -59,14 +59,22 @@
         this.root.querySelector('#label').innerText = tile.label;
       },
       
+      setPlayer(player) {
+        this.player = player;
+      },
+      
       submitTile() {
-        socket.emit('tile chosen', this.tile);
+        if (this.player.state === 'choosing tile') {
+          socket.emit('tile chosen', this.tile);
+        }
       },
       
       confirmPlay(tile) {
         if (tile.row === this.tile.row && tile.col === this.tile.col) {
           this.remove();
+          return true;
         }
+        return false;
       }
     });
     

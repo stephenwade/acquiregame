@@ -22,4 +22,12 @@ class Player {
       this.hand.push(tile);
     }
   }
+  
+  chooseTile(callback) {
+    this.state = 'choosing tile';
+  }
+  
+  tileChosen() {
+    this.state = 'waiting';
+  }
 }
