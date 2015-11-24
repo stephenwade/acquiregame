@@ -25,7 +25,7 @@
       white-space: nowrap;
     }
   </style>
-  <div id="label"><content></content></div>
+  <div id="label"></div>
 </template>
 
 <script>
@@ -41,9 +41,7 @@
         this.root.appendChild(document.importNode(template.content, true));
         
         var self = this;
-        this.clickHandler = (event) => {
-          console.log(self.tile);
-        };
+        this.clickHandler = (event) => { self.submitTile(); };
       },
       
       attachedCallback() {
@@ -52,6 +50,19 @@
       
       detachedCallback() {
         this.removeEventListener('click', this.clickHandler);
+      },
+      
+      setTile(tile) {
+        this.tile = tile;
+        this.root.querySelector('#label').innerText = tile.label;
+      },
+      
+      submitTile() {
+        socket.emit('tile chosen', this.tile);
+      },
+      
+      playConfirmed() {
+        this.remove();
       }
     });
     

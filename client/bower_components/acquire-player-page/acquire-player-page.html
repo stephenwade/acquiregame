@@ -38,43 +38,38 @@
   
   (() => {
     let template = document.currentScript.ownerDocument.querySelector('#playerView');
-    let PlayerViewProto = Object.create(HTMLElement.prototype);
+    let prototype = Object.create(HTMLElement.prototype);
     
-    Object.assign(PlayerViewProto, {
+    Object.assign(prototype, {
       createdCallback() {
         this.root = this.createShadowRoot();
         this.root.appendChild(document.importNode(template.content, true));
         
-        this.hand = [];
+        //this.hand = [];
       },
       
       attachedCallback() {
-        var tile1 = new TileView();
-        tile1.innerText = '5-G';
-        tile1.tile = 'herro?';
-        var tile2 = new TileView();
-        tile2.innerText = '12-H';
-        var tile3 = new TileView();
-        tile3.innerText = '1-A';
-        var tile4 = new TileView();
-        tile4.innerText = '10-B';
-        var tile5 = new TileView();
-        tile5.innerText = '8-E';
-        var tile6 = new TileView();
-        tile6.innerText = '3-C';
+        var self = this;
         
-        this.root.querySelector('#tiles').appendChild(tile1);
-        this.root.querySelector('#tiles').appendChild(tile2);
-        this.root.querySelector('#tiles').appendChild(tile3);
-        this.root.querySelector('#tiles').appendChild(tile4);
-        this.root.querySelector('#tiles').appendChild(tile5);
-        this.root.querySelector('#tiles').appendChild(tile6);
+        socket.on('new tiles', (tiles) => { self.addTiles(tiles) });
       },
       
       detachedCallback() {
+      },
+      
+      addTiles(tiles) {
+        for (let tile of tiles) {
+          //this.hand.push(tile);
+          console.log(tile);
+          
+          var view = new TileView();
+          view.setTile(tile);
+          var rack = this.root.querySelector('#tiles');
+          rack.appendChild(view);
+        }
       }
     });
     
-    window.AcquirePlayerPage = document.registerElement('acquire-player-page', { prototype: PlayerViewProto });
+    window.AcquirePlayerPage = document.registerElement('acquire-player-page', { prototype });
   })();
 </script>
