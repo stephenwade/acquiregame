@@ -4,24 +4,43 @@ CanvasRenderingContext2D.prototype.tempState = function tempState(callback) {
   this.save(); callback(); this.restore();
 }
 
+Array.prototype.unique = () => {
+  return this.reduce((p, c) => {
+    if (p.indexOf(c) < 0) p.push(c);
+    return p;
+  }, []);
+};
+
 class BoardView {
   constructor(canvas) {
     this.canvas = canvas;
     this.context = canvas.getContext('2d');
     
+    this.rows = 9;
+    this.cols = 12;
+    
     this.size = 0;
-    this.board = [];
     this.messages = [];
     
     let now = new Date().getTime();
     
-    for (let x = 0; x < 12; x++) {
+    this.board = [];
+    for (let row = 0; row < this.rows; row++) {
       this.board.push([]);
       
-      for (let y = 0; y < 9; y++) {
-        this.board[x][y] = new BoardCell(this.context, y, x);
+      for (let col = 0; col < this.cols; col++) {
+        this.board[row][col] = new BoardCell(this.context, row, col, this);
       }
     }
+    
+    this.board[3][3].flip(new Date().getTime());
+    this.board[3][3].chain = 'Imperial';
+    this.board[3][4].flip(new Date().getTime());
+    this.board[3][4].chain = 'Imperial';
+    this.board[3][5].flip(new Date().getTime());
+    this.board[3][5].chain = 'Imperial';
+    this.board[4][4].flip(new Date().getTime());
+    this.board[4][4].chain = 'Imperial';
   }
   
   attach() {
@@ -49,9 +68,9 @@ class BoardView {
   };
   
   drawBoard() {
-    for (let x = 0; x < 12; x++) {
-      for (let y = 0; y < 9; y++) {
-        this.board[x][y].draw();
+    for (let row = 0; row < this.rows; row++) {
+      for (let col = 0; col < this.cols; col++) {
+        this.board[row][col].draw();
       }
     }
   }
@@ -138,9 +157,9 @@ class BoardView {
     
     this.size = Math.min(this.canvas.width / 12, this.canvas.height / 9);
     
-    for (let x = 0; x < 12; x++) {
-      for (let y = 0; y < 9; y++) {
-        this.board[x][y].updateSize(this.size);
+    for (let row = 0; row < this.rows; row++) {
+      for (let col = 0; col < this.cols; col++) {
+        this.board[row][col].updateSize(this.size);
       }
     }
   }
@@ -151,19 +170,54 @@ class BoardView {
     }
   }
   
-  playTile(tile) {
-    this.board[tile.col][tile.row].flip(new Date().getTime());
-    this.displayMessage('Player played', tile.row, tile.col);
+  playTile(tile, msg) {
+    this.board[tile.row][tile.col].flip(new Date().getTime());
+    
+    let inheritance = this.getInheritance(tile.row, tile.col);
+    
+    if (!inheritance.merger && inheritance.sides.length > 0) {
+      console.log('joined!', inheritance.sides[0]);
+      this.board[tile.row][tile.col].chain = inheritance.sides[0];
+    }
+    
+    this.displayMessage(msg || 'Player played', tile.row, tile.col);
+  }
+  
+  getNeighborChains(row, col) {
+    let result = {};
+    
+    result.up    = (row > 0            ) ? this.board[row - 1][col    ].chain : 'none';
+    result.right = (col < this.cols - 1) ? this.board[row    ][col + 1].chain : 'none';
+    result.down  = (row < this.rows - 1) ? this.board[row + 1][col    ].chain : 'none';
+    result.left  = (col > 0            ) ? this.board[row    ][col - 1].chain : 'none';
+    
+    return result;
+  }
+  
+  getInheritance(row, col) {
+    let neighbors = this.getNeighborChains(row, col);
+    
+    let result = { merger: false, sides: [] };
+    
+    for (let dir in neighbors) {
+      if (neighbors[dir] !== 'none') {
+        if (result.sides.unique.length > 1) {
+          result.merger = true;
+        }
+        result.sides.push(neighbors[dir]);
+      }
+    }
+    
+    return result;
   }
   
   findClickSubject(event) {
     var rect = this.canvas.getBoundingClientRect();
     this.size = Math.min(this.canvas.width / 12, this.canvas.height / 9);
-    var x = ((event.clientX - rect.left) / this.size)|0;
-    var y = ((event.clientY - rect.top) / this.size)|0;
+    var col = ((event.clientX - rect.left) / this.size)|0;
+    var row = ((event.clientY - rect.top) / this.size)|0;
     
-    this.board[x][y].flip(new Date().getTime());
-    this.displayMessage('Clicked', y, x);
+    this.playTile({ row, col }, 'Clicked');
   }
   
   animatePlayerOrder(msg) {

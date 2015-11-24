@@ -1,12 +1,15 @@
 'use strict';
 
 class BoardCell {
-  constructor(context, row, col) {
+  constructor(context, row, col, board) {
     this.context = context;
     this.row = row;
     this.col = col;
+    this.board = board;
     
+    this.chain = 'none';
     this.filled = false;
+    
     this.frame = 1;
     
     this.flipAnimation = new Animation(400);
@@ -41,6 +44,7 @@ class BoardCell {
   
   draw() {
     this.drawOuterBox();
+    this.drawBoundaries();
     
     this.context.tempState(() => {
       let path = Math.abs(this.flipAnimation.frame * 2 - 1);
@@ -59,7 +63,48 @@ class BoardCell {
   drawOuterBox() {
     this.context.strokeStyle = this.colors.borderColor;
     
+    this.context.lineWidth = 2;
     this.context.strokeRect(this.x, this.y, this.size, this.size);
+  }
+  
+  drawBoundaries() {
+    if (this.chain !== 'none') {
+      this.context.strokeStyle = '#ff1c4d';
+      this.context.lineWidth = 3;
+      
+      let neighbors = this.board.getNeighborChains(this.row, this.col)
+      
+      let lX = this.x + 2;
+      let rX = this.x + this.size - 2;
+      let tY = this.y + 2;
+      let bY = this.y + this.size - 2;
+      
+      this.context.beginPath();
+      
+      if (neighbors.up !== this.chain) {
+        this.context.moveTo(lX, tY);
+        this.context.lineTo(rX, tY);
+        this.context.stroke();
+      }
+      
+      if (neighbors.right !== this.chain) {
+        this.context.moveTo(rX, tY);
+        this.context.lineTo(rX, bY);
+        this.context.stroke();
+      }
+      
+      if (neighbors.down !== this.chain) {
+        this.context.moveTo(rX, bY);
+        this.context.lineTo(lX, bY);
+        this.context.stroke();
+      }
+      
+      if (neighbors.left !== this.chain) {
+        this.context.moveTo(lX, bY);
+        this.context.lineTo(lX, tY);
+        this.context.stroke();
+      }
+    }
   }
   
   drawInnerBox() {
