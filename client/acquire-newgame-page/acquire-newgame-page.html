@@ -56,8 +56,6 @@
       is: 'acquire-newgame-page',
       
       attached: function() {
-        socket.emit('new game');
-        
         socket.on('game created', function(msg) {
           Acquire.gameID = msg;
           $('#game-ID').html(msg);
@@ -70,6 +68,8 @@
           $('#players').html(msg.players.map((player) => player.nickname).toString());
           $('paper-button').attr('disabled', ! msg.isReady);
         });
+        
+        socket.emit('new game');
       },
       
       startGame: function() {

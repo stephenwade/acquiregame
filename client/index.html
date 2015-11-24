@@ -7,8 +7,10 @@
   
   <title>Acquire</title>
   
-  <script src="bower_components/socket.io-client/socket.io.js"></script>
   <script src="bower_components/jquery/dist/jquery.min.js"></script>
+  
+  <script src="bower_components/socket.io-client/socket.io.js"></script>
+  <script src="acquire-socket/acquire-socket.js"></script>
   
   <script src="bower_components/webcomponentsjs/webcomponents-lite.min.js"></script>
   
@@ -25,11 +27,14 @@
 <script>
   'use strict';
   
-  var socket = io(window.location.hostname + ':8001');
-  socket.on('reconnect_attempt', () => document.querySelector('#socket-reconnecting').show());
-  socket.on('reconnect',         () => document.querySelector('#socket-reconnected').show());
-  socket.on('error', () => {});
+  function reconnectAttempt() {
+    document.querySelector('#socket-reconnecting').show()
+  }
+  function reconnect() {
+    document.querySelector('#socket-reconnected').show()
+  }
 </script>
+
 
 </body>
 </html>
