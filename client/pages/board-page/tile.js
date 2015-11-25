@@ -12,11 +12,27 @@ class BoardCell {
     this.flipAnimation = new Animation(400);
     
     this.colors = {
-      borderColor:       '#555555',
-      emptyBackground:   '#ffffff',
-      filledBackground:  '#555555',
-      emptyText:         '#000000',
-      filledText:        '#ffffff'
+      borderColor:        '#555555',
+      emptyBackground:    '#ffffff',
+      filledBackground:   '#555555',
+      emptyText:          '#000000',
+      filledText:         '#ffffff',
+      
+      imperialPrimary:    '#FF285A',
+      imperialAccent:     '#C1002D',
+      continentalPrimary: '#28FFCD',
+      continentalAccent:  '#00C194',
+      towerPrimary:       '#FFFA7A',
+      towerAccent:        '#FFDA47',
+      festivalPrimary:    '#1CC424',
+      festivalAccent:     '#15971C',
+      americanPrimary:    '#6B65FF',
+      americanAccent:     '#3E39D5',
+      worldwidePrimary:   '#A78966',
+      worldwideAccent:    '#7B5F41',
+      luxorPrimary:       '#FFA042',
+      luxorAccent:        '#F3871B',
+      unclaimed:          '#555555'
     };
     
     this.emptyText  = new StagingArea(this.cellText(), this.colors.emptyText);
