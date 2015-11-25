@@ -1,16 +1,15 @@
 'use strict';
 
 class BoardCell {
-  constructor(context, row, col, board) {
+  constructor(context, cell, board) {
     this.context = context;
-    this.row = row;
-    this.col = col;
+    this.cell = cell;
+    this.row = cell.row;
+    this.col = cell.col;
     this.board = board;
     
-    this.chain = 'none';
-    this.filled = false;
-    
     this.frame = 1;
+    this.filled = false;
     
     this.flipAnimation = new Animation(400);
     
@@ -43,6 +42,7 @@ class BoardCell {
   }
   
   draw() {
+    this.checkFlip();
     this.drawOuterBox();
     this.drawBoundaries();
     
@@ -68,7 +68,7 @@ class BoardCell {
   }
   
   drawBoundaries() {
-    if (this.chain !== 'none') {
+    if (this.cell.chain) {
       this.context.strokeStyle = '#ff1c4d';
       this.context.lineWidth = 3;
       
@@ -81,25 +81,25 @@ class BoardCell {
       
       this.context.beginPath();
       
-      if (neighbors.up !== this.chain) {
+      if (neighbors.up !== this.cell.chain) {
         this.context.moveTo(lX, tY);
         this.context.lineTo(rX, tY);
         this.context.stroke();
       }
       
-      if (neighbors.right !== this.chain) {
+      if (neighbors.right !== this.cell.chain) {
         this.context.moveTo(rX, tY);
         this.context.lineTo(rX, bY);
         this.context.stroke();
       }
       
-      if (neighbors.down !== this.chain) {
+      if (neighbors.down !== this.cell.chain) {
         this.context.moveTo(rX, bY);
         this.context.lineTo(lX, bY);
         this.context.stroke();
       }
       
-      if (neighbors.left !== this.chain) {
+      if (neighbors.left !== this.cell.chain) {
         this.context.moveTo(lX, bY);
         this.context.lineTo(lX, tY);
         this.context.stroke();
@@ -124,10 +124,12 @@ class BoardCell {
     return (this.col + 1) + '-' + String.fromCharCode(65 + this.row);
   }
   
-  flip(startTime) {
-    console.log('flipping', this.row, this.col, 'at', startTime);
-    this.filled = !this.filled;
-    
-    this.flipAnimation.begin(startTime);
+  checkFlip() {
+    if (!this.filled && this.cell.state === 'filled') {
+      let startTime = new Date().getTime();
+      console.log('flipping', this.row, this.col, 'at', startTime);
+      this.flipAnimation.begin(startTime);
+      this.filled = true;
+    }
   }
 }

@@ -24,23 +24,18 @@ class BoardView {
     
     let now = new Date().getTime();
     
-    this.board = [];
-    for (let row = 0; row < this.rows; row++) {
-      this.board.push([]);
-      
-      for (let col = 0; col < this.cols; col++) {
-        this.board[row][col] = new BoardCell(this.context, row, col, this);
-      }
+    this.board = new Board();
+    
+    this.tileViews = [];
+    for (let cell of this.board) {
+      this.tileViews.push(new BoardCell(this.context, cell, this));
     }
     
-    this.board[3][3].flip(new Date().getTime());
-    this.board[3][3].chain = 'Imperial';
-    this.board[3][4].flip(new Date().getTime());
-    this.board[3][4].chain = 'Imperial';
-    this.board[3][5].flip(new Date().getTime());
-    this.board[3][5].chain = 'Imperial';
-    this.board[4][4].flip(new Date().getTime());
-    this.board[4][4].chain = 'Imperial';
+    this.board.lookup(3, 3).play();
+    this.board.lookup(3, 3).setChain('Imperial');
+    this.board.lookup(3, 4).play();
+    this.board.lookup(3, 5).play();
+    this.board.lookup(4, 4).play();
   }
   
   attach() {
@@ -68,10 +63,8 @@ class BoardView {
   };
   
   drawBoard() {
-    for (let row = 0; row < this.rows; row++) {
-      for (let col = 0; col < this.cols; col++) {
-        this.board[row][col].draw();
-      }
+    for (let view of this.tileViews) {
+      view.draw();
     }
   }
   
@@ -157,10 +150,8 @@ class BoardView {
     
     this.size = Math.min(this.canvas.width / 12, this.canvas.height / 9);
     
-    for (let row = 0; row < this.rows; row++) {
-      for (let col = 0; col < this.cols; col++) {
-        this.board[row][col].updateSize(this.size);
-      }
+    for (let view of this.tileViews) {
+      view.updateSize(this.size);
     }
   }
   
@@ -171,25 +162,25 @@ class BoardView {
   }
   
   playTile(tile, msg) {
-    this.board[tile.row][tile.col].flip(new Date().getTime());
+    this.board.lookup(tile.row, tile.col).play();
     
-    let inheritance = this.getInheritance(tile.row, tile.col);
+    //let inheritance = this.getInheritance(tile.row, tile.col);
     
-    if (!inheritance.merger && inheritance.sides.length > 0) {
-      console.log('joined!', inheritance.sides[0]);
-      this.board[tile.row][tile.col].chain = inheritance.sides[0];
-    }
-    
+    //if (!inheritance.merger && inheritance.sides.length > 0) {
+      //console.log('joined!', inheritance.sides[0]);
+      //this.board[tile.row][tile.col].chain = inheritance.sides[0];
+    //}
+    //
     this.displayMessage(msg || 'Player played', tile.row, tile.col);
   }
   
   getNeighborChains(row, col) {
     let result = {};
     
-    result.up    = (row > 0            ) ? this.board[row - 1][col    ].chain : 'none';
-    result.right = (col < this.cols - 1) ? this.board[row    ][col + 1].chain : 'none';
-    result.down  = (row < this.rows - 1) ? this.board[row + 1][col    ].chain : 'none';
-    result.left  = (col > 0            ) ? this.board[row    ][col - 1].chain : 'none';
+    result.up    = (row > 0            ) ? this.board.lookup(row - 1, col    ).chain : false;
+    result.right = (col < this.cols - 1) ? this.board.lookup(row    , col + 1).chain : false;
+    result.down  = (row < this.rows - 1) ? this.board.lookup(row + 1, col    ).chain : false;
+    result.left  = (col > 0            ) ? this.board.lookup(row    , col - 1).chain : false;
     
     return result;
   }
