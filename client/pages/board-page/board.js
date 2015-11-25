@@ -9,19 +9,14 @@ class Board {
   }
   
   [Symbol.iterator]() {
-    let row = 0;
-    let col = 0;
-    
-    let value;
-    let done;
+    let row = 0, col = 0;
+    let value, done;
     
     let next = () => {
       if (row < this.numRows) {
-        value = this.board[row][col];
-        done = false;
+        value = this.board[row][col]; done = false;
         
-        if (col < this.numCols - 1) { col++; }
-        else { row++; col = 0; }
+        if (col < this.numCols - 1) { col++; } else { row++; col = 0; }
       } else {
         value = undefined; done = true;
       }
