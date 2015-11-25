@@ -16,9 +16,6 @@ class BoardView {
     this.canvas = canvas;
     this.context = canvas.getContext('2d');
     
-    this.rows = 9;
-    this.cols = 12;
-    
     this.size = 0;
     this.messages = [];
     
@@ -32,10 +29,15 @@ class BoardView {
     }
     
     this.board.lookup(3, 3).play();
-    this.board.lookup(3, 3).setChain('Imperial');
+    this.board.lookup(3, 3).setChain('imperial');
     this.board.lookup(3, 4).play();
     this.board.lookup(3, 5).play();
     this.board.lookup(4, 4).play();
+    
+    this.board.lookup(7, 8).play();
+    this.board.lookup(7, 9).play();
+    this.board.lookup(8, 8).play();
+    this.board.lookup(8, 8).setChain('continental');
   }
   
   attach() {
@@ -141,7 +143,6 @@ class BoardView {
     animation.begin(time || new Date().getTime());
     
     this.messages.push({ text, row, col, animation });
-    console.log('displayed message', text);
   }
   
   resize() {
@@ -164,40 +165,16 @@ class BoardView {
   playTile(tile, msg) {
     this.board.lookup(tile.row, tile.col).play();
     
-    //let inheritance = this.getInheritance(tile.row, tile.col);
-    
-    //if (!inheritance.merger && inheritance.sides.length > 0) {
-      //console.log('joined!', inheritance.sides[0]);
-      //this.board[tile.row][tile.col].chain = inheritance.sides[0];
-    //}
-    //
     this.displayMessage(msg || 'Player played', tile.row, tile.col);
   }
   
   getNeighborChains(row, col) {
     let result = {};
     
-    result.up    = (row > 0            ) ? this.board.lookup(row - 1, col    ).chain : false;
-    result.right = (col < this.cols - 1) ? this.board.lookup(row    , col + 1).chain : false;
-    result.down  = (row < this.rows - 1) ? this.board.lookup(row + 1, col    ).chain : false;
-    result.left  = (col > 0            ) ? this.board.lookup(row    , col - 1).chain : false;
-    
-    return result;
-  }
-  
-  getInheritance(row, col) {
-    let neighbors = this.getNeighborChains(row, col);
-    
-    let result = { merger: false, sides: [] };
-    
-    for (let dir in neighbors) {
-      if (neighbors[dir] !== 'none') {
-        if (result.sides.unique.length > 1) {
-          result.merger = true;
-        }
-        result.sides.push(neighbors[dir]);
-      }
-    }
+    result.up    = (row > 0                     ) ? this.board.lookup(row - 1, col    ).chain : false;
+    result.right = (col < this.board.numCols - 1) ? this.board.lookup(row    , col + 1).chain : false;
+    result.down  = (row < this.board.numRows - 1) ? this.board.lookup(row + 1, col    ).chain : false;
+    result.left  = (col > 0                     ) ? this.board.lookup(row    , col - 1).chain : false;
     
     return result;
   }
@@ -212,8 +189,6 @@ class BoardView {
   }
   
   animatePlayerOrder(msg) {
-    console.log('data:', msg);
-    
     // animate picking player order
     let i = 0;
     let currentTime = new Date().getTime();

@@ -69,7 +69,6 @@ class Cell {
     this.eachNeighbor((neighbor) => {
       if (neighbor.isClaimed()) {
         if (!claimed || claimed === neighbor.chain) {
-          console.log(this.row, this.col, 'found', neighbor.chain);
           claimed = neighbor.chain;
         } else {
           claimed = 'merger';

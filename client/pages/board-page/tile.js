@@ -18,7 +18,9 @@ class BoardCell {
       emptyBackground:   '#ffffff',
       filledBackground:  '#555555',
       emptyText:         '#000000',
-      filledText:        '#ffffff'
+      filledText:        '#ffffff',
+      imperial:          '#ff1c4d',
+      continental:       '#9bd5e8'
     };
     
     this.emptyText  = new StagingArea(this.cellText(), this.colors.emptyText);
@@ -69,7 +71,7 @@ class BoardCell {
   
   drawBoundaries() {
     if (this.cell.chain) {
-      this.context.strokeStyle = '#ff1c4d';
+      this.context.strokeStyle = this.colors[this.cell.chain];
       this.context.lineWidth = 3;
       
       let neighbors = this.board.getNeighborChains(this.row, this.col)
@@ -127,7 +129,6 @@ class BoardCell {
   checkFlip() {
     if (!this.filled && this.cell.state === 'filled') {
       let startTime = new Date().getTime();
-      console.log('flipping', this.row, this.col, 'at', startTime);
       this.flipAnimation.begin(startTime);
       this.filled = true;
     }
