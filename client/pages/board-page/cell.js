@@ -7,6 +7,12 @@ class Cell {
     
     this.state = 'empty';
     this.chain = false;
+    
+    this.label = this.getLabel();
+  }
+  
+  getLabel() {
+    return (this.col + 1) + String.fromCharCode(65 + this.row);
   }
   
   addUpperNeighbor(cell) {

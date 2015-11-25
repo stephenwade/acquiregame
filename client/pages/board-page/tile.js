@@ -37,8 +37,8 @@ class BoardCell {
       unclaimed:          '#555555'
     };
     
-    this.emptyText  = new StagingArea(this.cellText(), this.colors.emptyText);
-    this.filledText = new StagingArea(this.cellText(), this.colors.filledText);
+    this.emptyText  = new StagingArea(this.cell.label, this.colors.emptyText);
+    this.filledText = new StagingArea(this.cell.label, this.colors.filledText);
   }
   
   updateSize(size) {
@@ -134,10 +134,6 @@ class BoardCell {
     var imgId = this.flipAnimation.frame < 0.5 ? 'filledText' : 'emptyText';
     
     this.context.drawImage(this[imgId].canvas, 0, 0);
-  }
-  
-  cellText() {
-    return (this.col + 1) + '-' + String.fromCharCode(65 + this.row);
   }
   
   checkFlip() {

@@ -5,6 +5,9 @@ class Tile {
     this.row = row;
     this.col = col;
     
+    this.state = 'empty';
+    this.chain = false;
+    
     this.label = this.getLabel();
   }
   
