@@ -67,7 +67,10 @@ class Board {
     let merger  = false;
     let chains = [];
     
+    console.log('playing', String(cell));
+    
     cell.eachNeighbor((neighbor) => {
+      console.log('\tneighbor:', String(neighbor));
       if (neighbor.isPlayed()) {
         orphan = false;
         chains.push(neighbor.chain);
@@ -90,7 +93,7 @@ class Board {
     
     cell.play();
     let result = { success, orphan, create, expand, merger };
-    console.log(result);
+    console.log('play will be', result);
     return { success, orphan, create, expand, merger };
     
     // still needs checks for more than seven chains, safe chains

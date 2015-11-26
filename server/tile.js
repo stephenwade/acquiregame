@@ -86,6 +86,10 @@ class Tile {
       this.setChain(claimed);
     }
   }
+  
+  toString() {
+    return `(${this.row}, ${this.col}): ${this.isPlayed()} -> ${this.chain}`
+  }
 };
 
 module.exports = Tile;
