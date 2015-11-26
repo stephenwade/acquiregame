@@ -296,7 +296,7 @@
           (tile) => self.player.stateData.indexOf(tile.id.replace(/-choice-tile/, '')) !== -1
           ).forEach( (tile) => {
             tile.classList.add('available');
-            tile.addEventListener('click', self.chainSubmit(tile.id.replace(/-choice-tile/, '')));
+            tile.addEventListener('click', () => self.chainSubmit(tile.id.replace(/-choice-tile/, '')) );
           } );
       },
       
@@ -307,6 +307,7 @@
       },
       
       chainSubmit(chain) {
+        console.log(chain, 'chosen');
         socket.emit('chain chosen', chain);
         this.chainModalDismiss();
         this.player.state = 'waiting';
