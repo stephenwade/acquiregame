@@ -222,10 +222,15 @@ class Game {
     if (player.order != this.currentPlayer) {
       this.whisper(player.player.id, 'invalid move', 'It’s not your turn.');
     } else {
-      console.log(player.player.id, 'created', msg);
-      this.broadcast('chain created', msg);
-      
-      this.nextTurn();
+      if (this.chains.indexOf(msg) < 0) {
+        this.whisper(player.player.id, 'invalid move', 'Chain is not available.');
+      } else {
+        this.chains.splice(this.chains.indexOf(msg));
+        console.log(player.player.id, 'created', msg);
+        this.broadcast('chain created', msg);
+        
+        this.nextTurn();
+      }
     }
   }
   
