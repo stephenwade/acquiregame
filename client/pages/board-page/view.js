@@ -183,15 +183,15 @@ class BoardView {
   animatePlayerOrder(msg) {
     // animate picking player order
     let i = 0;
-    let currentTime = new Date().getTime();
     
     for (let player of msg) {
-      let cell = this.board.lookup(player.tile.row, player.tile.col);
-      let displayTime = currentTime + i * 1000;
-      
-      this.displayMessage(player.player.nickname, cell.row, cell.col, displayTime);
-      cell.play();
-      //i++;
+      setTimeout(() => {
+        let cell = this.board.lookup(player.tile.row, player.tile.col);
+        
+        this.displayMessage(player.player.nickname, cell.row, cell.col);
+        cell.play();
+      }, 1000 * i);
+      i++;
     };
     
     setTimeout(() => { socket.emit('board ready') }, 3000);
