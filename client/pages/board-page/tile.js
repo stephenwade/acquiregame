@@ -125,6 +125,9 @@ class BoardCell {
   
   drawInnerBox() {
     let colorId = this.flipAnimation.frame < 0.5 ? 'filledBackground' : 'emptyBackground';
+    if (colorId === 'filledBackground' && this.cell.chain) {
+      colorId = this.cell.chain + 'Primary';
+    }
     
     this.context.fillStyle = this.colors[colorId];
     this.context.fillRect(this.padding, this.padding, this.width, this.width);
