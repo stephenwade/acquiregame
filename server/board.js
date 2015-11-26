@@ -17,7 +17,7 @@ class Board {
     
     let next = () => {
       if (row < this.numRows) {
-        value = this.board[row][col]; done = false;
+        value = this.lookup(row, col); done = false;
         
         if (col < this.numCols - 1) { col++; } else { row++; col = 0; }
       } else {
@@ -116,6 +116,24 @@ class Board {
       result.push({ row, col: col + 1 });
     
     return result;
+  }
+  
+  logState() {
+    let col = 0;
+    let row = '';
+    
+    console.log('------------------------------------');
+    
+    for (let cell of this) {
+      row += cell.isPlayed() ? (' ' + cell.label).slice(-5) : '   ';
+      
+      col = ++col % this.numCols; 
+      if (col === 0) {
+        console.log(row); row = '';
+      }
+    }
+    
+    console.log('------------------------------------');
   }
 };
 
