@@ -216,7 +216,7 @@ class Game {
     player.waitingFor = { ev: 'create a chain' };
   }
   
-  chainCreated(id, msg) {
+  chainChosen(id, msg) {
     let player = this.findPlayer(id);
     
     if (player.order != this.currentPlayer) {
