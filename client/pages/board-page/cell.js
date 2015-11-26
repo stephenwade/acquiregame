@@ -1,6 +1,6 @@
 'use strict';
 
-class Tile {
+class Cell {
   constructor(row, col) {
     this.row = row;
     this.col = col;
@@ -45,7 +45,7 @@ class Tile {
   isClaimed() {
     return this.chain !== false;
   }
- 
+  
   eachNeighbor(callback) {
     let directions = [
       this.up,
@@ -86,10 +86,4 @@ class Tile {
       this.setChain(claimed);
     }
   }
-  
-  toString() {
-    return `(${this.row}, ${this.col}): ${this.isPlayed()} -> ${this.chain}`
-  }
 };
-
-module.exports = Tile;

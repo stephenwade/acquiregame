@@ -2,30 +2,13 @@
 
 <template id="playerView">
   <style>
-    html, body, :host {
-      display: block;
-      
-      width: 100%;
-      height: 100%;
-      padding: 0;
-      margin: 0;
-      
-      overflow: hidden;
-    }
-    
-    #tiles {
-      display: flex;
-      flex-direction: row;
-      justify-content: space-between;
-      
-      margin: 1em;
-    }
-    
     tile-view {
-      width: 15%;
-      height: 15vw;
-      
-      font-size: 4vw;
+      margin-right: 1em;
+      background-color: gray;
+      float: left;
+      height: 13vw;
+      width: 13vw;
+      display: flex;
     }
     
     #turnState {
@@ -44,11 +27,204 @@
       
       transition: ease 1s;
     }
+    
+    :host {
+      box-sizing: border-box;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      font-family: Roboto;
+    }
+    *, *:before, *:after {
+      box-sizing: inherit;
+    }
+    #info {
+      flex-grow: 1;
+      display: flex;
+    }
+    #stocks table {
+      line-height: 1.3;
+    }
+    #stocks table td {
+      padding: 0 0.5em;
+    }
+    #stocks,
+    #money {
+      padding: 1em;
+      width: 34vw;
+      border-right: 2px solid black;
+    }
+    #money-value {
+      font-size: 2em;
+    }
+    #other {
+      display: flex;
+      flex-direction: column;
+      width: 32vw;
+    }
+    #other > * {
+      flex-grow: 1;
+      padding: 1em;
+    }
+    #end-game {
+      border-bottom: 1px solid black;
+    }
+    #turn-state {
+      border-top: 1px solid black;
+    }
+    #tiles {
+      height: calc(13vw + 2em);
+      padding: 1em 0 1em 1em;
+      border-top: 2px solid black;
+    }
+    h3 {
+      margin-top: 0;
+    }
+    .modal {
+      display: none;
+      background-color: rgba(0, 0, 0, 0.54);
+      position: absolute;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      left: 0;
+    }
+    .modal.visible {
+      display: block;
+    }
+    .modal-container {
+      position: absolute;
+      top: 2em;
+      right: 4em;
+      bottom: 2em;
+      left: 4em;
+      padding: 1em 0 1em 1em;
+      background-color: white;
+      box-shadow: 0 4px 5px 0 rgba(0, 0, 0, 0.14),
+                  0 1px 10px 0 rgba(0, 0, 0, 0.12),
+                  0 2px 4px -1px rgba(0, 0, 0, 0.4); /* from paper-styles */
+    }
+    #chain-tiles {
+    }
+    .chain-tile {
+      display: none;
+      float: left;
+      text-align: center;
+      width: 6em;
+      height: 6em;
+      padding: 1em 0;
+      margin: 0 1em 1em 0;
+    }
+    .chain-tile.available {
+      display: block;
+    }
+    .chain-tile-letter {
+      font-size: 4em;
+      line-height: 0.8em;
+    }
+    .chain-tile > * {
+      display: block;
+    }
+    #tower-choice-tile {
+      background-color: #FFFA7A;
+    }
+    #luxor-choice-tile {
+      background-color: #FFA042;
+    }
+    #american-choice-tile {
+      background-color: #6B65FF;
+    }
+    #worldwide-choice-tile {
+      background-color: #A78966;
+    }
+    #festival-choice-tile {
+      background-color: #1CC424;
+    }
+    #imperial-choice-tile {
+      background-color: #FF285A;
+    }
+    #continental-choice-tile {
+      background-color: #28FFCD;
+    }
+    #fs {
+      position: absolute;
+      top: 1em;
+      right: 1em;
+      height: 2em;
+      width: 2em;
+    }
   </style>
   
+  <div id="info">
+    <div id="stocks">
+      <h3>Stocks</h3>
+      <table>
+        <thead>
+          <tr><th>chain</th>      <th>#</th>                       </tr>
+        </thead>
+        <tbody>
+          <tr><td>Tower</td>      <td id="tower-count"      >0</td></tr>
+          <tr><td>Luxor</td>      <td id="luxor-count"      >0</td></tr>
+          <tr><td>American</td>   <td id="american-count"   >0</td></tr>
+          <tr><td>Worldwide</td>  <td id="worldwide-count"  >0</td></tr>
+          <tr><td>Festival</td>   <td id="festival-count"   >0</td></tr>
+          <tr><td>Imperial</td>   <td id="imperial-count"   >0</td></tr>
+          <tr><td>Continental</td><td id="continental-count">0</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div id="money">
+      <h3>Money</h3>
+      <div id="money-value">$6,000</div>
+    </div>
+    <div id="other">
+      <div id="end-game"><h3>End the game</h3></div>
+      <div id="turn-state"><h3 id="turn-state-text">Waiting…</h3></div>
+    </div>
+  </div>
   <div id="tiles"></div>
-  <div id="portfolio"></div>
-  <div id="turnState"></div>
+  <div id="chain-modal" class="modal" onclick="this.classList.remove('visible')">
+    <div id="chain-modal-container" class="modal-container">
+      <h3>Choose a chain to create:</h3>
+      <div id="chain-tiles">
+        <div id="tower-choice-tile" class="chain-tile">
+          <span class="chain-tile-letter">T</span>
+          <span class="chain-tile-name">Tower</span>
+        </div>
+        <div id="luxor-choice-tile" class="chain-tile">
+          <span class="chain-tile-letter">L</span>
+          <span class="chain-tile-name">Luxor</span>
+        </div>
+        <div id="american-choice-tile" class="chain-tile">
+          <span class="chain-tile-letter">A</span>
+          <span class="chain-tile-name">American</span>
+        </div>
+        <div id="worldwide-choice-tile" class="chain-tile">
+          <span class="chain-tile-letter">W</span>
+          <span class="chain-tile-name">Worldwide</span>
+        </div>
+        <div id="festival-choice-tile" class="chain-tile">
+          <span class="chain-tile-letter">F</span>
+          <span class="chain-tile-name">Festival</span>
+        </div>
+        <div id="imperial-choice-tile" class="chain-tile">
+          <span class="chain-tile-letter">I</span>
+          <span class="chain-tile-name">Imperial</span>
+        </div>
+        <div id="continental-choice-tile" class="chain-tile">
+          <span class="chain-tile-letter">C</span>
+          <span class="chain-tile-name">Continental</span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div id="fs" onclick="document.documentElement.webkitRequestFullscreen()">
+  <svg style="width: 2em; height: 2em" x="0px" y="0px" width="512px" height="512px" viewBox="0 0 512 512" enable-background="new 0 0 512 512" xml:space="preserve">
+  <path d="M73.143,329.143H0V512h182.857v-73.143H73.143V329.143z M0,182.857h73.143V73.143h109.715V0H0V182.857z M438.857,438.857  H329.143V512H512V329.143h-73.143V438.857z M329.143,0v73.143h109.715v109.715H512V0H329.143z" fill="#000000"/>
+  </svg>
+  </div>
+  
 </template>
 
 <script src="./player.js"></script>
@@ -67,23 +243,76 @@
         this.root.appendChild(document.importNode(template.content, true));
         
         this.player = new Player();
+        
+        this.colors = {
+          towerPrimary:       '#FFFA7A',
+          towerAccent:        '#FFDA47',
+          luxorPrimary:       '#FFA042',
+          luxorAccent:        '#F3871B',
+          americanPrimary:    '#6B65FF',
+          americanAccent:     '#3E39D5',
+          worldwidePrimary:   '#A78966',
+          worldwideAccent:    '#7B5F41',
+          festivalPrimary:    '#1CC424',
+          festivalAccent:     '#15971C',
+          imperialPrimary:    '#FF285A',
+          imperialAccent:     '#C1002D',
+          continentalPrimary: '#28FFCD',
+          continentalAccent:  '#00C194',
+          unclaimed:          '#555555'
+        }
       },
       
       attachedCallback() {
         var self = this;
         
+        this.root.querySelector('#turn-state').addEventListener('click', () => self.turnStateClick() );
+        this.root.querySelector('#chain-modal').addEventListener('click', () => self.chainModalDismiss() );
+        this.root.querySelector('#chain-modal-container').addEventListener('click', (e) => e.stopPropagation() );
+        
         // Events
-        socket.on('new tiles', (tiles) => { self.addTiles(tiles) });
+        socket.on('new tiles', (tiles) => self.addTiles(tiles) );
         
         // States
         socket.on('play a tile', (tiles) => {
           self.player.chooseTile();
           self.displayTurnStatus();
         });
-        socket.on('tile played',   (tile)  => { self.checkTiles(tile) });
+        socket.on('tile played', (tile) => self.checkTiles(tile) );
+        socket.on('create a chain', (chains) => {
+          console.log('We need to create a train!');
+          self.createChain(chains)
+        })
       },
       
       detachedCallback() {
+      },
+      
+      turnStateClick() {
+        this.root.querySelector('#chain-modal').classList.add('visible');
+        let chainTiles = this.root.querySelectorAll('.chain-tile');
+        let self = this;
+        Array.prototype.filter.call(chainTiles,
+          (tile) => self.player.stateData.indexOf(tile.id.replace(/-choice-tile/, '')) !== -1
+          ).forEach( (tile) => {
+            tile.classList.add('available');
+            tile.addEventListener('click', () => self.chainSubmit(tile.id.replace(/-choice-tile/, '')) );
+          } );
+      },
+      
+      chainModalDismiss() {
+        this.root.querySelector('#chain-modal').classList.remove('visible');
+        let chainTiles = this.root.querySelectorAll('.chain-tile');
+        Array.prototype.forEach.call(chainTiles, (tile) => tile.classList.remove('available') );
+      },
+      
+      chainSubmit(chain) {
+        console.log(chain, 'chosen');
+        socket.emit('chain chosen', chain);
+        this.chainModalDismiss();
+        this.player.state = 'waiting';
+        this.player.stateData = undefined;
+        this.displayTurnStatus();
       },
       
       addTiles(tiles) {
@@ -110,20 +339,27 @@
         }
       },
       
+      createChain(chains) {
+        this.player.state = 'create chain';
+        this.player.stateData = chains;
+        this.displayTurnStatus();
+      },
+      
       displayTurnStatus() {
         console.log('displaying!');
-        let turnStateView = this.root.querySelector('#turnState');
+        let turnStateView = this.root.querySelector('#turn-state-text');
         switch (this.player.state) {
           case 'waiting':
-            turnStateView.style.display = 'none';
+            turnStateView.innerText = 'Waiting…';
             break;
           case 'choosing tile':
-            turnStateView.style.display = 'block';
-            turnStateView.innerText = 'Choose a Tile';
+            turnStateView.innerText = 'Choose a tile';
+            break;
+          case 'create chain':
+            turnStateView.innerText = 'Choose a chain';
             break;
           default:
-            turnStateView.style.display = 'block';
-            turnStateView.innerText = 'State Unknown';
+            turnStateView.innerText = 'State unknown';
         }
       },
     });

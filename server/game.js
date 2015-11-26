@@ -14,6 +14,18 @@ class Game {
     
     this.board = new Board();
     this.tileStore = new TileStore();
+    this.chains = [
+      'luxor',
+      'tower',
+      'american',
+      'festival',
+      'worldwide',
+      'continental',
+      'imperial'
+    ]
+    
+    // The tile starting a chain or causing a merger
+    this.activeTile = false;
   }
   
   broadcast(ev, data) {
@@ -126,6 +138,8 @@ class Game {
       }
       
       order.push(pairing);
+      
+      this.board.playTile(orderTiles[i].row, orderTiles[i].col);
     }
     
     this.currentPlayer = firstPlayer;
@@ -153,19 +167,24 @@ class Game {
   }
   
   nextTurn(firstTurn) {
-    if (! firstTurn) this.currentPlayer = ++this.currentPlayer % this.players.length;
+    if (! firstTurn) {
+      let tile = this.tileStore.getTile();
+      let player = this.players[this.currentPlayer];
+      player.addTile(tile);
+      this.whisper(player.id, 'new tiles', [tile]);
+    
+      this.currentPlayer = ++this.currentPlayer % this.players.length;
+    }
     let player = this.players[this.currentPlayer];
     this.broadcast('next turn', player.uuid);
     this.whisper(player.id, 'play a tile');
     player.waitingFor = { ev: 'play a tile' };
+    
+    console.log('board state is:');
+    this.board.logState();
   }
   
   findPlayer(id) {
-    // for (let player of this.players) {
-    //   if (player.id === id) {
-    //     return player;
-    //   }
-    // }
     for (let i = 0; i < this.players.length; i++) {
       if (this.players[i].id === id) {
         return { player: this.players[i], order: i };
@@ -181,22 +200,54 @@ class Game {
       if (player.player.hasTile(msg.row, msg.col)) {
         let result = this.board.playTile(msg.row, msg.col);
         if (result.success) {
-          console.log(player.nickname, 'played', msg);
+          console.log(player.player.nickname, 'played', msg);
           this.broadcast('tile played', msg);
           
-          if (result.orphan || result.expandChain) {
-            // move to buying stock phase
-          }
-          if (result.newChain) {
+          if (result.create) {
             // create a new chain
+            this.activeTile = this.board.lookup(msg.row, msg.col);
+            this.createChain(player);
+          } else {
+            this.nextTurn();
           }
-          if (result.merger) {
+          //if (result.orphan || result.expandChain) {
+            // move to buying stock phase
+          //}
+          //if (result.merger) {
             // resolve merger
-          }
-          this.nextTurn();
+          //}
         } else {
           this.whisper(player.player.id, 'invalid move', result.err);
         }
+      }
+    }
+  }
+  
+  createChain(player) {
+    console.log(player.player.nickname, 'needs to create a chain');
+    this.whisper(player.player.id, 'create a chain', this.chains);
+    player.waitingFor = { ev: 'create a chain' };
+  }
+  
+  chainChosen(id, msg) {
+    let player = this.findPlayer(id);
+    
+    if (player.order != this.currentPlayer) {
+      this.whisper(player.player.id, 'invalid move', 'It’s not your turn.');
+    } else {
+      if (this.chains.indexOf(msg) < 0) {
+        this.whisper(player.player.id, 'invalid move', 'Chain is not available.');
+      } else {
+        this.chains.splice(this.chains.indexOf(msg), 1);
+        this.activeTile.setChain(msg);
+        console.log(player.player.id, 'created', msg);
+        this.broadcast('chain created', {
+          row: this.activeTile.row,
+          col: this.activeTile.col,
+          chain: msg
+        });
+        
+        this.nextTurn();
       }
     }
   }

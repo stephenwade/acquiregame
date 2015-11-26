@@ -3,6 +3,8 @@
 class Player {
   constructor() {
     this.state = 'waiting';
+    this.stateData = undefined;
+    // this.stateData = ['tower', 'luxor', 'american'];
     
     this.hand = [];
     this.money = 6000;
