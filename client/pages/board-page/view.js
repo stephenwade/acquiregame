@@ -4,24 +4,32 @@ CanvasRenderingContext2D.prototype.tempState = function tempState(callback) {
   this.save(); callback(); this.restore();
 }
 
+Array.prototype.unique = () => {
+  return this.reduce((p, c) => {
+    if (p.indexOf(c) < 0) p.push(c);
+    return p;
+  }, []);
+};
+
 class BoardView {
   constructor(canvas) {
     this.canvas = canvas;
     this.context = canvas.getContext('2d');
     
     this.size = 0;
-    this.board = [];
     this.messages = [];
     
     let now = new Date().getTime();
     
-    for (let x = 0; x < 12; x++) {
-      this.board.push([]);
-      
-      for (let y = 0; y < 9; y++) {
-        this.board[x][y] = new BoardCell(this.context, y, x);
-      }
+    this.board = new Board();
+    
+    this.tileViews = [];
+    for (let cell of this.board) {
+      this.tileViews.push(new BoardCell(this.context, cell, this));
     }
+    
+    //this.board.lookup(3, 3).play();
+    //this.board.lookup(3, 3).setChain('imperial');
   }
   
   attach() {
@@ -49,10 +57,8 @@ class BoardView {
   };
   
   drawBoard() {
-    for (let x = 0; x < 12; x++) {
-      for (let y = 0; y < 9; y++) {
-        this.board[x][y].draw();
-      }
+    for (let view of this.tileViews) {
+      view.draw();
     }
   }
   
@@ -129,7 +135,6 @@ class BoardView {
     animation.begin(time || new Date().getTime());
     
     this.messages.push({ text, row, col, animation });
-    console.log('displayed message', text);
   }
   
   resize() {
@@ -138,10 +143,8 @@ class BoardView {
     
     this.size = Math.min(this.canvas.width / 12, this.canvas.height / 9);
     
-    for (let x = 0; x < 12; x++) {
-      for (let y = 0; y < 9; y++) {
-        this.board[x][y].updateSize(this.size);
-      }
+    for (let view of this.tileViews) {
+      view.updateSize(this.size);
     }
   }
   
@@ -151,34 +154,43 @@ class BoardView {
     }
   }
   
-  playTile(tile) {
-    this.board[tile.col][tile.row].flip(new Date().getTime());
-    this.displayMessage('Player played', tile.row, tile.col);
+  playTile(tile, msg) {
+    this.board.lookup(tile.row, tile.col).play();
+    
+    this.displayMessage(msg || 'Player played', tile.row, tile.col);
+  }
+  
+  getNeighborChains(row, col) {
+    let result = {};
+    
+    result.up    = (row > 0                     ) ? this.board.lookup(row - 1, col    ).chain : false;
+    result.right = (col < this.board.numCols - 1) ? this.board.lookup(row    , col + 1).chain : false;
+    result.down  = (row < this.board.numRows - 1) ? this.board.lookup(row + 1, col    ).chain : false;
+    result.left  = (col > 0                     ) ? this.board.lookup(row    , col - 1).chain : false;
+    
+    return result;
   }
   
   findClickSubject(event) {
     var rect = this.canvas.getBoundingClientRect();
     this.size = Math.min(this.canvas.width / 12, this.canvas.height / 9);
-    var x = ((event.clientX - rect.left) / this.size)|0;
-    var y = ((event.clientY - rect.top) / this.size)|0;
+    var col = ((event.clientX - rect.left) / this.size)|0;
+    var row = ((event.clientY - rect.top) / this.size)|0;
     
-    this.board[x][y].flip(new Date().getTime());
-    this.displayMessage('Clicked', y, x);
+    this.playTile({ row, col }, 'Clicked');
   }
   
   animatePlayerOrder(msg) {
-    console.log('data:', msg);
-    
     // animate picking player order
     let i = 0;
-    let currentTime = new Date().getTime();
     
     for (let player of msg) {
-      let cell = this.board[player.tile.col][player.tile.row];
-      let displayTime = currentTime + i * 1000;
-      
-      this.displayMessage(player.player.nickname, cell.row, cell.col, displayTime);
-      cell.flip(displayTime);
+      setTimeout(() => {
+        let cell = this.board.lookup(player.tile.row, player.tile.col);
+        
+        this.displayMessage(player.player.nickname, cell.row, cell.col);
+        cell.play();
+      }, 1000 * i);
       i++;
     };
     

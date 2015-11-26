@@ -31,6 +31,7 @@ class Connection {
     this.socket.on('start game',       ()    => { if (self.game) self.game.startGame() });
     this.socket.on('board ready',      ()    => { if (self.game) self.game.boardReady() });
     this.socket.on('tile chosen',      (msg) => { if (self.game) self.game.tileChosen(this.id, msg) });
+    this.socket.on('chain chosen',     (msg) => { if (self.game) self.game.chainChosen(this.id, msg) });
     this.socket.on('merger chosen',    (msg) => { if (self.game) self.game.mergerChosen(this.id, msg) });
     this.socket.on('stock decision',   (msg) => { if (self.game) self.game.stockDecision(this.id, msg) });
     this.socket.on('stocks purchased', (msg) => { if (self.game) self.game.stocksPurchased(this.id, msg) });

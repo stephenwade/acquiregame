@@ -279,7 +279,10 @@
           self.displayTurnStatus();
         });
         socket.on('tile played', (tile) => self.checkTiles(tile) );
-        socket.on('create a chain', (chains) => self.createChain(chains) )
+        socket.on('create a chain', (chains) => {
+          console.log('We need to create a train!');
+          self.createChain(chains)
+        })
       },
       
       detachedCallback() {
@@ -305,7 +308,7 @@
       
       chainSubmit(chain) {
         socket.emit('chain chosen', chain);
-        chainModalDismiss();
+        this.chainModalDismiss();
         this.player.state = 'waiting';
         this.player.stateData = undefined;
         this.displayTurnStatus();
