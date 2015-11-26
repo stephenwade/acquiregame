@@ -23,6 +23,9 @@ class Game {
       'continental',
       'imperial'
     ]
+    
+    // The tile starting a chain or causing a merger
+    this.activeTile = false;
   }
   
   broadcast(ev, data) {
@@ -199,6 +202,7 @@ class Game {
           }
           if (result.create) {
             // create a new chain
+            this.activeTile = this.board.lookup(msg.row, msg.col);
             this.createChain(player);
           }
           if (result.merger) {
@@ -228,7 +232,11 @@ class Game {
       } else {
         this.chains.splice(this.chains.indexOf(msg));
         console.log(player.player.id, 'created', msg);
-        this.broadcast('chain created', msg);
+        this.broadcast('chain created', {
+          row: this.activeTile.row,
+          col: this.activeTile.col,
+          chain: msg
+        });
         
         this.nextTurn();
       }
