@@ -38,7 +38,8 @@ class BoardView {
     
     socket.emit('start game');
     socket.on('game started', (msg) => self.animatePlayerOrder(msg) );
-    socket.on('tile played', (msg) => self.playTile(msg) );
+    socket.on('tile played',  (msg) => self.playTile(msg) );
+    socket.on('chain created', (msg) => self.createChain(msg) );
   }
   
   detatch() {
@@ -158,6 +159,11 @@ class BoardView {
     this.board.lookup(tile.row, tile.col).play();
     
     this.displayMessage(msg || 'Player played', tile.row, tile.col);
+  }
+  
+  createChain(msg) {
+    this.displayMessage(msg.chain, 0, 0);
+    this.board.lookup(msg.row, msg.col).setChain(msg.chain);
   }
   
   getNeighborChains(row, col) {
