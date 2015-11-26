@@ -197,9 +197,9 @@ class Game {
             // move to buying stock phase
             this.nextTurn();
           }
-          if (result.newChain) {
+          if (result.create) {
             // create a new chain
-            this.createChain();
+            this.createChain(player);
           }
           if (result.merger) {
             // resolve merger
@@ -211,8 +211,9 @@ class Game {
     }
   }
   
-  createChain() {
-    this.whisper(player.id, 'create a chain', this.chains);
+  createChain(player) {
+    console.log(player.player.nickname, 'needs to create a chain');
+    this.whisper(player.player.id, 'create a chain', this.chains);
     player.waitingFor = { ev: 'create a chain' };
   }
   
