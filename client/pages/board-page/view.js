@@ -28,16 +28,8 @@ class BoardView {
       this.tileViews.push(new BoardCell(this.context, cell, this));
     }
     
-    this.board.lookup(3, 3).play();
-    this.board.lookup(3, 3).setChain('imperial');
-    this.board.lookup(3, 4).play();
-    this.board.lookup(3, 5).play();
-    this.board.lookup(4, 4).play();
-    
-    this.board.lookup(7, 8).play();
-    this.board.lookup(7, 9).play();
-    this.board.lookup(8, 8).play();
-    this.board.lookup(8, 8).setChain('continental');
+    //this.board.lookup(3, 3).play();
+    //this.board.lookup(3, 3).setChain('imperial');
   }
   
   attach() {
@@ -194,12 +186,12 @@ class BoardView {
     let currentTime = new Date().getTime();
     
     for (let player of msg) {
-      let cell = this.board[player.tile.col][player.tile.row];
+      let cell = this.board.lookup(player.tile.row, player.tile.col);
       let displayTime = currentTime + i * 1000;
       
       this.displayMessage(player.player.nickname, cell.row, cell.col, displayTime);
-      cell.flip(displayTime);
-      i++;
+      cell.play();
+      //i++;
     };
     
     setTimeout(() => { socket.emit('board ready') }, 3000);

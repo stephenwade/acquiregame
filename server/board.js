@@ -1,5 +1,6 @@
 'use strict';
 
+require('./polyfills');
 var Tile = require('./tile');
 
 class Board {
@@ -57,33 +58,40 @@ class Board {
   }
   
   playTile(row, col) {
-    let neighbors = this.getNeighbors(row, col);
+    let cell = this.lookup(row, col);
     
-    if (neighbors.every( (cell) => ! this.grid[cell.row][cell.col].filled )) {
-      this.grid[row][col].filled = true;
-      return { success: true, orphan: true }
-    } else {
-      if (neighbors.every( (cell) => ! this.grid[cell.row][cell.col].chain )) {
-        this.grid[row][col].filled = true;
-        return { success: true, newChain: true }
-      } else {
-        let chainMembers = neighbors.filter( (cell) => this.grid[cell.row][cell.col].chain );
-        
-        if (chainMembers.length == 1) {
-          this.grid[row][col].filled = true;
-          return { success: true, expandChain: true }
-        } else {
-          let firstChain = this.grid[row][col].chain;
-          if (neighbors.slice(1).each( (cell) => this.grid[cell.row][cell.col].chain == firstChain )) {
-            this.grid[row][col].filled = true;
-            return { success: true, expandChain: true }
-          } else {
-            this.grid[row][col].filled = true;
-            return { success: true, merger: true }
-          }
-        }
+    let success = true;
+    let orphan  = true;
+    let create  = false;
+    let expand  = false;
+    let merger  = false;
+    let chains = [];
+    
+    cell.eachNeighbor((neighbor) => {
+      if (neighbor.isPlayed()) {
+        orphan = false;
+        chains.push(neighbor.chain);
+      }
+    });
+    
+    if (!orphan) {
+      chains = chains.filter(Boolean).unique();
+      switch (chains.length) {
+        case 0:
+          create = true;
+          break;
+        case 1:
+          expand = true;
+          break;
+        default:
+          merger = true;
       }
     }
+    
+    cell.play();
+    let result = { success, orphan, create, expand, merger };
+    console.log(result);
+    return { success, orphan, create, expand, merger };
     
     // still needs checks for more than seven chains, safe chains
     
