@@ -188,31 +188,31 @@
     <div id="chain-modal-container" class="modal-container">
       <h3>Choose a chain to create:</h3>
       <div id="chain-tiles">
-        <div id="tower-choice-tile" class="chain-tile available">
+        <div id="tower-choice-tile" class="chain-tile">
           <span class="chain-tile-letter">T</span>
           <span class="chain-tile-name">Tower</span>
         </div>
-        <div id="luxor-choice-tile" class="chain-tile available">
+        <div id="luxor-choice-tile" class="chain-tile">
           <span class="chain-tile-letter">L</span>
           <span class="chain-tile-name">Luxor</span>
         </div>
-        <div id="american-choice-tile" class="chain-tile available">
+        <div id="american-choice-tile" class="chain-tile">
           <span class="chain-tile-letter">A</span>
           <span class="chain-tile-name">American</span>
         </div>
-        <div id="worldwide-choice-tile" class="chain-tile available">
+        <div id="worldwide-choice-tile" class="chain-tile">
           <span class="chain-tile-letter">W</span>
           <span class="chain-tile-name">Worldwide</span>
         </div>
-        <div id="festival-choice-tile" class="chain-tile available">
+        <div id="festival-choice-tile" class="chain-tile">
           <span class="chain-tile-letter">F</span>
           <span class="chain-tile-name">Festival</span>
         </div>
-        <div id="imperial-choice-tile" class="chain-tile available">
+        <div id="imperial-choice-tile" class="chain-tile">
           <span class="chain-tile-letter">I</span>
           <span class="chain-tile-name">Imperial</span>
         </div>
-        <div id="continental-choice-tile" class="chain-tile available">
+        <div id="continental-choice-tile" class="chain-tile">
           <span class="chain-tile-letter">C</span>
           <span class="chain-tile-name">Continental</span>
         </div>
@@ -266,8 +266,8 @@
       attachedCallback() {
         var self = this;
         
-        this.root.querySelector('#turn-state').addEventListener('click', () => self.root.querySelector('#chain-modal').classList.add('visible'));
-        this.root.querySelector('#chain-modal').addEventListener('click', () => self.root.querySelector('#chain-modal').classList.remove('visible'));
+        this.root.querySelector('#turn-state').addEventListener('click', () => self.turnStateClick() );
+        this.root.querySelector('#chain-modal').addEventListener('click', () => self.chainModalDismiss() );
         this.root.querySelector('#chain-modal-container').addEventListener('click', (e) => e.stopPropagation() );
         
         // Events
@@ -284,6 +284,32 @@
       
       detachedCallback() {
       },
+      
+      turnStateClick() {
+        this.root.querySelector('#chain-modal').classList.add('visible');
+        let chainTiles = this.root.querySelectorAll('.chain-tile');
+        let self = this;
+        Array.prototype.filter.call(chainTiles,
+          (tile) => self.player.stateData.indexOf(tile.id.replace(/-choice-tile/, '')) !== -1
+          ).forEach( (tile) => {
+            tile.classList.add('available');
+            tile.addEventListener('click', self.chainSubmit(tile.id.replace(/-choice-tile/, '')));
+          } );
+      },
+      
+      chainModalDismiss() {
+        this.root.querySelector('#chain-modal').classList.remove('visible');
+        let chainTiles = this.root.querySelectorAll('.chain-tile');
+        Array.prototype.forEach.call(chainTiles, (tile) => tile.classList.remove('available') );
+      },
+      
+      chainSubmit(chain) {
+        socket.emit('chain chosen', chain);
+        chainModalDismiss();
+        this.player.state = 'waiting';
+        this.player.stateData = undefined;
+        this.displayTurnStatus();
+      }
       
       addTiles(tiles) {
         for (let tile of tiles) {
@@ -310,8 +336,9 @@
       },
       
       createChain(chains) {
-        let chainModal = this.root.querySelector('#chain-modal');
-        chainModal.classList.add('visible');
+        this.player.state = 'create chain';
+        this.player.stateData = chains;
+        this.displayTurnStatus();
       },
       
       displayTurnStatus() {
@@ -323,6 +350,9 @@
             break;
           case 'choosing tile':
             turnStateView.innerText = 'Choose a tile';
+            break;
+          case 'create chain':
+            turnStateView.innerText = 'Choose a chain';
             break;
           default:
             turnStateView.innerText = 'State unknown';
