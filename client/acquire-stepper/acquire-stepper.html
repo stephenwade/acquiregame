@@ -1,0 +1,80 @@
+<template id="acquire-stepper">
+  <style>
+    :host {
+      display: inline-block;
+      text-align: center;
+      /*width: 4em;*/
+    }
+    
+    #minus,
+    #number,
+    #plus {
+      display: inline-block;
+    }
+    
+    #minus,
+    #plus {
+      width: 1em;
+      -webkit-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
+      cursor: pointer;
+    }
+    #number {
+      width: 2em;
+    }
+  </style>
+  
+  <div id="minus">–</div>
+  <div id="number">{{value}}</div>
+  <div id="plus">+</div>
+</template>
+
+<script>
+  'use strict';
+
+  (() => {
+    let template = document.currentScript.ownerDocument.querySelector('template');
+    let prototype = Object.create(HTMLElement.prototype);
+    
+    Object.assign(prototype, {
+      createdCallback() {
+        this.root = this.createShadowRoot();
+        this.root.appendChild(document.importNode(template.content, true));
+        
+        let self = this;
+        this.addClickListener('#minus', () => self.minusClick() );
+        this.addClickListener('#plus', () => self.plusClick() );
+        
+        this.root.querySelector('#number').innerText = this.getAttribute('value');
+      },
+      
+      attachedCallback() {
+        this.addEventListener('click', this.clickHandler);
+      },
+      
+      detachedCallback() {
+        this.removeEventListener('click', this.clickHandler);
+      },
+      
+      addClickListener(element, callback) {
+        this.root.querySelector(element).addEventListener('click', callback);
+      },
+      
+      attributeChangedCallback(attrName, oldVal, newVal) {
+        if (attrName == 'value')
+          this.root.querySelector('#number').innerText = newVal;
+      },
+      
+      plusClick() {
+        this.setAttribute('value', Number(this.getAttribute('value')) + 1);
+      },
+      
+      minusClick() {
+        this.setAttribute('value', Number(this.getAttribute('value')) - 1);
+      }
+    });
+    
+    window.AcquireStepper = document.registerElement('acquire-stepper', { prototype });
+  })();
+</script>
