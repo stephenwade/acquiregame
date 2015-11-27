@@ -14,15 +14,6 @@ class Game {
     
     this.board = new Board();
     this.tileStore = new TileStore();
-    this.chains = [
-      'luxor',
-      'tower',
-      'american',
-      'festival',
-      'worldwide',
-      'continental',
-      'imperial'
-    ]
     
     // The tile starting a chain or causing a merger
     this.activeTile = false;
@@ -43,6 +34,11 @@ class Game {
         io.sockets.connected[to].emit(ev, data);
       }
     }
+  }
+
+  replyInvalid(player, msg) {
+    console.log(player.nickname, 'tried to play an invalid move:', msg);
+    this.whisper(player.id, 'invalid move', msg);
   }
   
   addPlayer(player) {
@@ -67,18 +63,18 @@ class Game {
     }
   }
   
-  rejoinPlayer(msg) {
+  rejoinPlayer(data) {
     for (let i = 0; i < this.players.length; i++) {
-      if (msg.uuid === this.players[i].uuid) {
-        this.players[i].id = msg.id;
-        this.whisper(msg.id, 'game state', {
+      if (data.uuid === this.players[i].uuid) {
+        this.players[i].id = data.id;
+        this.whisper(data.id, 'game state', {
           game: this.dumpGameState(),
           player: this.players[i].dumpPlayerState()
         });
         return true;
         let waitingFor = this.players[i].waitingFor;
         if (waitingFor) {
-          this.whisper(msg.id, waitingFor.ev, waitingFor.data);
+          this.whisper(data.id, waitingFor.ev, waitingFor.data);
         }
       }
     }
@@ -184,6 +180,17 @@ class Game {
     this.board.logState();
   }
   
+  createChain(player, tile) {
+    this.activeTile = this.board.lookup(tile.row, tile.col);
+    console.log(player.nickname, 'needs to create a chain');
+    this.whisper(player.id, 'create a chain', this.board.availableChains);
+    player.waitingFor = { ev: 'create a chain' };
+  }
+  
+  buyStock(player) {
+    this.nextTurn();
+  }
+  
   findPlayer(id) {
     for (let i = 0; i < this.players.length; i++) {
       if (this.players[i].id === id) {
@@ -192,75 +199,72 @@ class Game {
     }
   }
   
-  tileChosen(id, msg) {
+  turnAction(id, action, data) {
     let player = this.findPlayer(id);
+    let self = this;
+    let methods = {
+      'tile chosen': () => { self.tileChosen(player.player, data) },
+      'chain chosen': () => { self.chainChosen(player.player, data) }
+    }
+    
     if (player.order != this.currentPlayer) {
-      this.whisper(player.player.id, 'invalid move', 'It’s not your turn.');
+      this.replyInvalid(player.player, 'It’s not your turn.');
     } else {
-      if (player.player.hasTile(msg.row, msg.col)) {
-        let result = this.board.playTile(msg.row, msg.col);
-        if (result.success) {
-          console.log(player.player.nickname, 'played', msg);
-          this.broadcast('tile played', msg);
-          
-          if (result.create) {
-            // create a new chain
-            this.activeTile = this.board.lookup(msg.row, msg.col);
-            this.createChain(player);
-          } else {
-            this.nextTurn();
-          }
-          //if (result.orphan || result.expandChain) {
-            // move to buying stock phase
-          //}
-          //if (result.merger) {
-            // resolve merger
-          //}
-        } else {
-          this.whisper(player.player.id, 'invalid move', result.err);
-        }
-      }
+      console.log('action', action, '->', methods[action]);
+      (methods[action])();
+    }
+  }
+
+  tileChosen(player, tile) {
+    if (! player.hasTile(tile.row, tile.col)) {
+      this.replyInvalid(player, 'You shouldn\'t have that tile!');
+      return;
+    }
+    
+    let result = this.board.playTile(tile.row, tile.col);
+    
+    if (result.success) {
+      console.log(player.nickname, 'played', tile);
+      this.broadcast('tile played', tile);
+      
+      if (result.create) { this.createChain(player, tile); }
+      if (result.merger) { this.mergeChains(player, tile); }
+      if (result.noAction) { this.buyStock(player); }
+    } else {
+      this.replyInvalid(player, result.err);
     }
   }
   
-  createChain(player) {
-    console.log(player.player.nickname, 'needs to create a chain');
-    this.whisper(player.player.id, 'create a chain', this.chains);
-    player.waitingFor = { ev: 'create a chain' };
-  }
-  
-  chainChosen(id, msg) {
-    let player = this.findPlayer(id);
-    
-    if (player.order != this.currentPlayer) {
-      this.whisper(player.player.id, 'invalid move', 'It’s not your turn.');
+  chainChosen(player, chain) {
+    let created = this.board.newChain(chain);
+    if (created) {
+      this.activeTile.setChain(chain);
+      
+      console.log(player.id, 'created', chain);
+      this.broadcast('chain created', {
+        row: this.activeTile.row,
+        col: this.activeTile.col,
+        chain
+      });
+      
+      player.giveShares(chain, 1);
+      this.broadcast('new shares', { player, chain, quantity: 1 });
+      
+      this.nextTurn();
     } else {
-      if (this.chains.indexOf(msg) < 0) {
-        this.whisper(player.player.id, 'invalid move', 'Chain is not available.');
-      } else {
-        this.chains.splice(this.chains.indexOf(msg), 1);
-        this.activeTile.setChain(msg);
-        console.log(player.player.id, 'created', msg);
-        this.broadcast('chain created', {
-          row: this.activeTile.row,
-          col: this.activeTile.col,
-          chain: msg
-        });
-        
-        this.nextTurn();
-      }
+      this.replyInvalid(player, 'Chain is not available.');
     }
   }
   
-  mergerChosen(id, msg) {
+  mergerChosen(id, data) {
     
   }
   
-  stockDecision(id, msg) {
+  stockDecision(id, data) {
     
   }
   
-  stocksPurchased(id, msg) {
+  stocksPurchased(id, data) {
     
   }
   

@@ -3,12 +3,11 @@
 <template id="playerView">
   <style>
     tile-view {
-      margin-right: 1em;
-      background-color: gray;
-      float: left;
       height: 13vw;
       width: 13vw;
-      display: flex;
+      
+      font-size: 4vw;
+      background-color: gray;
     }
     
     #turnState {
@@ -74,8 +73,12 @@
       border-top: 1px solid black;
     }
     #tiles {
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+      
       height: calc(13vw + 2em);
-      padding: 1em 0 1em 1em;
+      padding: 1em 1em 1em 1em;
       border-top: 2px solid black;
     }
     h3 {
@@ -183,7 +186,14 @@
       <div id="turn-state"><h3 id="turn-state-text">Waiting…</h3></div>
     </div>
   </div>
-  <div id="tiles"></div>
+  <div id="tiles">
+    <tile-view></tile-view>
+    <tile-view></tile-view>
+    <tile-view></tile-view>
+    <tile-view></tile-view>
+    <tile-view></tile-view>
+    <tile-view></tile-view>
+  </div>
   <div id="chain-modal" class="modal" onclick="this.classList.remove('visible')">
     <div id="chain-modal-container" class="modal-container">
       <h3>Choose a chain to create:</h3>
@@ -232,6 +242,7 @@
   'use strict';
   
   HTMLCollection.prototype[Symbol.iterator] = Array.prototype[Symbol.iterator];
+  NodeList.prototype[Symbol.iterator] = Array.prototype[Symbol.iterator];
   
   (() => {
     let template = document.currentScript.ownerDocument.querySelector('#playerView');
@@ -243,6 +254,12 @@
         this.root.appendChild(document.importNode(template.content, true));
         
         this.player = new Player();
+        
+        let views = this.root.querySelectorAll('tile-view');
+        console.log('tile views:', views);
+        for (let tileView of views) {
+          tileView.setPlayer(this.player);
+        }
         
         this.colors = {
           towerPrimary:       '#FFFA7A',
@@ -278,7 +295,7 @@
           self.player.chooseTile();
           self.displayTurnStatus();
         });
-        socket.on('tile played', (tile) => self.checkTiles(tile) );
+        socket.socket.on('tile played', (tile) => self.checkTiles(tile) );
         socket.on('create a chain', (chains) => {
           console.log('We need to create a train!');
           self.createChain(chains)
@@ -316,26 +333,27 @@
       },
       
       addTiles(tiles) {
+        let views = this.root.querySelectorAll('tile-view');
+        
         for (let tile of tiles) {
           console.log(tile);
           this.player.hand.push(tile);
           
-          var view = new TileView();
-          view.setTile(tile);
-          view.setPlayer(this.player);
-          var rack = this.root.querySelector('#tiles');
-          rack.appendChild(view);
+          for (let tileView of views) {
+            if (tileView.isEmpty()) {
+              tileView.setTile(tile);
+              break;
+            }
+          }
         }
       },
       
       checkTiles(tile) {
-        let tileViews = this.root.querySelector('#tiles');
+        let tileViews = this.root.querySelectorAll('tile-view');
         
-        for (let view of tileViews.children) {
-          if (view.confirmPlay(tile)) {
-            this.player.tileChosen();
-            this.displayTurnStatus();
-          }
+        if (this.player.choosingTile()) {
+          this.player.tileChosen();
+          this.displayTurnStatus();
         }
       },
       

@@ -23,18 +23,29 @@ class Connection {
   
   registerMessages() {
     var self = this;
-    this.socket.on('new game',         ()    => self.newGame());
-    this.socket.on('join game',        (msg) => self.joinGame(msg));
-    this.socket.on('rejoin game',      (msg) => self.rejoinGame(msg));
-    this.socket.on('disconnect',       ()    => self.disconnect());
-    this.socket.on('update nickname',  (msg) => self.updateNickname(msg));
-    this.socket.on('start game',       ()    => { if (self.game) self.game.startGame() });
-    this.socket.on('board ready',      ()    => { if (self.game) self.game.boardReady() });
-    this.socket.on('tile chosen',      (msg) => { if (self.game) self.game.tileChosen(this.id, msg) });
-    this.socket.on('chain chosen',     (msg) => { if (self.game) self.game.chainChosen(this.id, msg) });
-    this.socket.on('merger chosen',    (msg) => { if (self.game) self.game.mergerChosen(this.id, msg) });
-    this.socket.on('stock decision',   (msg) => { if (self.game) self.game.stockDecision(this.id, msg) });
-    this.socket.on('stocks purchased', (msg) => { if (self.game) self.game.stocksPurchased(this.id, msg) });
+    this.socket.on('new game',        ()     => self.newGame());
+    this.socket.on('join game',       (data) => self.joinGame(data));
+    this.socket.on('rejoin game',     (data) => self.rejoinGame(data));
+    this.socket.on('disconnect',      ()     => self.disconnect());
+    this.socket.on('update nickname', (data) => self.updateNickname(data));
+    this.socket.on('start game',      ()     => { if (self.game) self.game.startGame() });
+    this.socket.on('board ready',     ()     => { if (self.game) self.game.boardReady() });
+    this.socket.on('stock decision',  (data) => { if (self.game) self.game.stockDecision(this.id, data) });
+    
+    let turnMsgs = [
+      'tile chosen',
+      'chain chosen',
+      'merger chosen',
+      'stocks purchased'
+    ];
+    
+    for (let msg of turnMsgs) {
+      let callback = (data) => {
+        if (self.game) self.game.turnAction(this.id, msg, data);
+      };
+      
+      this.socket.on(msg, callback);
+    }
   }
   
   // Callbacks
@@ -48,30 +59,30 @@ class Connection {
     io.to(this.gameID).emit('game created', this.gameID);
   }
   
-  joinGame(msg) {
-    let game = gamesManager.findGame(msg.id);
+  joinGame(data) {
+    let game = gamesManager.findGame(data.id);
     if (game) {
       this.game = game;
-      this.gameID = msg.id;
-      this.socket.join(msg.id);
+      this.gameID = data.id;
+      this.socket.join(data.id);
       let newUUID = uuid();
-      this.game.addPlayer(new Player(this.socket.id, newUUID, he.escape(msg.nickname)));
-      this.socket.emit('joined game', msg.id);
+      this.game.addPlayer(new Player(this.socket.id, newUUID, he.escape(data.nickname)));
+      this.socket.emit('joined game', data.id);
       this.socket.emit('assigned UUID', newUUID);
     } else {
       this.socket.emit('invalid game');
     }
   }
   
-  rejoinGame(msg) {
-    let game = gamesManager.findGame(msg.id);
+  rejoinGame(data) {
+    let game = gamesManager.findGame(data.id);
     if (game) {
-      if (game.rejoinPlayer({ uuid: msg.uuid, id: this.id })) {
+      if (game.rejoinPlayer({ uuid: data.uuid, id: this.id })) {
         this.game = game;
-        this.gameID = msg.id;
-        this.socket.join(msg.id);
-        this.socket.emit('rejoined game', msg.id);
-        console.log('rejoined game', msg.id);
+        this.gameID = data.id;
+        this.socket.join(data.id);
+        this.socket.emit('rejoined game', data.id);
+        console.log('rejoined game', data.id);
       } else {
         this.socket.emit('forbidden connection');
         console.log('forbidden connection');
@@ -92,9 +103,9 @@ class Connection {
     }
   }
   
-  updateNickname(msg) {
-    console.log('Player', this.socket.id, 'updating nickname to', msg.val);
-    if (this.game) this.game.updateNickname(this.socket.id, msg.val);
+  updateNickname(data) {
+    console.log('Player', this.socket.id, 'updating nickname to', data.val);
+    if (this.game) this.game.updateNickname(this.socket.id, data.val);
   }
 };
 
