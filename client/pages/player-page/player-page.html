@@ -322,7 +322,9 @@
       chainModalDismiss() {
         this.root.querySelector('#chain-modal').classList.remove('visible');
         let chainTiles = this.root.querySelectorAll('.chain-tile');
-        Array.prototype.forEach.call(chainTiles, (tile) => tile.classList.remove('available') );
+        for (let tile of chainTiles) {
+          tile.classList.remove('available');
+        }
       },
       
       chainSubmit(chain) {
