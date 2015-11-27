@@ -103,11 +103,14 @@
       right: 4em;
       bottom: 2em;
       left: 4em;
-      padding: 1em 0 1em 1em;
+      padding: 1em;
       background-color: white;
       box-shadow: 0 4px 5px 0 rgba(0, 0, 0, 0.14),
                   0 1px 10px 0 rgba(0, 0, 0, 0.12),
                   0 2px 4px -1px rgba(0, 0, 0, 0.4); /* from paper-styles */
+    }
+    #chain-modal-container {
+      padding-right: 0;
     }
     #chain-tiles {
     }
@@ -151,9 +154,41 @@
     .continental {
       background-color: #28FFCD;
     }
+    #stock-tiles {
+      display: flex;
+      flex-direction: column;
+      flex-wrap: wrap;
+      align-items: flex-start;
+      position: absolute;
+      top: 4em;
+      bottom: 3em;
+      left: 1em;
+    }
+    .stock-tile {
+      display: inline-block;
+      padding: 0.2em 0.5em;
+      margin: 0 1em 1em 0;
+    }
     .stock-tile-name {
       display: inline-block;
       width: 6em;
+    }
+    #stock-modal-buttons {
+      position: absolute;
+      right: 1em;
+      bottom: 1em;
+    }
+    .custom-button {
+      display: inline-block;
+      border-radius: 3px;
+      cursor: pointer;
+      padding: 0.5em 1em;
+      text-transform: uppercase;
+      margin-left: 0.5em;
+    }
+    .custom-button[raised] {
+      background: blue;
+      color: white;
     }
     #fs {
       position: absolute;
@@ -240,32 +275,36 @@
       <div id="stock-tiles">
         <div id="tower-stock-tile" class="tower stock-tile">
           <span class="stock-tile-name">Tower</span>
-          <acquire-stepper class="stock-tile-stepper" max="3" value="2"></acquire-stepper>
+          <acquire-stepper class="stock-tile-stepper" max="3" value="0"></acquire-stepper>
         </div>
         <div id="luxor-stock-tile" class="luxor stock-tile">
           <span class="stock-tile-name">Luxor</span>
-          <acquire-stepper class="stock-tile-stepper" max="3" value="2"></acquire-stepper>
+          <acquire-stepper class="stock-tile-stepper" max="3" value="0"></acquire-stepper>
         </div>
         <div id="american-stock-tile" class="american stock-tile">
           <span class="stock-tile-name">American</span>
-          <acquire-stepper class="stock-tile-stepper" max="3" value="2"></acquire-stepper>
+          <acquire-stepper class="stock-tile-stepper" max="3" value="0"></acquire-stepper>
         </div>
         <div id="worldwide-stock-tile" class="worldwide stock-tile">
           <span class="stock-tile-name">Worldwide</span>
-          <acquire-stepper class="stock-tile-stepper" max="3" value="2"></acquire-stepper>
+          <acquire-stepper class="stock-tile-stepper" max="3" value="0"></acquire-stepper>
         </div>
         <div id="festival-stock-tile" class="festival stock-tile">
           <span class="stock-tile-name">Festival</span>
-          <acquire-stepper class="stock-tile-stepper" max="3" value="2"></acquire-stepper>
+          <acquire-stepper class="stock-tile-stepper" max="3" value="0"></acquire-stepper>
         </div>
         <div id="imperial-stock-tile" class="imperial stock-tile">
           <span class="stock-tile-name">Imperial</span>
-          <acquire-stepper class="stock-tile-stepper" max="3" value="2"></acquire-stepper>
+          <acquire-stepper class="stock-tile-stepper" max="3" value="0"></acquire-stepper>
         </div>
         <div id="continental-stock-tile" class="continental stock-tile">
           <span class="stock-tile-name">Continental</span>
-          <acquire-stepper class="stock-tile-stepper" max="3" value="2"></acquire-stepper>
+          <acquire-stepper class="stock-tile-stepper" max="3" value="0"></acquire-stepper>
         </div>
+      </div>
+      <div id="stock-modal-buttons">
+        <span class="custom-button">Not yet</span>
+        <span class="custom-button" raised>Purchase</span>
       </div>
     </div>
   </div>
