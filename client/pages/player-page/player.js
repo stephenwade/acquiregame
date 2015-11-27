@@ -36,4 +36,8 @@ class Player {
   choosingTile() {
     return this.state === 'choosing tile';
   }
+  
+  addShares(chain, quantity) {
+    this.portfolio[chain] += quantity;
+  }
 }

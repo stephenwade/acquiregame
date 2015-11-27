@@ -256,7 +256,6 @@
         this.player = new Player();
         
         let views = this.root.querySelectorAll('tile-view');
-        console.log('tile views:', views);
         for (let tileView of views) {
           tileView.setPlayer(this.player);
         }
@@ -289,6 +288,7 @@
         
         // Events
         socket.on('new tiles', (tiles) => self.addTiles(tiles) );
+        socket.on('new shares', (shares) => self.updateShares(shares) );
         
         // States
         socket.on('play a tile', (tiles) => {
@@ -297,7 +297,6 @@
         });
         socket.socket.on('tile played', (tile) => self.checkTiles(tile) );
         socket.on('create a chain', (chains) => {
-          console.log('We need to create a train!');
           self.createChain(chains)
         })
       },
@@ -324,7 +323,6 @@
       },
       
       chainSubmit(chain) {
-        console.log(chain, 'chosen');
         socket.emit('chain chosen', chain);
         this.chainModalDismiss();
         this.player.state = 'waiting';
@@ -336,7 +334,6 @@
         let views = this.root.querySelectorAll('tile-view');
         
         for (let tile of tiles) {
-          console.log(tile);
           this.player.hand.push(tile);
           
           for (let tileView of views) {
@@ -346,6 +343,14 @@
             }
           }
         }
+      },
+      
+      updateShares(shares) {
+        console.log('new shares!', shares);
+        this.player.addShares(shares.chain, shares.quantity);
+        
+        let id = '#' + shares.chain + '-count';
+        this.root.querySelector(id).innerText = this.player.portfolio[shares.chain];
       },
       
       checkTiles(tile) {

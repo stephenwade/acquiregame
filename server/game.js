@@ -248,7 +248,7 @@ class Game {
       });
       
       player.giveShares(chain, 1);
-      this.broadcast('new shares', { player, chain, quantity: 1 });
+      this.whisper(player.id, 'new shares', { player, chain, quantity: 1 });
       
       this.nextTurn();
     } else {
