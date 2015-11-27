@@ -11,7 +11,7 @@ class BoardCell {
     this.frame = 1;
     this.filled = false;
     
-    this.flipAnimation = new Animation(400);
+    this.flipAnimation = new Animation(450);
     
     this.colors = {
       borderColor:        '#555555',
@@ -22,18 +22,25 @@ class BoardCell {
       
       imperialPrimary:    '#FF285A',
       imperialAccent:     '#C1002D',
+      imperialText:       'filled',
       continentalPrimary: '#28FFCD',
       continentalAccent:  '#00C194',
+      continentalText:    'empty',
       towerPrimary:       '#FFFA7A',
       towerAccent:        '#FFDA47',
+      towerText:          'empty',
       festivalPrimary:    '#1CC424',
       festivalAccent:     '#15971C',
+      festivalText:       'filled',
       americanPrimary:    '#6B65FF',
       americanAccent:     '#3E39D5',
+      americanText:       'filled',
       worldwidePrimary:   '#A78966',
       worldwideAccent:    '#7B5F41',
+      worldwideText:      'filled',
       luxorPrimary:       '#FFA042',
       luxorAccent:        '#F3871B',
+      luxorText:          'empty',
       unclaimed:          '#555555'
     };
     
@@ -79,7 +86,7 @@ class BoardCell {
   drawOuterBox() {
     this.context.strokeStyle = this.colors.borderColor;
     
-    this.context.lineWidth = 2;
+    this.context.lineWidth = 1;
     this.context.strokeRect(this.x, this.y, this.size, this.size);
   }
   
@@ -130,11 +137,14 @@ class BoardCell {
     }
     
     this.context.fillStyle = this.colors[colorId];
-    this.context.fillRect(this.padding, this.padding, this.width, this.width);
+    this.context.fillRect(0, 0, this.size, this.size);
   }
   
   drawText() {
     var imgId = this.flipAnimation.frame < 0.5 ? 'filledText' : 'emptyText';
+    if (imgId === 'filledText' && this.cell.chain) {
+      imgId = this.colors[this.cell.chain + 'Text'] + 'Text';
+    }
     
     this.context.drawImage(this[imgId].canvas, 0, 0);
   }

@@ -96,7 +96,7 @@ class Board {
             create = true;
           } else {
             success = false;
-            err     = 'No new chains available'; ////////// THIS
+            err     = 'No new chains available';
           }
           break;
         case 1:
