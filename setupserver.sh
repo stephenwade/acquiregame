@@ -33,6 +33,9 @@ npm update
 pm2 start acquire.js
 pm2 startup systemd 2>&1 | tail -n 1 | bash
 
+cd /var/www/acquiregame/client
+bower update
+
 sudo sed -i \
   -e '/\s*#.*$/d' \
   -e '/^\s*$/d' \

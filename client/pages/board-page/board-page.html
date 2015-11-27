@@ -1,0 +1,58 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/font-roboto/roboto.html">
+
+<dom-module id="board-page">
+  <style>
+    html, body, :host, canvas {
+      display: block;
+      
+      width: 100%;
+      height: 100%;
+      padding: 0;
+      margin: 0;
+      
+      overflow: hidden;
+      font-size: 0;
+    }
+  </style>
+
+  <template>
+    <canvas id="canvas">
+      Say “Hello!” to the year 2000 for me!
+    </canvas>
+  </template>
+  
+  <script src="./stagingArea.js"></script>
+  <script src="./animation.js"></script>
+  <script src="./cell.js"></script>
+  <script src="./board.js"></script>
+  <script src="./tile.js"></script>
+  <script src="./view.js"></script>
+  <script>
+    'use strict';
+    
+    Polymer({
+      is: 'board-page',
+      
+      attached: function() {
+        if (! this.view) {
+          this.view = new BoardView(this.$.canvas);
+        }
+        this.view.attach();
+        this.view.resize();
+        
+        this.resizeHandler = () => this.view.resize()
+        window.addEventListener('resize', this.resizeHandler );
+        this.canvasClickHandler = (event) => this.view.findClickSubject(event)
+        this.$.canvas.addEventListener('click', this.canvasClickHandler );
+      },
+      
+      detached: function() {
+        this.view.detatch();
+        window.removeEventListener('resize', this.resizeHandler);
+        this.$.canvas.removeEventListener('click', this.canvasClickHandler);
+      }
+    });
+  </script>
+
+</dom-module>

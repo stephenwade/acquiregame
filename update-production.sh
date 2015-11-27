@@ -3,5 +3,7 @@
 cd /var/www/acquiregame
 git pull
 cd server
-npm install
+npm update
+cd ../client
+bower update
 pm2 restart acquire
