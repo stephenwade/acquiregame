@@ -107,7 +107,7 @@ class Board {
       }
     }
     
-    cell.play();
+    if (success) cell.play();
     let result = { success, orphan, create, expand, merger, err };
     console.log('play will be', result);
     return result;
