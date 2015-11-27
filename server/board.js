@@ -9,6 +9,16 @@ class Board {
     this.numCols = 12;
     
     this.grid = this.constructBoard();
+    
+    this.availableChains = [
+      'luxor',
+      'tower',
+      'american',
+      'festival',
+      'worldwide',
+      'continental',
+      'imperial'
+    ]
   }
   
   [Symbol.iterator]() {
@@ -65,7 +75,8 @@ class Board {
     let create  = false;
     let expand  = false;
     let merger  = false;
-    let chains = [];
+    let neighboringChains = [];
+    let err     = '';
     
     console.log('playing', String(cell));
     
@@ -73,15 +84,20 @@ class Board {
       console.log('\tneighbor:', String(neighbor));
       if (neighbor.isPlayed()) {
         orphan = false;
-        chains.push(neighbor.chain);
+        neighboringChains.push(neighbor.chain);
       }
     });
     
     if (!orphan) {
-      chains = chains.filter(Boolean).unique();
-      switch (chains.length) {
+      neighboringChains = neighboringChains.filter(Boolean).unique();
+      switch (neighboringChains.length) {
         case 0:
-          create = true;
+          if (this.availableChains.length > 0) {
+            create = true;
+          } else {
+            success = false;
+            err     = 'No new chains available';
+          }
           break;
         case 1:
           expand = true;
@@ -92,9 +108,9 @@ class Board {
     }
     
     cell.play();
-    let result = { success, orphan, create, expand, merger };
+    let result = { success, orphan, create, expand, merger, err };
     console.log('play will be', result);
-    return { success, orphan, create, expand, merger };
+    return result;
     
     // still needs checks for more than seven chains, safe chains
     
