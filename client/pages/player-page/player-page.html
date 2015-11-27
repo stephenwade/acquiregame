@@ -373,20 +373,15 @@
       
       displayTurnStatus() {
         console.log('displaying!');
-        let turnStateView = this.root.querySelector('#turn-state-text');
-        switch (this.player.state) {
-          case 'waiting':
-            turnStateView.innerText = 'Waiting…';
-            break;
-          case 'choosing tile':
-            turnStateView.innerText = 'Choose a tile';
-            break;
-          case 'create chain':
-            turnStateView.innerText = 'Choose a chain';
-            break;
-          default:
-            turnStateView.innerText = 'State unknown';
-        }
+        let stateView = this.root.querySelector('#turn-state-text');
+        
+        let message = {
+          'waiting': 'Waiting...',
+          'choosing tile': 'Choose a tile',
+          'create chain':  'Choose a chain',
+        }[this.player.state];
+        
+        stateView.innerText = message ? message : 'State unknown';
       },
       
       toggleFullScreen() {
