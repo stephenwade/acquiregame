@@ -107,10 +107,10 @@ class Board {
       }
     }
     
-    let buyStock = orphan || expand;
+    let noAction = orphan || expand;
     
     if (success) cell.play();
-    let result = { success, orphan, create, expand, buyStock, merger, err };
+    let result = { success, orphan, create, expand, noAction, merger, err };
     console.log('play will be', result);
     return result;
     
@@ -119,21 +119,6 @@ class Board {
     // success possibilities: orphan, newChain, expandChain, merger
     // if invalid, return { success: false, err: 'error message' }
     // for example: { success: false, err: 'Can’t create more than seven chains.'}
-  }
-  
-  getNeighbors(row, col) {
-    let result = [];
-    
-    if (row > 0)
-      result.push({ row: row - 1, col });
-    if (row < this.height - 1)
-      result.push({ row: row + 1, col });
-    if (col > 0)
-      result.push({ row, col: col - 1 });
-    if (col < this.width - 1)
-      result.push({ row, col: col + 1 });
-    
-    return result;
   }
   
   logState() {

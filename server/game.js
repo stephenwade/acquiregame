@@ -229,7 +229,7 @@ class Game {
       
       if (result.create) { this.createChain(player, tile); }
       if (result.merger) { this.mergeChains(player, tile); }
-      if (result.buyStock) { this.buyStock(player); }
+      if (result.noAction) { this.buyStock(player); }
     } else {
       this.replyInvalid(player, result.err);
     }
