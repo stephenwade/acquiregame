@@ -1,4 +1,5 @@
 <link rel="import" href="./tile-view.html">
+<link rel="import" href="../../acquire-stepper/acquire-stepper.html">
 
 <template id="playerView">
   <style>
@@ -129,26 +130,30 @@
     .chain-tile > * {
       display: block;
     }
-    #tower-choice-tile {
+    .tower {
       background-color: #FFFA7A;
     }
-    #luxor-choice-tile {
+    .luxor {
       background-color: #FFA042;
     }
-    #american-choice-tile {
+    .american {
       background-color: #6B65FF;
     }
-    #worldwide-choice-tile {
+    .worldwide {
       background-color: #A78966;
     }
-    #festival-choice-tile {
+    .festival {
       background-color: #1CC424;
     }
-    #imperial-choice-tile {
+    .imperial {
       background-color: #FF285A;
     }
-    #continental-choice-tile {
+    .continental {
       background-color: #28FFCD;
+    }
+    .stock-tile-name {
+      display: inline-block;
+      width: 6em;
     }
     #fs {
       position: absolute;
@@ -194,35 +199,35 @@
     <tile-view></tile-view>
     <tile-view></tile-view>
   </div>
-  <div id="chain-modal" class="modal" onclick="this.classList.remove('visible')">
+  <div id="chain-modal" class="modal">
     <div id="chain-modal-container" class="modal-container">
       <h3>Choose a chain to create:</h3>
       <div id="chain-tiles">
-        <div id="tower-choice-tile" class="chain-tile">
+        <div id="tower-chain-tile" class="tower chain-tile">
           <span class="chain-tile-letter">T</span>
           <span class="chain-tile-name">Tower</span>
         </div>
-        <div id="luxor-choice-tile" class="chain-tile">
+        <div id="luxor-chain-tile" class="luxor chain-tile">
           <span class="chain-tile-letter">L</span>
           <span class="chain-tile-name">Luxor</span>
         </div>
-        <div id="american-choice-tile" class="chain-tile">
+        <div id="american-chain-tile" class="american chain-tile">
           <span class="chain-tile-letter">A</span>
           <span class="chain-tile-name">American</span>
         </div>
-        <div id="worldwide-choice-tile" class="chain-tile">
+        <div id="worldwide-chain-tile" class="worldwide chain-tile">
           <span class="chain-tile-letter">W</span>
           <span class="chain-tile-name">Worldwide</span>
         </div>
-        <div id="festival-choice-tile" class="chain-tile">
+        <div id="festival-chain-tile" class="festival chain-tile">
           <span class="chain-tile-letter">F</span>
           <span class="chain-tile-name">Festival</span>
         </div>
-        <div id="imperial-choice-tile" class="chain-tile">
+        <div id="imperial-chain-tile" class="imperial chain-tile">
           <span class="chain-tile-letter">I</span>
           <span class="chain-tile-name">Imperial</span>
         </div>
-        <div id="continental-choice-tile" class="chain-tile">
+        <div id="continental-chain-tile" class="continental chain-tile">
           <span class="chain-tile-letter">C</span>
           <span class="chain-tile-name">Continental</span>
         </div>
@@ -234,7 +239,41 @@
       <path d="M73.143,329.143H0V512h182.857v-73.143H73.143V329.143z M0,182.857h73.143V73.143h109.715V0H0V182.857z M438.857,438.857  H329.143V512H512V329.143h-73.143V438.857z M329.143,0v73.143h109.715v109.715H512V0H329.143z" fill="#000000"/>
     </svg>
   </div>
-  
+  <div id="stock-modal" class="modal">
+    <div id="stock-modal-container" class="modal-container">
+      <h3>The market is open!</h3>
+      <div id="stock-tiles">
+        <div id="tower-stock-tile" class="tower stock-tile">
+          <span class="stock-tile-name">Tower</span>
+          <acquire-stepper class="stock-tile-stepper" max="3" value="2"></acquire-stepper>
+        </div>
+        <div id="luxor-stock-tile" class="luxor stock-tile">
+          <span class="stock-tile-name">Luxor</span>
+          <acquire-stepper class="stock-tile-stepper" max="3" value="2"></acquire-stepper>
+        </div>
+        <div id="american-stock-tile" class="american stock-tile">
+          <span class="stock-tile-name">American</span>
+          <acquire-stepper class="stock-tile-stepper" max="3" value="2"></acquire-stepper>
+        </div>
+        <div id="worldwide-stock-tile" class="worldwide stock-tile">
+          <span class="stock-tile-name">Worldwide</span>
+          <acquire-stepper class="stock-tile-stepper" max="3" value="2"></acquire-stepper>
+        </div>
+        <div id="festival-stock-tile" class="festival stock-tile">
+          <span class="stock-tile-name">Festival</span>
+          <acquire-stepper class="stock-tile-stepper" max="3" value="2"></acquire-stepper>
+        </div>
+        <div id="imperial-stock-tile" class="imperial stock-tile">
+          <span class="stock-tile-name">Imperial</span>
+          <acquire-stepper class="stock-tile-stepper" max="3" value="2"></acquire-stepper>
+        </div>
+        <div id="continental-stock-tile" class="continental stock-tile">
+          <span class="stock-tile-name">Continental</span>
+          <acquire-stepper class="stock-tile-stepper" max="3" value="2"></acquire-stepper>
+        </div>
+      </div>
+    </div>
+  </div>
 </template>
 
 <script src="./player.js"></script>
@@ -288,6 +327,8 @@
         this.addClickListener('#chain-modal', () => self.chainModalDismiss() );
         this.addClickListener('#chain-modal-container', (e) => e.stopPropagation() );
         this.addClickListener('#fs', () => self.toggleFullScreen() );
+        this.addClickListener('#stock-modal', () => self.stockModalDismiss() );
+        this.addClickListener('#stock-modal-container', (e) => e.stopPropagation() );
         
         // Events
         socket.on('new tiles', (tiles) => self.addTiles(tiles) );
@@ -312,15 +353,24 @@
       },
       
       turnStateClick() {
-        this.root.querySelector('#chain-modal').classList.add('visible');
-        let chainTiles = this.root.querySelectorAll('.chain-tile');
-        let self = this;
-        Array.prototype.filter.call(chainTiles,
-          (tile) => self.player.stateData.indexOf(tile.id.replace(/-choice-tile/, '')) !== -1
-          ).forEach( (tile) => {
-            tile.classList.add('available');
-            tile.addEventListener('click', () => self.chainSubmit(tile.id.replace(/-choice-tile/, '')) );
-          } );
+        switch (this.player.state) {
+          case 'create chain':
+            this.root.querySelector('#chain-modal').classList.add('visible');
+            let chainTiles = this.root.querySelectorAll('.chain-tile');
+            let self = this;
+            Array.prototype.filter.call(chainTiles,
+              (tile) => self.player.stateData.indexOf(tile.id.replace(/-chain-tile/, '')) !== -1
+              ).forEach( (tile) => {
+                tile.classList.add('available');
+                tile.addEventListener('click', () => self.chainSubmit(tile.id.replace(/-chain-tile/, '')) );
+              } );
+            break;
+          // case 'buy stock':
+          default:
+            this.root.querySelector('#stock-modal').classList.add('visible');
+            
+            break;
+        }
       },
       
       chainModalDismiss() {
@@ -329,6 +379,10 @@
         for (let tile of chainTiles) {
           tile.classList.remove('available');
         }
+      },
+      
+      stockModalDismiss() {
+        this.root.querySelector('#stock-modal').classList.remove('visible');
       },
       
       chainSubmit(chain) {
