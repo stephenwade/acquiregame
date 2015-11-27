@@ -107,8 +107,10 @@ class Board {
       }
     }
     
+    let buyStock = orphan || expand;
+    
     if (success) cell.play();
-    let result = { success, orphan, create, expand, merger, err };
+    let result = { success, orphan, create, expand, buyStock, merger, err };
     console.log('play will be', result);
     return result;
     
@@ -141,7 +143,7 @@ class Board {
     console.log('------------------------------------');
     
     for (let cell of this) {
-      row += cell.isPlayed() ? (' ' + cell.label).slice(-5) : '   ';
+      row += cell.isPlayed() ? (' ' + cell.label).slice(-3) : '   ';
       
       col = ++col % this.numCols; 
       if (col === 0) {

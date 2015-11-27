@@ -35,6 +35,11 @@ class Game {
       }
     }
   }
+
+  replyInvalid(player, msg) {
+    console.log(player.nickname, 'tried to play an invalid move:', msg);
+    this.whisper(player.id, 'invalid move', msg);
+  }
   
   addPlayer(player) {
     this.players.push(player);
@@ -177,9 +182,13 @@ class Game {
   
   createChain(player, tile) {
     this.activeTile = this.board.lookup(tile.row, tile.col);
-    console.log(player.player.nickname, 'needs to create a chain');
-    this.whisper(player.player.id, 'create a chain', this.board.availableChains);
+    console.log(player.nickname, 'needs to create a chain');
+    this.whisper(player.id, 'create a chain', this.board.availableChains);
     player.waitingFor = { ev: 'create a chain' };
+  }
+  
+  buyStock(player) {
+    this.nextTurn();
   }
   
   findPlayer(id) {
@@ -194,12 +203,12 @@ class Game {
     let player = this.findPlayer(id);
     let self = this;
     let methods = {
-      'tile chosen': () => { self.tileChosen(player, data) },
-      'chain chosen': () => { self.chainChosen(player, data) }
+      'tile chosen': () => { self.tileChosen(player.player, data) },
+      'chain chosen': () => { self.chainChosen(player.player, data) }
     }
     
     if (player.order != this.currentPlayer) {
-      this.whisper(player.player.id, 'invalid move', 'It’s not your turn.');
+      this.replyInvalid(player.player, 'It’s not your turn.');
     } else {
       console.log('action', action, '->', methods[action]);
       (methods[action])();
@@ -207,38 +216,32 @@ class Game {
   }
 
   tileChosen(player, tile) {
-    console.log('tile chosen and player is', player);
-    if (player.player.hasTile(tile.row, tile.col)) {
-      let result = this.board.playTile(tile.row, tile.col);
+    if (! player.hasTile(tile.row, tile.col)) {
+      this.replyInvalid(player, 'You shouldn\'t have that tile!');
+      return;
+    }
+    
+    let result = this.board.playTile(tile.row, tile.col);
+    
+    if (result.success) {
+      console.log(player.nickname, 'played', tile);
+      this.broadcast('tile played', tile);
       
-      if (result.success) {
-        console.log(player.player.nickname, 'played', tile);
-        this.broadcast('tile played', tile);
-        
-        if (result.create) {
-          this.createChain(player, tile);
-        } else {
-          this.nextTurn();
-        }
-        //if (result.orphan || result.expandChain) {
-          // move to buying stock phase
-        //}
-        //if (result.merger) {
-          // resolve merger
-        //}
-      } else {
-        this.whisper(player.player.id, 'invalid move', result.err);
-      }
+      if (result.create) { this.createChain(player, tile); }
+      if (result.merger) { this.mergeChains(player, tile); }
+      if (result.buyStock) { this.buyStock(player); }
+    } else {
+      this.replyInvalid(player, result.err);
     }
   }
   
   chainChosen(player, data) {
     if (this.board.availableChains.indexOf(data) < 0) {
-      this.whisper(player.player.id, 'invalid move', 'Chain is not available.');
+      this.replyInvalid(player, 'Chain is not available.');
     } else {
       this.board.availableChains.splice(this.board.availableChains.indexOf(data), 1);
       this.activeTile.setChain(data);
-      console.log(player.player.id, 'created', data);
+      console.log(player.id, 'created', data);
       this.broadcast('chain created', {
         row: this.activeTile.row,
         col: this.activeTile.col,

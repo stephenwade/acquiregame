@@ -23,13 +23,14 @@ class Connection {
   
   registerMessages() {
     var self = this;
-    this.socket.on('new game',         ()    => self.newGame());
-    this.socket.on('join game',        (data) => self.joinGame(data));
-    this.socket.on('rejoin game',      (data) => self.rejoinGame(data));
-    this.socket.on('disconnect',       ()    => self.disconnect());
-    this.socket.on('update nickname',  (data) => self.updateNickname(data));
-    this.socket.on('start game',       ()    => { if (self.game) self.game.startGame() });
-    this.socket.on('board ready',      ()    => { if (self.game) self.game.boardReady() });
+    this.socket.on('new game',        ()     => self.newGame());
+    this.socket.on('join game',       (data) => self.joinGame(data));
+    this.socket.on('rejoin game',     (data) => self.rejoinGame(data));
+    this.socket.on('disconnect',      ()     => self.disconnect());
+    this.socket.on('update nickname', (data) => self.updateNickname(data));
+    this.socket.on('start game',      ()     => { if (self.game) self.game.startGame() });
+    this.socket.on('board ready',     ()     => { if (self.game) self.game.boardReady() });
+    this.socket.on('stock decision',  (data) => { if (self.game) self.game.stockDecision(this.id, data) });
     
     let turnMsgs = [
       'tile chosen',
@@ -45,8 +46,6 @@ class Connection {
       
       this.socket.on(msg, callback);
     }
-    
-    this.socket.on('stock decision',   (data) => { if (self.game) self.game.stockDecision(this.id, data) });
   }
   
   // Callbacks
