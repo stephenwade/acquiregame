@@ -7,6 +7,7 @@ class Player {
     this.nickname = nickname;
     this.waitingFor = undefined;
     this.tiles = [];
+    this.money = 60;
     // money
     // stock
     // etc.
