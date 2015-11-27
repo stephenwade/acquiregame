@@ -69,16 +69,13 @@
       },
       
       setEmpty() {
-        console.log('setting empty');
         this.tile = null;
         this.root.querySelector('#label').innerText = '';
         this.root.host.classList.add('empty');
-        console.log('done setting empty');
         return;
       },
       
       isEmpty() {
-        console.log('Empty?', this.tile === null, '->', this.tile);
         return this.tile === null;
       },
       

@@ -269,6 +269,11 @@
       </div>
     </div>
   </div>
+  <div id="fs">
+    <svg style="width: 2em; height: 2em" x="0px" y="0px" width="512px" height="512px" viewBox="0 0 512 512" enable-background="new 0 0 512 512" xml:space="preserve">
+      <path d="M73.143,329.143H0V512h182.857v-73.143H73.143V329.143z M0,182.857h73.143V73.143h109.715V0H0V182.857z M438.857,438.857  H329.143V512H512V329.143h-73.143V438.857z M329.143,0v73.143h109.715v109.715H512V0H329.143z" fill="#000000"/>
+    </svg>
+  </div>
   <div id="stock-modal" class="modal">
     <div id="stock-modal-container" class="modal-container">
       <h3>The market is open!</h3>
@@ -308,12 +313,6 @@
       </div>
     </div>
   </div>
-  <div id="fs" onclick="document.documentElement.webkitRequestFullscreen()">
-  <svg style="width: 2em; height: 2em" x="0px" y="0px" width="512px" height="512px" viewBox="0 0 512 512" enable-background="new 0 0 512 512" xml:space="preserve">
-  <path d="M73.143,329.143H0V512h182.857v-73.143H73.143V329.143z M0,182.857h73.143V73.143h109.715V0H0V182.857z M438.857,438.857  H329.143V512H512V329.143h-73.143V438.857z M329.143,0v73.143h109.715v109.715H512V0H329.143z" fill="#000000"/>
-  </svg>
-  </div>
-  
 </template>
 
 <script src="./player.js"></script>
@@ -334,8 +333,9 @@
         
         this.player = new Player();
         
+        this.fullscreen = false;
+        
         let views = this.root.querySelectorAll('tile-view');
-        console.log('tile views:', views);
         for (let tileView of views) {
           tileView.setPlayer(this.player);
         }
@@ -362,14 +362,16 @@
       attachedCallback() {
         var self = this;
         
-        this.root.querySelector('#turn-state').addEventListener('click', () => self.turnStateClick() );
-        this.root.querySelector('#chain-modal').addEventListener('click', () => self.chainModalDismiss() );
-        this.root.querySelector('#stock-modal').addEventListener('click', () => self.stockModalDismiss() );
-        this.root.querySelector('#chain-modal-container').addEventListener('click', (e) => e.stopPropagation() );
-        this.root.querySelector('#stock-modal-container').addEventListener('click', (e) => e.stopPropagation() );
+        this.addClickListener('#turn-state', () => self.turnStateClick() );
+        this.addClickListener('#chain-modal', () => self.chainModalDismiss() );
+        this.addClickListener('#chain-modal-container', (e) => e.stopPropagation() );
+        this.addClickListener('#fs', () => self.toggleFullScreen() );
+        this.addClickListener('#stock-modal', () => self.stockModalDismiss() );
+        this.addClickListener('#stock-modal-container', (e) => e.stopPropagation() );
         
         // Events
         socket.on('new tiles', (tiles) => self.addTiles(tiles) );
+        socket.on('new shares', (shares) => self.updateShares(shares) );
         
         // States
         socket.on('play a tile', (tiles) => {
@@ -378,12 +380,15 @@
         });
         socket.socket.on('tile played', (tile) => self.checkTiles(tile) );
         socket.on('create a chain', (chains) => {
-          console.log('We need to create a train!');
           self.createChain(chains)
         })
       },
       
       detachedCallback() {
+      },
+      
+      addClickListener(element, callback) {
+        this.root.querySelector(element).addEventListener('click', callback);
       },
       
       turnStateClick() {
@@ -410,7 +415,9 @@
       chainModalDismiss() {
         this.root.querySelector('#chain-modal').classList.remove('visible');
         let chainTiles = this.root.querySelectorAll('.chain-tile');
-        Array.prototype.forEach.call(chainTiles, (tile) => tile.classList.remove('available') );
+        for (let tile of chainTiles) {
+          tile.classList.remove('available');
+        }
       },
       
       stockModalDismiss() {
@@ -418,7 +425,6 @@
       },
       
       chainSubmit(chain) {
-        console.log(chain, 'chosen');
         socket.emit('chain chosen', chain);
         this.chainModalDismiss();
         this.player.state = 'waiting';
@@ -430,7 +436,6 @@
         let views = this.root.querySelectorAll('tile-view');
         
         for (let tile of tiles) {
-          console.log(tile);
           this.player.hand.push(tile);
           
           for (let tileView of views) {
@@ -440,6 +445,14 @@
             }
           }
         }
+      },
+      
+      updateShares(shares) {
+        console.log('new shares!', shares);
+        this.player.addShares(shares.chain, shares.quantity);
+        
+        let id = '#' + shares.chain + '-count';
+        this.root.querySelector(id).innerText = this.player.portfolio[shares.chain];
       },
       
       checkTiles(tile) {
@@ -459,21 +472,23 @@
       
       displayTurnStatus() {
         console.log('displaying!');
-        let turnStateView = this.root.querySelector('#turn-state-text');
-        switch (this.player.state) {
-          case 'waiting':
-            turnStateView.innerText = 'Waiting…';
-            break;
-          case 'choosing tile':
-            turnStateView.innerText = 'Choose a tile';
-            break;
-          case 'create chain':
-            turnStateView.innerText = 'Choose a chain';
-            break;
-          default:
-            turnStateView.innerText = 'State unknown';
-        }
+        let stateView = this.root.querySelector('#turn-state-text');
+        
+        let message = {
+          'waiting': 'Waiting...',
+          'choosing tile': 'Choose a tile',
+          'create chain':  'Choose a chain',
+        }[this.player.state];
+        
+        stateView.innerText = message ? message : 'State unknown';
       },
+      
+      toggleFullScreen() {
+        let doc = document.documentElement;
+        
+        this.fullscreen ? document.webkitExitFullscreen() : doc.webkitRequestFullscreen();
+        this.fullscreen = ! this.fullscreen;
+      }
     });
     
     window.PlayerPage = document.registerElement('player-page', { prototype });
