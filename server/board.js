@@ -19,6 +19,8 @@ class Board {
       'continental',
       'imperial'
     ]
+    
+    this.chains = [];
   }
   
   [Symbol.iterator]() {
@@ -67,6 +69,18 @@ class Board {
     return this.grid[row][col];
   }
   
+  newChain(chain) {
+    let index = this.availableChains.indexOf(chain);
+    
+    if (index >= 0) {
+      this.availableChains.splice(index, 1);
+      
+      return true;
+    }
+    
+    return false;
+  }
+
   playTile(row, col) {
     let cell = this.lookup(row, col);
     

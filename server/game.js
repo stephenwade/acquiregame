@@ -236,11 +236,10 @@ class Game {
   }
   
   chainChosen(player, data) {
-    if (this.board.availableChains.indexOf(data) < 0) {
-      this.replyInvalid(player, 'Chain is not available.');
-    } else {
-      this.board.availableChains.splice(this.board.availableChains.indexOf(data), 1);
+    let created = this.board.newChain(data);
+    if (created) {
       this.activeTile.setChain(data);
+      
       console.log(player.id, 'created', data);
       this.broadcast('chain created', {
         row: this.activeTile.row,
@@ -249,6 +248,8 @@ class Game {
       });
       
       this.nextTurn();
+    } else {
+      this.replyInvalid(player, 'Chain is not available.');
     }
   }
   
