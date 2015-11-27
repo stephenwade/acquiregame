@@ -8,9 +8,15 @@ class Player {
     this.waitingFor = undefined;
     this.tiles = [];
     this.money = 60;
-    // money
-    // stock
-    // etc.
+    this.portfolio = {
+      luxor: 0,
+      tower: 0,
+      american: 0,
+      festival: 0,
+      worldwide: 0,
+      continental: 0,
+      imperial: 0
+    };
   }
   
   dumpPlayerState() {
@@ -35,6 +41,10 @@ class Player {
   
   hasTile(row, col) {
     return this.tiles.some( (t) => t.row == row && t.col == col );
+  }
+  
+  giveShares(chain, quantity) {
+    this.portfolio[chain] += quantity;
   }
 };
 

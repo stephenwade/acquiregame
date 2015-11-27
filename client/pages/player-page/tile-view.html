@@ -14,6 +14,8 @@
       
       -webkit-user-select: none;
       cursor: pointer;
+      
+      transition: background-color 0.5s ease;
     }
     
     #label {
@@ -23,6 +25,10 @@
       transform: translate(-50%, -50%);
       
       white-space: nowrap;
+    }
+    
+    :host(.empty) {
+      background-color: transparent;
     }
   </style>
   <div id="label"></div>
@@ -43,7 +49,9 @@
         var self = this;
         this.clickHandler = (event) => { self.submitTile(); };
         
-        socket.on('tile played', (tile) => { self.confirmPlay(tile); });
+        socket.socket.on('tile played', (tile) => { self.confirmPlay(tile); });
+        
+        this.setEmpty();
       },
       
       attachedCallback() {
@@ -57,6 +65,21 @@
       setTile(tile) {
         this.tile = tile;
         this.root.querySelector('#label').innerText = tile.label;
+        this.root.host.classList.remove('empty');
+      },
+      
+      setEmpty() {
+        console.log('setting empty');
+        this.tile = null;
+        this.root.querySelector('#label').innerText = '';
+        this.root.host.classList.add('empty');
+        console.log('done setting empty');
+        return;
+      },
+      
+      isEmpty() {
+        console.log('Empty?', this.tile === null, '->', this.tile);
+        return this.tile === null;
       },
       
       setPlayer(player) {
@@ -71,9 +94,9 @@
       
       confirmPlay(tile) {
         if (tile.row === this.tile.row && tile.col === this.tile.col) {
-          this.remove();
-          return true;
+          this.setEmpty(); return true;
         }
+        
         return false;
       }
     });

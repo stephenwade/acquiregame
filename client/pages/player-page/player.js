@@ -32,4 +32,8 @@ class Player {
   tileChosen() {
     this.state = 'waiting';
   }
+  
+  choosingTile() {
+    return this.state === 'choosing tile';
+  }
 }

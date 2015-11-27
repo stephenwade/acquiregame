@@ -235,17 +235,20 @@ class Game {
     }
   }
   
-  chainChosen(player, data) {
-    let created = this.board.newChain(data);
+  chainChosen(player, chain) {
+    let created = this.board.newChain(chain);
     if (created) {
-      this.activeTile.setChain(data);
+      this.activeTile.setChain(chain);
       
-      console.log(player.id, 'created', data);
+      console.log(player.id, 'created', chain);
       this.broadcast('chain created', {
         row: this.activeTile.row,
         col: this.activeTile.col,
-        chain: data
+        chain
       });
+      
+      player.giveShares(chain, 1);
+      this.broadcast('new shares', { player, chain, quantity: 1 });
       
       this.nextTurn();
     } else {
