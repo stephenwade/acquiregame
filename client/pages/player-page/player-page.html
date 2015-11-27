@@ -1,5 +1,6 @@
 <link rel="import" href="./tile-view.html">
 <link rel="import" href="../../acquire-stepper/acquire-stepper.html">
+<link rel="import" href="./chain-choice-tile.html">
 
 <template id="playerView">
   <style>
@@ -109,27 +110,6 @@
                   0 1px 10px 0 rgba(0, 0, 0, 0.12),
                   0 2px 4px -1px rgba(0, 0, 0, 0.4); /* from paper-styles */
     }
-    #chain-tiles {
-    }
-    .chain-tile {
-      display: none;
-      float: left;
-      text-align: center;
-      width: 6em;
-      height: 6em;
-      padding: 1em 0;
-      margin: 0 1em 1em 0;
-    }
-    .chain-tile.available {
-      display: block;
-    }
-    .chain-tile-letter {
-      font-size: 4em;
-      line-height: 0.8em;
-    }
-    .chain-tile > * {
-      display: block;
-    }
     .tower {
       background-color: #FFFA7A;
     }
@@ -203,34 +183,13 @@
     <div id="chain-modal-container" class="modal-container">
       <h3>Choose a chain to create:</h3>
       <div id="chain-tiles">
-        <div id="tower-chain-tile" class="tower chain-tile">
-          <span class="chain-tile-letter">T</span>
-          <span class="chain-tile-name">Tower</span>
-        </div>
-        <div id="luxor-chain-tile" class="luxor chain-tile">
-          <span class="chain-tile-letter">L</span>
-          <span class="chain-tile-name">Luxor</span>
-        </div>
-        <div id="american-chain-tile" class="american chain-tile">
-          <span class="chain-tile-letter">A</span>
-          <span class="chain-tile-name">American</span>
-        </div>
-        <div id="worldwide-chain-tile" class="worldwide chain-tile">
-          <span class="chain-tile-letter">W</span>
-          <span class="chain-tile-name">Worldwide</span>
-        </div>
-        <div id="festival-chain-tile" class="festival chain-tile">
-          <span class="chain-tile-letter">F</span>
-          <span class="chain-tile-name">Festival</span>
-        </div>
-        <div id="imperial-chain-tile" class="imperial chain-tile">
-          <span class="chain-tile-letter">I</span>
-          <span class="chain-tile-name">Imperial</span>
-        </div>
-        <div id="continental-chain-tile" class="continental chain-tile">
-          <span class="chain-tile-letter">C</span>
-          <span class="chain-tile-name">Continental</span>
-        </div>
+        <chain-choice-tile chain="Tower" class="available tower"></chain-choice-tile>
+        <chain-choice-tile chain="Luxor" class="available luxor"></chain-choice-tile>
+        <chain-choice-tile chain="American" class="available american"></chain-choice-tile>
+        <chain-choice-tile chain="Worldwide" class="available worldwide"></chain-choice-tile>
+        <chain-choice-tile chain="Festival" class="available festival"></chain-choice-tile>
+        <chain-choice-tile chain="Imperial" class="available imperial"></chain-choice-tile>
+        <chain-choice-tile chain="Continental" class="available continental"></chain-choice-tile>
       </div>
     </div>
   </div>
@@ -353,8 +312,8 @@
       },
       
       turnStateClick() {
-        switch (this.player.state) {
-          case 'create chain':
+        //switch (this.player.state) {
+          //case 'create chain':
             this.root.querySelector('#chain-modal').classList.add('visible');
             let chainTiles = this.root.querySelectorAll('.chain-tile');
             let self = this;
@@ -364,13 +323,13 @@
                 tile.classList.add('available');
                 tile.addEventListener('click', () => self.chainSubmit(tile.id.replace(/-chain-tile/, '')) );
               } );
-            break;
+            //break;
           // case 'buy stock':
-          default:
-            this.root.querySelector('#stock-modal').classList.add('visible');
+          //default:
+            //this.root.querySelector('#stock-modal').classList.add('visible');
             
-            break;
-        }
+            //break;
+        //}
       },
       
       chainModalDismiss() {

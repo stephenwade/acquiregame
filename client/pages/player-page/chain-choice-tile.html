@@ -1,0 +1,50 @@
+<template id="chainTile">
+  <style>
+    :host {
+      display: none;
+      float: left;
+      text-align: center;
+      width: 6em;
+      height: 6em;
+      padding: 1em 0;
+      margin: 0 1em 1em 0;
+    }
+    
+    :host(.available) {
+      display: block;
+    }
+    #letter {
+      font-size: 4em;
+      line-height: 0.8em;
+    }
+    #letter, #name {
+      display: block;
+    }
+  </style>
+  
+  <div id="letter"></div>
+  <div id="name"></div>
+</template>
+
+<script>
+  'use strict';
+
+  (() => {
+    let template = document.currentScript.ownerDocument.querySelector('template');
+    let prototype = Object.create(HTMLElement.prototype);
+    
+    Object.assign(prototype, {
+      createdCallback() {
+        this.root = this.createShadowRoot();
+        this.root.appendChild(document.importNode(template.content, true));
+        
+        this.chain = this.getAttribute('chain');
+        
+        this.root.querySelector('#letter').innerText = this.chain[0];
+        this.root.querySelector('#name').innerText = this.chain;
+      }
+    });
+    
+    window.ChainChoiceTile = document.registerElement('chain-choice-tile', { prototype });
+  })();
+</script>
