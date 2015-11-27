@@ -284,10 +284,10 @@
       attachedCallback() {
         var self = this;
         
-        this.root.querySelector('#turn-state').addEventListener('click', () => self.turnStateClick() );
-        this.root.querySelector('#chain-modal').addEventListener('click', () => self.chainModalDismiss() );
-        this.root.querySelector('#chain-modal-container').addEventListener('click', (e) => e.stopPropagation() );
-        this.root.querySelector('#fs').addEventListener('click', () => self.toggleFullScreen() );
+        this.addClickListener('#turn-state', () => self.turnStateClick() );
+        this.addClickListener('#chain-modal', () => self.chainModalDismiss() );
+        this.addClickListener('#chain-modal-container', (e) => e.stopPropagation() );
+        this.addClickListener('#fs', () => self.toggleFullScreen() );
         
         // Events
         socket.on('new tiles', (tiles) => self.addTiles(tiles) );
@@ -305,6 +305,10 @@
       },
       
       detachedCallback() {
+      },
+      
+      addClickListener(element, callback) {
+        this.root.querySelector(element).addEventListener('click', callback);
       },
       
       turnStateClick() {
