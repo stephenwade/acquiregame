@@ -1,4 +1,5 @@
-<link rel="import" href="./tile-view.html">
+<link rel="import" href="tile-view.html">
+<link rel="import" href="fs-button.html">
 <link rel="import" href="../../acquire-stepper/acquire-stepper.html">
 
 <template id="playerView">
@@ -193,12 +194,10 @@
       background: blue;
       color: white;
     }
-    #fs {
+    fs-button {
       position: absolute;
       top: 1em;
       right: 1em;
-      height: 2em;
-      width: 2em;
     }
   </style>
   
@@ -237,6 +236,7 @@
     <tile-view></tile-view>
     <tile-view></tile-view>
   </div>
+  <fs-button></fs-button>
   <div id="chain-modal" class="modal">
     <div id="chain-modal-container" class="modal-container">
       <h3>Choose a chain to create:</h3>
@@ -271,11 +271,6 @@
         </div>
       </div>
     </div>
-  </div>
-  <div id="fs">
-    <svg style="width: 2em; height: 2em" x="0px" y="0px" width="512px" height="512px" viewBox="0 0 512 512" enable-background="new 0 0 512 512" xml:space="preserve">
-      <path d="M73.143,329.143H0V512h182.857v-73.143H73.143V329.143z M0,182.857h73.143V73.143h109.715V0H0V182.857z M438.857,438.857  H329.143V512H512V329.143h-73.143V438.857z M329.143,0v73.143h109.715v109.715H512V0H329.143z" fill="#000000"/>
-    </svg>
   </div>
   <div id="stock-modal" class="modal">
     <div id="stock-modal-container" class="modal-container">
@@ -372,7 +367,6 @@
           tile.addEventListener('click', () => self.chainSubmit(tile.id.replace(/-chain-tile/, '')) );
         this.addClickListener('#stock-modal',           ()  => self.stockModalDismiss() );
         this.addClickListener('#stock-modal-container', (e) => e.stopPropagation() );
-        this.addClickListener('#fs', ()  => self.toggleFullScreen() );
         
         // Events
         socket.on('new tiles', (tiles) => self.addTiles(tiles) );

@@ -1,0 +1,91 @@
+<template id="fs-button">
+  <style>
+    :host {
+      box-sizing: border-box;
+    }
+    *, *::before, *::after {
+      box-sizing: inherit;
+    }
+    
+    :host {
+      width: 38px;
+      height: 38px;
+    }
+    
+    #circle {
+      width: calc(100% + 8px);
+      height: calc(100% + 8px);
+      border-radius: calc(50% + 4px);
+      position: absolute;
+      top: -4px;
+      left: -4px;
+      padding: 4px;
+      background-color: #fff;
+      box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14),
+                  0 1px 5px 0 rgba(0, 0, 0, 0.12),
+                  0 3px 1px -2px rgba(0, 0, 0, 0.2);
+    }
+    
+    svg {
+      cursor: pointer;
+      display: none;
+      width: 100%;
+      height: 100%;
+    }
+    svg.visible {
+      display: block;
+    }
+  </style>
+  
+  <div id="circle">
+    <svg id="fullscreen" class="visible" viewBox="0 0 24 24" preserveAspectRatio="xMidYMid meet">
+      <path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"></path>
+    </svg>
+    <svg id="fullscreen-exit" viewBox="0 0 24 24" preserveAspectRatio="xMidYMid meet">
+      <path d="M5 16h3v3h2v-5H5v2zm3-8H5v2h5V5H8v3zm6 11h2v-3h3v-2h-5v5zm2-11V5h-2v5h5V8h-3z"></path>
+    </svg>
+  </div>
+</template>
+
+<script>
+  'use strict';
+
+  (() => {
+    let template = document.currentScript.ownerDocument.querySelector('template');
+    let prototype = Object.create(HTMLElement.prototype);
+    
+    Object.assign(prototype, {
+      createdCallback() {
+        this.root = this.createShadowRoot();
+        this.root.appendChild(document.importNode(template.content, true));
+        
+        this.fullscreen = false;
+        
+        var self = this;
+        this.root.addEventListener('click', () => self.toggleFullscreen());
+      },
+      
+      attachedCallback() {
+        // this.fullscreen ? 
+      },
+      
+      detachedCallback() {
+      },
+      
+      toggleFullscreen() {
+        if (this.fullscreen) {
+          document.webkitExitFullscreen();
+          this.root.querySelector('#fullscreen').classList.add('visible');
+          this.root.querySelector('#fullscreen-exit').classList.remove('visible');
+        } else {
+          document.documentElement.webkitRequestFullscreen();
+          this.root.querySelector('#fullscreen').classList.remove('visible');
+          this.root.querySelector('#fullscreen-exit').classList.add('visible');
+        }
+        this.fullscreen = ! this.fullscreen;
+      }
+    });
+    
+    window.fsButton = document.registerElement('fs-button', { prototype });
+  })();
+</script>
