@@ -206,7 +206,7 @@
       <h3>Stocks</h3>
       <table>
         <thead>
-          <tr><th>chain</th>      <th>#</th>                       </tr>
+          <tr><th>chain</th>      <th                       >#</th></tr>
         </thead>
         <tbody>
           <tr><td>Tower</td>      <td id="tower-count"      >0</td></tr>
@@ -363,7 +363,7 @@
         this.addClickListener('#turn-state',            ()  => self.turnStateClick() );
         this.addClickListener('#chain-modal',           ()  => self.chainModalDismiss() );
         this.addClickListener('#chain-modal-container', (e) => e.stopPropagation() );
-        for (tile of this.root.querySelectorAll('.chain-tile'))
+        for (let tile of this.root.querySelectorAll('.chain-tile'))
           tile.addEventListener('click', () => self.chainSubmit(tile.id.replace(/-chain-tile/, '')) );
         this.addClickListener('#stock-modal',           ()  => self.stockModalDismiss() );
         this.addClickListener('#stock-modal-container', (e) => e.stopPropagation() );
