@@ -165,9 +165,12 @@
       left: 1em;
     }
     .stock-tile {
-      display: inline-block;
+      display: none;
       padding: 0.2em 0.5em;
       margin: 0 1em 1em 0;
+    }
+    .stock-tile.available {
+      display: inline-block;
     }
     .stock-tile-name {
       display: inline-block;
@@ -362,12 +365,14 @@
       attachedCallback() {
         var self = this;
         
-        this.addClickListener('#turn-state', () => self.turnStateClick() );
-        this.addClickListener('#chain-modal', () => self.chainModalDismiss() );
+        this.addClickListener('#turn-state',            ()  => self.turnStateClick() );
+        this.addClickListener('#chain-modal',           ()  => self.chainModalDismiss() );
         this.addClickListener('#chain-modal-container', (e) => e.stopPropagation() );
-        this.addClickListener('#fs', () => self.toggleFullScreen() );
-        this.addClickListener('#stock-modal', () => self.stockModalDismiss() );
+        for (tile of this.root.querySelectorAll('.chain-tile'))
+          tile.addEventListener('click', () => self.chainSubmit(tile.id.replace(/-chain-tile/, '')) );
+        this.addClickListener('#stock-modal',           ()  => self.stockModalDismiss() );
         this.addClickListener('#stock-modal-container', (e) => e.stopPropagation() );
+        this.addClickListener('#fs', ()  => self.toggleFullScreen() );
         
         // Events
         socket.on('new tiles', (tiles) => self.addTiles(tiles) );
@@ -396,18 +401,23 @@
           case 'create chain':
             this.root.querySelector('#chain-modal').classList.add('visible');
             let chainTiles = this.root.querySelectorAll('.chain-tile');
-            let self = this;
             Array.prototype.filter.call(chainTiles,
               (tile) => self.player.stateData.indexOf(tile.id.replace(/-chain-tile/, '')) !== -1
               ).forEach( (tile) => {
                 tile.classList.add('available');
-                tile.addEventListener('click', () => self.chainSubmit(tile.id.replace(/-chain-tile/, '')) );
               } );
             break;
           // case 'buy stock':
           default:
             this.root.querySelector('#stock-modal').classList.add('visible');
-            
+            let stockTiles = this.root.querySelectorAll('.stock-tile');
+            let self = this;
+            Array.prototype.filter.call(stockTiles,
+              (tile) => self.player.stateData.indexOf(tile.id.replace(/-stock-tile/, '')) !== -1
+              ).forEach( (tile) => {
+                tile.value = 0;
+                tile.classList.add('available');
+              } );
             break;
         }
       },
@@ -422,6 +432,18 @@
       
       stockModalDismiss() {
         this.root.querySelector('#stock-modal').classList.remove('visible');
+        let stockTiles = this.root.querySelectorAll('.stock-tile');
+        for (let tile of stockTiles) {
+          tile.classList.remove('available');
+        }
+      },
+      
+      stockModalSubmit() {
+        let stockTiles = this.root.querySelectorAll('.stock-tile.available');
+        let result = {}
+        for (let tile of stockTiles) {
+          result[tile.id.replace(/-stock-tile/, '')] = tile.value;
+        }
       },
       
       chainSubmit(chain) {
@@ -470,14 +492,21 @@
         this.displayTurnStatus();
       },
       
+      buyStock(stocks) {
+        this.player.state = 'buy stock';
+        this.player.stateData = stocks;
+        this.displayTurnStatus();
+      },
+      
       displayTurnStatus() {
         console.log('displaying!');
         let stateView = this.root.querySelector('#turn-state-text');
         
         let message = {
-          'waiting': 'Waiting...',
-          'choosing tile': 'Choose a tile',
-          'create chain':  'Choose a chain',
+          'waiting':       'Waiting...',
+          'choosing tile': 'Click to choose a tile',
+          'create chain':  'Click to choose a chain',
+          'buy stock':     'Click to buy stock'
         }[this.player.state];
         
         stateView.innerText = message ? message : 'State unknown';
