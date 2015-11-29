@@ -217,10 +217,11 @@ class Game {
   }
   
   giveShares(player, chain, quantity) {
-    if (this.stockStore.chain >= quantity)
+    if (this.stockStore.chain >= quantity) {
       player.giveShares(chain, quantity);
+      return true;
+    }
     else return false;
-    return true;
   }
   
   turnAction(id, action, data) {
