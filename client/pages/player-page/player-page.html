@@ -368,16 +368,19 @@
             });
             break;
           case 'buy stock':
-          default:
+          // default:
             this.root.querySelector('#stock-modal').classList.add('visible');
             let stockTiles = this.root.querySelectorAll('.stock-tile');
             
-            Array.prototype.filter.call(stockTiles,
-              (tile) => self.player.stateData.indexOf(tile.id.replace(/-stock-tile/, '')) !== -1
-              ).forEach( (tile) => {
-                tile.value = 0;
-                tile.classList.add('available');
-              } );
+            for (let tile of stockTiles) {
+              for (let stock of this.player.stateData) {
+                if (tile.id.replace(/-stock-tile/, '') == stock.chain) {
+                  tile.value = 0;
+                  tile.max = Math.min(3, stock.count);
+                  tile.classList.add('available');
+                }
+              }
+            }
             break;
         }
       },
@@ -469,6 +472,7 @@
       buyStock(stocks) {
         this.player.state = 'buy stock';
         this.player.stateData = stocks;
+        console.log(stocks);
         this.displayTurnStatus();
       },
       
