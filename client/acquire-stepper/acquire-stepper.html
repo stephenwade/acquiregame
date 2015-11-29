@@ -67,11 +67,19 @@
       },
       
       plusClick() {
-        this.setAttribute('value', Number(this.getAttribute('value')) + 1);
+        let val = Number(this.getAttribute('value'));
+        if (this.getAttribute('max')) {
+          if (val < this.getAttribute('max'))
+            this.setAttribute('value', val + 1);
+        } else {
+          this.setAttribute('value', val + 1);
+        }
       },
       
       minusClick() {
-        this.setAttribute('value', Number(this.getAttribute('value')) - 1);
+        let val = Number(this.getAttribute('value'));
+        if (val > this.getAttribute('min')|0)
+          this.setAttribute('value', val - 1);
       }
     });
     

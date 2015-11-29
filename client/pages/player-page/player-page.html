@@ -104,7 +104,7 @@
       right: 4em;
       bottom: 2em;
       left: 4em;
-      padding: 1em 0 1em 1em;
+      padding: 1em;
       background-color: white;
       box-shadow: 0 4px 5px 0 rgba(0, 0, 0, 0.14),
                   0 1px 10px 0 rgba(0, 0, 0, 0.12),
@@ -131,9 +131,44 @@
     .continental {
       background-color: #28FFCD;
     }
+    #stock-tiles {
+      display: flex;
+      flex-direction: column;
+      flex-wrap: wrap;
+      align-items: flex-start;
+      position: absolute;
+      top: 4em;
+      bottom: 3em;
+      left: 1em;
+    }
+    .stock-tile {
+      display: none;
+      padding: 0.2em 0.5em;
+      margin: 0 1em 1em 0;
+    }
+    .stock-tile.available {
+      display: inline-block;
+    }
     .stock-tile-name {
       display: inline-block;
       width: 6em;
+    }
+    #stock-modal-buttons {
+      position: absolute;
+      right: 1em;
+      bottom: 1em;
+    }
+    .custom-button {
+      display: inline-block;
+      border-radius: 3px;
+      cursor: pointer;
+      padding: 0.5em 1em;
+      text-transform: uppercase;
+      margin-left: 0.5em;
+    }
+    .custom-button[raised] {
+      background: blue;
+      color: white;
     }
     #fs {
       position: absolute;
@@ -183,13 +218,13 @@
     <div id="chain-modal-container" class="modal-container">
       <h3>Choose a chain to create:</h3>
       <div id="chain-tiles">
-        <chain-choice-tile chain="Tower" class="available tower"></chain-choice-tile>
-        <chain-choice-tile chain="Luxor" class="available luxor"></chain-choice-tile>
-        <chain-choice-tile chain="American" class="available american"></chain-choice-tile>
-        <chain-choice-tile chain="Worldwide" class="available worldwide"></chain-choice-tile>
-        <chain-choice-tile chain="Festival" class="available festival"></chain-choice-tile>
-        <chain-choice-tile chain="Imperial" class="available imperial"></chain-choice-tile>
-        <chain-choice-tile chain="Continental" class="available continental"></chain-choice-tile>
+        <chain-choice-tile chain="tower" class="tower"></chain-choice-tile>
+        <chain-choice-tile chain="luxor" class="luxor"></chain-choice-tile>
+        <chain-choice-tile chain="american" class="american"></chain-choice-tile>
+        <chain-choice-tile chain="worldwide" class="worldwide"></chain-choice-tile>
+        <chain-choice-tile chain="festival" class="festival"></chain-choice-tile>
+        <chain-choice-tile chain="imperial" class="imperial"></chain-choice-tile>
+        <chain-choice-tile chain="continental" class="continental"></chain-choice-tile>
       </div>
     </div>
   </div>
@@ -204,32 +239,36 @@
       <div id="stock-tiles">
         <div id="tower-stock-tile" class="tower stock-tile">
           <span class="stock-tile-name">Tower</span>
-          <acquire-stepper class="stock-tile-stepper" max="3" value="2"></acquire-stepper>
+          <acquire-stepper class="stock-tile-stepper" max="3" value="0"></acquire-stepper>
         </div>
         <div id="luxor-stock-tile" class="luxor stock-tile">
           <span class="stock-tile-name">Luxor</span>
-          <acquire-stepper class="stock-tile-stepper" max="3" value="2"></acquire-stepper>
+          <acquire-stepper class="stock-tile-stepper" max="3" value="0"></acquire-stepper>
         </div>
         <div id="american-stock-tile" class="american stock-tile">
           <span class="stock-tile-name">American</span>
-          <acquire-stepper class="stock-tile-stepper" max="3" value="2"></acquire-stepper>
+          <acquire-stepper class="stock-tile-stepper" max="3" value="0"></acquire-stepper>
         </div>
         <div id="worldwide-stock-tile" class="worldwide stock-tile">
           <span class="stock-tile-name">Worldwide</span>
-          <acquire-stepper class="stock-tile-stepper" max="3" value="2"></acquire-stepper>
+          <acquire-stepper class="stock-tile-stepper" max="3" value="0"></acquire-stepper>
         </div>
         <div id="festival-stock-tile" class="festival stock-tile">
           <span class="stock-tile-name">Festival</span>
-          <acquire-stepper class="stock-tile-stepper" max="3" value="2"></acquire-stepper>
+          <acquire-stepper class="stock-tile-stepper" max="3" value="0"></acquire-stepper>
         </div>
         <div id="imperial-stock-tile" class="imperial stock-tile">
           <span class="stock-tile-name">Imperial</span>
-          <acquire-stepper class="stock-tile-stepper" max="3" value="2"></acquire-stepper>
+          <acquire-stepper class="stock-tile-stepper" max="3" value="0"></acquire-stepper>
         </div>
         <div id="continental-stock-tile" class="continental stock-tile">
           <span class="stock-tile-name">Continental</span>
-          <acquire-stepper class="stock-tile-stepper" max="3" value="2"></acquire-stepper>
+          <acquire-stepper class="stock-tile-stepper" max="3" value="0"></acquire-stepper>
         </div>
+      </div>
+      <div id="stock-modal-buttons">
+        <span class="custom-button">Not yet</span>
+        <span class="custom-button" raised>Purchase</span>
       </div>
     </div>
   </div>
@@ -282,12 +321,16 @@
       attachedCallback() {
         var self = this;
         
-        this.addClickListener('#turn-state', () => self.turnStateClick() );
-        this.addClickListener('#chain-modal', () => self.chainModalDismiss() );
+        this.addClickListener('#turn-state',            ()  => self.turnStateClick() );
+        this.addClickListener('#chain-modal',           ()  => self.chainModalDismiss() );
         this.addClickListener('#chain-modal-container', (e) => e.stopPropagation() );
-        this.addClickListener('#fs', () => self.toggleFullScreen() );
-        this.addClickListener('#stock-modal', () => self.stockModalDismiss() );
+        let views = this.root.querySelectorAll('chain-choice-tile');
+        for (let chainView of views) {
+          chainView.addEventListener('click', () => self.chainSubmit(chainView.chain));
+        }
+        this.addClickListener('#stock-modal',           ()  => self.stockModalDismiss() );
         this.addClickListener('#stock-modal-container', (e) => e.stopPropagation() );
+        this.addClickListener('#fs', ()  => self.toggleFullScreen() );
         
         // Events
         socket.on('new tiles', (tiles) => self.addTiles(tiles) );
@@ -312,29 +355,39 @@
       },
       
       turnStateClick() {
-        //switch (this.player.state) {
-          //case 'create chain':
+        var self = this;
+        
+        switch (this.player.state) {
+          case 'create chain':
             this.root.querySelector('#chain-modal').classList.add('visible');
-            let chainTiles = this.root.querySelectorAll('.chain-tile');
-            let self = this;
-            Array.prototype.filter.call(chainTiles,
-              (tile) => self.player.stateData.indexOf(tile.id.replace(/-chain-tile/, '')) !== -1
-              ).forEach( (tile) => {
-                tile.classList.add('available');
-                tile.addEventListener('click', () => self.chainSubmit(tile.id.replace(/-chain-tile/, '')) );
-              } );
-            //break;
-          // case 'buy stock':
-          //default:
-            //this.root.querySelector('#stock-modal').classList.add('visible');
+            let chainTiles = this.root.querySelectorAll('chain-choice-tile');
+            console.log(self.player.stateData);
+            Array.prototype.filter.call(chainTiles, (tile) => {
+              console.log('filtering', tile, tile.chain);
+              
+              return self.player.stateData.indexOf(tile.chain) !== -1;
+            }).forEach( (tile) => {
+              tile.classList.add('available');
+            });
+            break;
+          case 'buy stock':
+          default:
+            this.root.querySelector('#stock-modal').classList.add('visible');
+            let stockTiles = this.root.querySelectorAll('.stock-tile');
             
-            //break;
-        //}
+            Array.prototype.filter.call(stockTiles,
+              (tile) => self.player.stateData.indexOf(tile.id.replace(/-stock-tile/, '')) !== -1
+              ).forEach( (tile) => {
+                tile.value = 0;
+                tile.classList.add('available');
+              } );
+            break;
+        }
       },
       
       chainModalDismiss() {
         this.root.querySelector('#chain-modal').classList.remove('visible');
-        let chainTiles = this.root.querySelectorAll('.chain-tile');
+        let chainTiles = this.root.querySelectorAll('chain-choice-tile');
         for (let tile of chainTiles) {
           tile.classList.remove('available');
         }
@@ -342,6 +395,18 @@
       
       stockModalDismiss() {
         this.root.querySelector('#stock-modal').classList.remove('visible');
+        let stockTiles = this.root.querySelectorAll('.stock-tile');
+        for (let tile of stockTiles) {
+          tile.classList.remove('available');
+        }
+      },
+      
+      stockModalSubmit() {
+        let stockTiles = this.root.querySelectorAll('.stock-tile.available');
+        let result = {}
+        for (let tile of stockTiles) {
+          result[tile.id.replace(/-stock-tile/, '')] = tile.value;
+        }
       },
       
       chainSubmit(chain) {
@@ -390,14 +455,21 @@
         this.displayTurnStatus();
       },
       
+      buyStock(stocks) {
+        this.player.state = 'buy stock';
+        this.player.stateData = stocks;
+        this.displayTurnStatus();
+      },
+      
       displayTurnStatus() {
         console.log('displaying!');
         let stateView = this.root.querySelector('#turn-state-text');
         
         let message = {
-          'waiting': 'Waiting...',
-          'choosing tile': 'Choose a tile',
-          'create chain':  'Choose a chain',
+          'waiting':       'Waiting...',
+          'choosing tile': 'Click to choose a tile',
+          'create chain':  'Click to choose a chain',
+          'buy stock':     'Click to buy stock'
         }[this.player.state];
         
         stateView.innerText = message ? message : 'State unknown';
