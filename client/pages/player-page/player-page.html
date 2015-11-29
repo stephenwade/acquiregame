@@ -417,9 +417,9 @@
         }
         let sum = 0;
         for (let chain of purchases)
-          sum += chain.count;
+          sum += Number(chain.count);
         if (sum > 3) {
-          this.root.querySelector('stock-modal-error').innerText =
+          this.root.querySelector('#stock-modal-error').innerText =
             'You can only buy up to 3 total shares.';
         } else {
           console.log(purchases);
@@ -457,6 +457,11 @@
         
         let id = '#' + shares.chain + '-count';
         this.root.querySelector(id).innerText = this.player.portfolio[shares.chain];
+        if (! shares.free) {
+          this.player.state = 'waiting';
+          this.player.stateData = undefined;
+          this.displayTurnStatus();
+        }
       },
       
       checkTiles(tile) {

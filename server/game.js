@@ -177,7 +177,7 @@ class Game {
       let player = this.players[this.currentPlayer];
       player.addTile(tile);
       this.whisper(player.id, 'new tiles', [tile]);
-    
+      
       this.currentPlayer = ++this.currentPlayer % this.players.length;
     }
     let player = this.players[this.currentPlayer];
@@ -219,14 +219,22 @@ class Game {
     }
   }
   
+  sharesAvailable(chain, quantity) {
+    if (this.stockStore[chain] >= quantity)
+      return true;
+    else return false;
+  }
+  
   giveShares(player, chain, quantity) {
-    if (this.stockStore[chain] >= quantity) {
+    if (this.sharesAvailable(chain, quantity)) {
       player.giveShares(chain, quantity);
       console.log('gave player', player.id, quantity, chain, 'shares');
       return true;
     }
-    console.log('failed to give player', player.id, quantity, chain, 'shares');
-    return false;
+    else {
+      console.log('failed to give player', player.id, quantity, chain, 'shares');
+      return false;
+    }
   }
   
   turnAction(id, action, data) {
@@ -234,7 +242,8 @@ class Game {
     let self = this;
     let methods = {
       'tile chosen': () => { self.tileChosen(player.player, data) },
-      'chain chosen': () => { self.chainChosen(player.player, data) }
+      'chain chosen': () => { self.chainChosen(player.player, data) },
+      'stocks purchased': () => { self.stockDecision(player.player, data) }
     }
     
     if (player.order != this.currentPlayer) {
@@ -282,7 +291,12 @@ class Game {
       });
       
       if (this.giveShares(player, chain, 1))
-        this.whisper(player.id, 'new shares', { player, chain, quantity: 1 });
+        this.whisper(player.id, 'new shares', {
+          player,
+          chain,
+          quantity: 1,
+          free: true
+        });
       
       this.buyStock(player);
     } else {
@@ -295,7 +309,20 @@ class Game {
   }
   
   stockDecision(player, data) {
-    
+    let self = this;
+    if (data.every( (stock) => self.sharesAvailable(stock.chain, stock.count) )) {
+      for (let stock of data) {
+        this.giveShares(player, stock.chain, stock.count);
+        this.whisper(player.id, 'new shares', {
+          player,
+          chain: stock.chain,
+          quantity: stock.count
+        });
+      }
+      this.nextTurn();
+    } else {
+      this.replyInvalid(player, 'There aren’t that many shares left.');
+    }
   }
   
   stocksPurchased(player, data) {

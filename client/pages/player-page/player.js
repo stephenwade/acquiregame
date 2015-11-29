@@ -38,6 +38,6 @@ class Player {
   }
   
   addShares(chain, quantity) {
-    this.portfolio[chain] += quantity;
+    this.portfolio[chain] += Number(quantity);
   }
 }
