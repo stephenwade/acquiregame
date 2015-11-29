@@ -64,6 +64,7 @@
       attributeChangedCallback(attrName, oldVal, newVal) {
         if (attrName == 'value')
           this.root.querySelector('#number').innerText = newVal;
+        this[attrName] = newVal;
       },
       
       plusClick() {

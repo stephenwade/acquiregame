@@ -329,6 +329,8 @@
         }
         this.addClickListener('#stock-modal',           ()  => self.stockModalDismiss() );
         this.addClickListener('#stock-modal-container', (e) => e.stopPropagation() );
+        this.addClickListener('#stock-button-cancel',   ()  => self.stockModalDismiss());
+        this.addClickListener('#stock-button-confirm',  ()  => self.stockModalSubmit());
         
         // Events
         socket.on('new tiles', (tiles) => self.addTiles(tiles) );
@@ -370,14 +372,14 @@
           case 'buy stock':
           // default:
             this.root.querySelector('#stock-modal').classList.add('visible');
-            this.root.querySelector('#stock-button-cancel').addEventListener('click', () => self.stockModalDismiss());
             let stockTiles = this.root.querySelectorAll('.stock-tile');
             
             for (let tile of stockTiles) {
               for (let stock of this.player.stateData) {
                 if (tile.id.replace(/-stock-tile/, '') == stock.chain) {
-                  tile.value = 0;
-                  tile.max = Math.min(3, stock.count);
+                  let stepper = tile.querySelector('acquire-stepper');
+                  stepper.value = 0;
+                  stepper.max = Math.min(3, stock.count);
                   tile.classList.add('available');
                 }
               }
@@ -406,13 +408,15 @@
         let stockTiles = this.root.querySelectorAll('.stock-tile.available');
         let purchases = [];
         for (let tile of stockTiles) {
+          let stepper = tile.querySelector('acquire-stepper');
+          console.log('tile', tile, 'stepper', stepper);
           purchases.push({
             chain: tile.id.replace(/-stock-tile/, ''),
-            count: tile.value
+            count: stepper.value
           });
         }
         let sum = 0;
-        for (let chain of result)
+        for (let chain of purchases)
           sum += chain.count;
         if (sum > 3) {
           this.root.querySelector('stock-modal-error').innerText =
