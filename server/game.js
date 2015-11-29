@@ -199,7 +199,10 @@ class Game {
   buyStock(player) {
     if (this.board.chains.length > 0) {
       this.whisper(player.id, 'buy stocks', this.board.chains.map( (chain) => {
-        return { chain, count: 25 }
+        return {
+          chain: chain.name,
+          count: this.stockStore[chain.name]
+        }
       }) );
       console.log(player.id, 'buys stock');
     } else {
@@ -267,7 +270,7 @@ class Game {
   chainChosen(player, chain) {
     let created = this.board.newChain(chain);
     if (created) {
-      this.activeTile.setChain(chain);
+      this.activeTile.setChain(created);
       
       console.log(player.id, 'created', chain);
       this.broadcast('chain created', {

@@ -2,6 +2,7 @@
 
 require('./polyfills');
 var Tile = require('./tile');
+var Chain = require('./chain');
 
 class Board {
   constructor() {
@@ -74,11 +75,18 @@ class Board {
     
     if (index >= 0) {
       this.availableChains.splice(index, 1);
-      this.chains.push(chain);
-      return true;
+      let newChain = new Chain(chain);
+      this.chains.push(newChain);
+      return newChain;
     }
     
     return false;
+  }
+  
+  findChain(chainName) {
+    for (let chain in this.chains)
+      if (chain.name == chainName)
+        return chain;
   }
 
   playTile(row, col) {
@@ -123,7 +131,11 @@ class Board {
     
     let noAction = orphan || expand;
     
-    if (success) cell.play();
+    if (success) {
+      cell.play();
+      if (expand)
+        this.findChain(neighboringChains[0]).addTile(cell);
+    }
     let result = { success, orphan, create, expand, noAction, merger, err };
     console.log('play will be', result);
     return result;

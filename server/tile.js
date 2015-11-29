@@ -60,7 +60,8 @@ class Tile {
   }
   
   setChain(chain) {
-    this.chain = chain;
+    this.chain = chain.name;
+    chain.addTile(this);
     
     this.eachNeighbor((neighbor) => {
       if (neighbor.isPlayed() && neighbor.isOrphan()) {
