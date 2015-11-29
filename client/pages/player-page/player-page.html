@@ -423,8 +423,8 @@
             'You can only buy up to 3 total shares.';
         } else {
           console.log(purchases);
-          // socket.emit('stocks purchased', purchases);
-          // this.root.querySelector('#stock-modal').classList.remove('visible');
+          socket.emit('stocks purchased', purchases);
+          this.root.querySelector('#stock-modal').classList.remove('visible');
         }
       },
       
