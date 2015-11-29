@@ -74,7 +74,7 @@ class Board {
     
     if (index >= 0) {
       this.availableChains.splice(index, 1);
-      
+      this.chains.push(chain);
       return true;
     }
     

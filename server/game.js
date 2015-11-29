@@ -14,6 +14,15 @@ class Game {
     
     this.board = new Board();
     this.tileStore = new TileStore();
+    this.stockStore = {
+      luxor: 25,
+      tower: 25,
+      american: 25,
+      festival: 25,
+      worldwide: 25,
+      continental: 25,
+      imperial: 25
+    };
     
     // The tile starting a chain or causing a merger
     this.activeTile = false;
@@ -184,11 +193,19 @@ class Game {
     this.activeTile = this.board.lookup(tile.row, tile.col);
     console.log(player.nickname, 'needs to create a chain');
     this.whisper(player.id, 'create a chain', this.board.availableChains);
-    player.waitingFor = { ev: 'create a chain' };
+    player.waitingFor = { ev: 'create a chain', data: this.board.availableChains };
   }
   
   buyStock(player) {
-    this.nextTurn();
+    if (this.board.chains.length > 0) {
+      this.whisper(player.id, 'buy stocks', this.board.chains.map( (chain) => {
+        return { chain, count: 25 }
+      }) );
+      console.log(player.id, 'buys stock');
+    } else {
+      this.nextTurn();
+      console.log(player.id, 'doesn’t buy stock');
+    }
   }
   
   findPlayer(id) {
@@ -197,6 +214,13 @@ class Game {
         return { player: this.players[i], order: i };
       }
     }
+  }
+  
+  giveShares(player, chain, quantity) {
+    if (this.stockStore.chain >= quantity)
+      player.giveShares(chain, quantity);
+    else return false;
+    return true;
   }
   
   turnAction(id, action, data) {
@@ -251,8 +275,8 @@ class Game {
         chain
       });
       
-      player.giveShares(chain, 1);
-      this.whisper(player.id, 'new shares', { player, chain, quantity: 1 });
+      if (this.giveShares(player, chain, 1))
+        this.whisper(player.id, 'new shares', { player, chain, quantity: 1 });
       
       this.buyStock(player);
     } else {
