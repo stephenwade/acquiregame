@@ -177,6 +177,9 @@
       display: inline-block;
       width: 6em;
     }
+    #stock-modal-error {
+      color: red;
+    }
     #stock-modal-buttons {
       position: absolute;
       right: 1em;
@@ -306,8 +309,9 @@
         </div>
       </div>
       <div id="stock-modal-buttons">
-        <span class="custom-button">Not yet</span>
-        <span class="custom-button" raised>Purchase</span>
+        <span id="stock-modal-error"></span>
+        <span id="stock-button-cancel" class="custom-button">Not yet</span>
+        <span id="stock-button-confirm" class="custom-button" raised>Purchase</span>
       </div>
     </div>
   </div>
@@ -378,9 +382,8 @@
           self.displayTurnStatus();
         });
         socket.socket.on('tile played', (tile) => self.checkTiles(tile) );
-        socket.on('create a chain', (chains) => {
-          self.createChain(chains)
-        })
+        socket.on('create a chain', (chains) => self.createChain(chains) );
+        socket.on('buy stocks', (stocks) => self.buyStock(stocks) );
       },
       
       detachedCallback() {
@@ -395,14 +398,14 @@
           case 'create chain':
             this.root.querySelector('#chain-modal').classList.add('visible');
             let chainTiles = this.root.querySelectorAll('.chain-tile');
+            let me = this;
             Array.prototype.filter.call(chainTiles,
-              (tile) => self.player.stateData.indexOf(tile.id.replace(/-chain-tile/, '')) !== -1
+              (tile) => me.player.stateData.indexOf(tile.id.replace(/-chain-tile/, '')) !== -1
               ).forEach( (tile) => {
                 tile.classList.add('available');
               } );
             break;
-          // case 'buy stock':
-          default:
+          case 'buy stock':
             this.root.querySelector('#stock-modal').classList.add('visible');
             let stockTiles = this.root.querySelectorAll('.stock-tile');
             let self = this;
@@ -434,9 +437,23 @@
       
       stockModalSubmit() {
         let stockTiles = this.root.querySelectorAll('.stock-tile.available');
-        let result = {}
+        let purchases = [];
         for (let tile of stockTiles) {
-          result[tile.id.replace(/-stock-tile/, '')] = tile.value;
+          purchases.push({
+            chain: tile.id.replace(/-stock-tile/, ''),
+            count: tile.value
+          });
+        }
+        let sum = 0;
+        for (let chain of result)
+          sum += chain.count;
+        if (sum > 3) {
+          this.root.querySelector('stock-modal-error').innerText =
+            'You can only buy up to 3 total shares.';
+        } else {
+          console.log(purchases);
+          // socket.emit('stocks purchased', purchases);
+          // this.root.querySelector('#stock-modal').classList.remove('visible');
         }
       },
       
