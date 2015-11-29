@@ -217,7 +217,7 @@ class Game {
 
   tileChosen(player, tile) {
     if (! player.hasTile(tile.row, tile.col)) {
-      this.replyInvalid(player, 'You shouldn\'t have that tile!');
+      this.replyInvalid(player, 'You shouldn’t have that tile!');
       return;
     }
     
@@ -235,6 +235,10 @@ class Game {
     }
   }
   
+  mergeChains(player, tile) {
+    this.buyStock(player);
+  }
+  
   chainChosen(player, chain) {
     let created = this.board.newChain(chain);
     if (created) {
@@ -250,21 +254,21 @@ class Game {
       player.giveShares(chain, 1);
       this.whisper(player.id, 'new shares', { player, chain, quantity: 1 });
       
-      this.nextTurn();
+      this.buyStock(player);
     } else {
       this.replyInvalid(player, 'Chain is not available.');
     }
   }
   
-  mergerChosen(id, data) {
+  mergerChosen(player, data) {
     
   }
   
-  stockDecision(id, data) {
+  stockDecision(player, data) {
     
   }
   
-  stocksPurchased(id, data) {
+  stocksPurchased(player, data) {
     
   }
   
