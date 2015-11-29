@@ -370,6 +370,7 @@
           case 'buy stock':
           // default:
             this.root.querySelector('#stock-modal').classList.add('visible');
+            this.root.querySelector('#stock-button-cancel').addEventListener('click', () => self.stockModalDismiss());
             let stockTiles = this.root.querySelectorAll('.stock-tile');
             
             for (let tile of stockTiles) {
