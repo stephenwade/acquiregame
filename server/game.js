@@ -220,11 +220,13 @@ class Game {
   }
   
   giveShares(player, chain, quantity) {
-    if (this.stockStore.chain >= quantity) {
+    if (this.stockStore[chain] >= quantity) {
       player.giveShares(chain, quantity);
+      console.log('gave player', player.id, quantity, chain, 'shares');
       return true;
     }
-    else return false;
+    console.log('failed to give player', player.id, quantity, chain, 'shares');
+    return false;
   }
   
   turnAction(id, action, data) {
