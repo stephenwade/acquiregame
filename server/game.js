@@ -180,13 +180,17 @@ class Game {
       
       this.currentPlayer = ++this.currentPlayer % this.players.length;
     }
+    
+    console.log('board state is:');
+    this.board.logState();
+    console.log('\n');
+    
     let player = this.players[this.currentPlayer];
     this.broadcast('next turn', player.uuid);
     this.whisper(player.id, 'play a tile');
     player.waitingFor = { ev: 'play a tile' };
     
-    console.log('board state is:');
-    this.board.logState();
+    console.log(player.nickname, 'needs to choose a tile.');
   }
   
   createChain(player, tile) {

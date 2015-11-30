@@ -60,7 +60,7 @@ class Tile {
   }
   
   setChain(chain) {
-    this.chain = chain.name;
+    this.chain = chain.chainName;
     chain.addTile(this);
     
     this.eachNeighbor((neighbor) => {
@@ -84,7 +84,8 @@ class Tile {
     });
     
     if (claimed && claimed !== 'merger') {
-      this.setChain(claimed);
+      let chain = this.board.findChain(claimed);
+      this.setChain(chain);
     }
   }
   

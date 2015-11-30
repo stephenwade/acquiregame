@@ -59,6 +59,8 @@ class Board {
           cell.addLeftNeighbor(result[row][col - 1]);
         }
         
+        cell.board = this;
+        
         result[row][col] = cell;
       }
     }
@@ -153,10 +155,11 @@ class Board {
     let col = 0;
     let row = '';
     
-    console.log('------------------------------------');
+    console.log('------------------------------------------------');
     
     for (let cell of this) {
-      row += cell.isPlayed() ? (' ' + cell.label).slice(-3) : '   ';
+      let chain = typeof cell.chain === String ? cell.chain[0] : String(cell.chain)[0];
+      row += cell.isPlayed() ? ('  ' + cell.label + chain).slice(-4) : '    ';
       
       col = ++col % this.numCols; 
       if (col === 0) {
@@ -164,7 +167,7 @@ class Board {
       }
     }
     
-    console.log('------------------------------------');
+    console.log('------------------------------------------------');
   }
 };
 
