@@ -200,7 +200,7 @@ class Game {
     if (this.board.chains.length > 0) {
       this.whisper(player.id, 'buy stocks', this.board.chains.map( (chain) => {
         return {
-          chain: chain.name,
+          chain: chain.chainName,
           count: this.stockStore[chain.name]
         }
       }) );

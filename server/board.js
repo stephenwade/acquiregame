@@ -84,9 +84,11 @@ class Board {
   }
   
   findChain(chainName) {
-    for (let chain in this.chains)
-      if (chain.name == chainName)
+    for (let chain of this.chains) {
+      if (chain.chainName == chainName) {
         return chain;
+      }
+    }
   }
 
   playTile(row, col) {
