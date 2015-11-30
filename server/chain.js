@@ -4,7 +4,7 @@ var Tile = require('./tile');
 
 class Chain {
   constructor(name) {
-    this.name = name;
+    this.chainName = name;
     this.tiles = [];
   }
   
