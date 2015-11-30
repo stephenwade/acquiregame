@@ -380,7 +380,7 @@
               for (let stock of this.player.stateData) {
                 if (tile.id.replace(/-stock-tile/, '') == stock.chain) {
                   let stepper = tile.querySelector('acquire-stepper');
-                  stepper.value = 0;
+                  stepper.setAttribute('value', 0);
                   stepper.max = Math.min(3, stock.count);
                   tile.classList.add('available');
                 }
