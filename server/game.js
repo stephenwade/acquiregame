@@ -310,27 +310,31 @@ class Game {
   
   stockDecision(player, data) {
     let self = this;
-    if (data.every( (stock) => self.sharesAvailable(stock.chain, stock.count) )) {
-      let price = 0;
-      for (let stock of data) {
-        price += this.board.findChain(stock.chain).price * stock.count;
-      }
-      if (player.money >= price) {
-        this.whisper(player.id, 'debit', price);
+    if (data.skip)
+      this.nextTurn();
+    else {
+      if (data.every( (stock) => self.sharesAvailable(stock.chain, stock.count) )) {
+        let price = 0;
         for (let stock of data) {
-          this.giveShares(player, stock.chain, stock.count);
-          this.whisper(player.id, 'new shares', {
-            player,
-            chain: stock.chain,
-            quantity: stock.count
-          });
+          price += this.board.findChain(stock.chain).price * stock.count;
         }
-        this.nextTurn();
+        if (player.money >= price) {
+          this.whisper(player.id, 'debit', price);
+          for (let stock of data) {
+            this.giveShares(player, stock.chain, stock.count);
+            this.whisper(player.id, 'new shares', {
+              player,
+              chain: stock.chain,
+              quantity: stock.count
+            });
+          }
+          this.nextTurn();
+        } else {
+          this.replyInvalid(player, 'You don’t have enough money.');
+        }
       } else {
-        this.replyInvalid(player, 'You don’t have enough money.');
+        this.replyInvalid(player, 'There aren’t that many shares left.');
       }
-    } else {
-      this.replyInvalid(player, 'There aren’t that many shares left.');
     }
   }
   

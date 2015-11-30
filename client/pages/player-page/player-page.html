@@ -169,6 +169,7 @@
       padding: 0.5em 1em;
       text-transform: uppercase;
       margin-left: 0.5em;
+      color: blue;
     }
     .custom-button[raised] {
       background: blue;
@@ -267,6 +268,7 @@
       <div id="stock-modal-buttons">
         <span id="stock-modal-error"></span>
         <span id="stock-button-cancel" class="custom-button">Not yet</span>
+        <span id="stock-button-skip" class="custom-button">Skip</span>
         <span id="stock-button-confirm" class="custom-button" raised>Purchase</span>
       </div>
     </div>
@@ -330,6 +332,7 @@
         this.addClickListener('#stock-modal',           ()  => self.stockModalDismiss() );
         this.addClickListener('#stock-modal-container', (e) => e.stopPropagation() );
         this.addClickListener('#stock-button-cancel',   ()  => self.stockModalDismiss());
+        this.addClickListener('#stock-button-skip',     ()  => self.stockModalSubmit(true));
         this.addClickListener('#stock-button-confirm',  ()  => self.stockModalSubmit());
         
         // Events
@@ -406,27 +409,35 @@
         }
       },
       
-      stockModalSubmit() {
-        let stockTiles = this.root.querySelectorAll('.stock-tile.available');
-        let purchases = [];
-        for (let tile of stockTiles) {
-          let stepper = tile.querySelector('acquire-stepper');
-          console.log('tile', tile, 'stepper', stepper);
-          purchases.push({
-            chain: tile.id.replace(/-stock-tile/, ''),
-            count: stepper.value
-          });
-        }
-        let sum = 0;
-        for (let chain of purchases)
-          sum += Number(chain.count);
-        if (sum > 3) {
-          this.root.querySelector('#stock-modal-error').innerText =
-            'You can only buy up to 3 total shares.';
-        } else {
-          console.log(purchases);
-          socket.emit('stocks purchased', purchases);
+      stockModalSubmit(skip) {
+        if (skip) {
+          socket.emit('stocks purchased', { skip: true });
           this.root.querySelector('#stock-modal').classList.remove('visible');
+          this.player.state = 'waiting';
+          this.player.stateData = undefined;
+          this.displayTurnStatus();
+        } else {
+          let stockTiles = this.root.querySelectorAll('.stock-tile.available');
+          let purchases = [];
+          for (let tile of stockTiles) {
+            let stepper = tile.querySelector('acquire-stepper');
+            console.log('tile', tile, 'stepper', stepper);
+            purchases.push({
+              chain: tile.id.replace(/-stock-tile/, ''),
+              count: stepper.value
+            });
+          }
+          let sum = 0;
+          for (let chain of purchases)
+            sum += Number(chain.count);
+          if (sum > 3) {
+            this.root.querySelector('#stock-modal-error').innerText =
+              'You can only buy up to 3 total shares.';
+          } else {
+            console.log(purchases);
+            socket.emit('stocks purchased', purchases);
+            this.root.querySelector('#stock-modal').classList.remove('visible');
+          }
         }
       },
       
