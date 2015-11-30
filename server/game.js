@@ -338,10 +338,6 @@ class Game {
     }
   }
   
-  stocksPurchased(player, data) {
-    
-  }
-  
 };
 
 module.exports = Game;
