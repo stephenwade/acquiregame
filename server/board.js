@@ -138,7 +138,7 @@ class Board {
       if (expand)
         this.findChain(neighboringChains[0]).addTile(cell);
     }
-    let result = { success, orphan, create, expand, noAction, merger, err };
+    let result = { success, orphan, create, expand, noAction, merger, err, neighboringChains };
     console.log('play will be', result);
     return result;
     
