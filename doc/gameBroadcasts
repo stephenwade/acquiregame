@@ -1,0 +1,29 @@
+'setup state':
+  players: Array
+  isReady: Bool
+
+'game started':
+  player: Player
+  tile:   Tile
+
+'next turn':
+  player.uuid: String ??
+
+'tile played':
+  tile: Object{ row, col }
+
+'chain created':
+  row:   Int
+  col:   Int
+  chain: String
+
+'new shares':
+  player:   Player
+  chain:    String
+  quantity: Int
+
+Whispers:
+'buy shares':
+  chains: [
+      Chain{ name, price, numAvailable }
+    ]
