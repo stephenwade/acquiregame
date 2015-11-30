@@ -46,7 +46,8 @@
         this.addClickListener('#minus', () => self.minusClick() );
         this.addClickListener('#plus', () => self.plusClick() );
         
-        this.root.querySelector('#number').innerText = this.getAttribute('value');
+        this.value = this.getAttribute('value');
+        this.root.querySelector('#number').innerText = this.value;
       },
       
       attachedCallback() {
@@ -63,6 +64,7 @@
       
       attributeChangedCallback(attrName, oldVal, newVal) {
         if (attrName == 'value')
+          this.value = newVal;
           this.root.querySelector('#number').innerText = newVal;
         this[attrName] = newVal;
       },
