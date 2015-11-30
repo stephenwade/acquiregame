@@ -301,10 +301,11 @@ class Game {
       }
     }
     
-    this.pendingChains = chains.splice(chains.indexOf(largestChain), 1);
+    this.pendingChains = chains;
     if (ties.length > 1) {
       this.chooseWinningChain(player, ties);
     } else {
+      this.pendingChains.splice(chains.indexOf(largestChain), 1);
       this.resolveStock(player, ties[0], this.pendingChains);
     }
   }
@@ -340,6 +341,7 @@ class Game {
   }
   
   mergerWinnerChosen(player, data) {
+    this.pendingChains.splice(this.pendingChains.indexOf(data), 1);
     this.resolveStock(player, data, this.pendingChains);
   }
   
