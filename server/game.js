@@ -254,7 +254,8 @@ class Game {
     let methods = {
       'tile chosen': () => { self.tileChosen(player.player, data) },
       'chain chosen': () => { self.chainChosen(player.player, data) },
-      'stocks purchased': () => { self.stockDecision(player.player, data) }
+      'stocks purchased': () => { self.stockDecision(player.player, data) },
+      'merge winner chosen': () => { self.mergeWinnerChosen(player.player, data) }
     }
     
     if (player.order != this.currentPlayer) {
@@ -302,10 +303,11 @@ class Game {
       }
     }
     
+    this.pendingChains = chains.splice(chains.indexOf(largestChain), 1);
     if (ties.length > 1) {
-      this.chooseWinner();
+      this.chooseWinningChain(player, ties);
     } else {
-      this.resolveStock();
+      this.resolveStock(player, ties[0], this.pendingChains);
     }
   }
   
@@ -333,6 +335,14 @@ class Game {
     } else {
       this.replyInvalid(player, 'Chain is not available.');
     }
+  }
+  
+  resolveStock(player, winner, remainder) {
+    
+  }
+  
+  mergerWinnerChosen(player, data) {
+    this.resolveStock(player, data, this.pendingChains);
   }
   
   mergerChosen(player, data) {
