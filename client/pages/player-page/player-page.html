@@ -396,6 +396,7 @@
         socket.socket.on('tile played', (tile) => self.checkTiles(tile) );
         socket.on('create a chain', (chains) => self.createChain(chains) );
         socket.on('buy stocks', (stocks) => self.buyStock(stocks) );
+        socket.on('choose merge winner', (chains) => self.chooseMergeWinner(chains) );
       },
       
       detachedCallback() {
@@ -454,12 +455,9 @@
               choice.id = chain + '-decision-tile';
               let html = '';
               html += '<h3>' + chain + '</h3>';
-              // html += '<div id="' + chain + '-keep"><span>Keep</span><acquire-stepper value="0" max="' + this.player.portfolio[chain] + '"></acquire-stepper>';
-              html += '<div id="' + chain + '-keep"><span>Keep</span><acquire-stepper value="0" max="5"></acquire-stepper>';
-              // html += '<div id="' + chain + '-sell"><span>Sell</span><acquire-stepper value="0" max="' + this.player.portfolio[chain] + '"></acquire-stepper>';
-              html += '<div id="' + chain + '-sell"><span>Sell</span><acquire-stepper value="0" max="5"></acquire-stepper>';
-              // html += '<div id="' + chain + '-trade"><span>Trade</span><acquire-stepper value="0" max="' + this.player.portfolio[chain] + '"></acquire-stepper>';
-              html += '<div id="' + chain + '-trade"><span>Trade</span><acquire-stepper value="0" max="5"></acquire-stepper>';
+              html += '<div id="' + chain + '-keep"><span>Keep</span><acquire-stepper value="0" max="' + this.player.portfolio[chain] + '"></acquire-stepper>';
+              html += '<div id="' + chain + '-sell"><span>Sell</span><acquire-stepper value="0" max="' + this.player.portfolio[chain] + '"></acquire-stepper>';
+              html += '<div id="' + chain + '-trade"><span>Trade</span><acquire-stepper value="0" max="' + this.player.portfolio[chain] + '"></acquire-stepper>';
               choice.innerHTML = html;
               this.root.querySelector('#merge-choices').appendChild(choice);
             }
@@ -542,10 +540,10 @@
         for (let tile of tiles) {
           console.log(tile);
           let chain = tile.id.replace(/-decision-tile/, '');
-          let keep = this.root.querySelector('#' + chain + '-keep acquire-stepper').value |0;
-          let sell = this.root.querySelector('#' + chain + '-sell acquire-stepper').value |0;
-          let trade = this.root.querySelector('#' + chain + '-trade acquire-stepper').value |0;
-          result.push({ chain, keep, sell, trade: });
+          let keep = this.root.querySelector('#' + chain + '-keep acquire-stepper').value;
+          let sell = this.root.querySelector('#' + chain + '-sell acquire-stepper').value;
+          let trade = this.root.querySelector('#' + chain + '-trade acquire-stepper').value;
+          result.push({ chain, keep, sell, trade });
         }
         console.log(result);
       },
@@ -621,6 +619,13 @@
         this.player.state = 'buy stock';
         this.player.stateData = stocks;
         console.log(stocks);
+        this.displayTurnStatus();
+      },
+      
+      chooseMergeWinner(chains) {
+        this.player.state = 'merge conflict';
+        this.player.stateData = chains;
+        console.log('we need to choose a winner', chains);
         this.displayTurnStatus();
       },
       
