@@ -10,7 +10,7 @@ class Chain {
   
   addTile(tile) {
     this.tiles.push(tile);
-    console.log('chain', this.name, 'now has', this.tiles.map( (tile) => tile.getLabel() ));
+    console.log('chain', this.chainName, 'now has', this.tiles.map( (tile) => tile.getLabel() ));
   }
   
   addTiles(tiles) {
