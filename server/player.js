@@ -7,7 +7,7 @@ class Player {
     this.nickname = nickname;
     this.waitingFor = undefined;
     this.tiles = [];
-    this.money = 60;
+    this.money = 6000;
     this.portfolio = {
       tower: 0,
       luxor: 0,

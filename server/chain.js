@@ -6,6 +6,20 @@ class Chain {
   constructor(name) {
     this.chainName = name;
     this.tiles = [];
+    switch (name) {
+      case 'tower':
+      case 'luxor':
+        this.priceCategory = 'low';
+        break;
+      case 'american':
+      case 'festival':
+      case 'worldwide':
+        this.priceCategory = 'medium';
+        break;
+      case 'imperial':
+      case 'continental':
+        this.priceCategory = 'high';
+    }
   }
   
   addTile(tile) {
@@ -17,8 +31,28 @@ class Chain {
     tiles.forEach( (tile) => this.addTile(tile) );
   }
   
-  getLength() {
-    return this.tiles.length();
+  get length() {
+    return this.tiles.length;
+  }
+  
+  get price() {
+    let len = this.length, price;
+    if (len <= 5) {
+      price = len * 100;
+    } else if (len >= 6 && len <= 40) {
+      price = Math.ceil(len / 10) * 100 + 500;
+    } else {
+      price = 1000;
+    }
+    if (this.priceCategory == 'medium')
+      price += 100;
+    if (this.priceCategory == 'high')
+      price += 200;
+    return price;
+  }
+  
+  get bonuses() {
+    
   }
 };
 
