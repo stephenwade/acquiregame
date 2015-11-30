@@ -157,7 +157,8 @@
     #stock-modal-error {
       color: red;
     }
-    #stock-modal-buttons {
+    #stock-modal-buttons,
+    #merge-modal-buttons {
       position: absolute;
       right: 1em;
       bottom: 1em;
@@ -174,6 +175,18 @@
     .custom-button[raised] {
       background: blue;
       color: white;
+    }
+    .merge-decision-tile {
+      display: inline-block;
+      padding: 1em;
+      margin: 0 1em 1em 0;
+    }
+    .merge-decision-tile h3 {
+      text-transform: capitalize;
+    }
+    .merge-decision-tile span {
+      display: inline-block;
+      width: 3em;
     }
     fs-button {
       position: absolute;
@@ -287,6 +300,18 @@
       </div>
     </div>
   </div>
+  <div id="merge-modal" class="modal">
+    <div id="merge-modal-container" class="modal-container">
+      <h3>What do you want to do with your shares?</h3>
+      <div id="merge-choices">
+      </div>
+      <div id="merge-modal-buttons">
+        <span id="merge-modal-error"></span>
+        <span id="merge-button-cancel" class="custom-button">Not yet</span>
+        <span id="merge-button-confirm" class="custom-button" raised>Confirm</span>
+      </div>
+    </div>
+  </div>
 </template>
 
 <script src="./player.js"></script>
@@ -352,6 +377,10 @@
         let morechains = this.root.querySelectorAll('chain-choice-tile.merge-conflict-modal');
         for (let chain of morechains)
           chain.addEventListener('click', () => self.mergeConflictSubmit(chain.chain) );
+        this.addClickListener('#merge-modal',           ()  => self.mergeModalDismiss() );
+        this.addClickListener('#merge-modal-container', (e) => e.stopPropagation() );
+        this.addClickListener('#merge-button-cancel',   ()  => self.mergeModalDismiss());
+        this.addClickListener('#merge-button-confirm',  ()  => self.mergeModalSubmit());
         
         // Events
         socket.on('new tiles', (tiles) => self.addTiles(tiles) );
@@ -399,7 +428,7 @@
             for (let tile of stockTiles) {
               for (let stock of this.player.stateData) {
                 if (tile.id.replace(/-stock-tile/, '') == stock.chain) {
-                  let stepper = tile.querySelector('acquire-stepper');
+                  let stepper = tile.querySelector('.stock-tile acquire-stepper');
                   stepper.setAttribute('value', 0);
                   stepper.max = Math.min(3, stock.count);
                   tile.classList.add('available');
@@ -407,13 +436,34 @@
               }
             }
             break;
-          default:
+          case 'merge conflict':
             this.root.querySelector('#merge-conflict-modal').classList.add('visible');
             let tiles = this.root.querySelectorAll('chain-choice-tile.merge-conflict-modal');
             
             for (let tile of tiles)
               if (this.player.stateData.indexOf(tile.chain) >= 0)
                 tile.classList.add('available');
+            break;
+          default:
+          // case 'merger':
+            for (let chain of ['tower', 'luxor']) {
+            // for (let chain of this.player.stateData) {
+              let choice = document.createElement('div');
+              choice.classList.add(chain);
+              choice.classList.add('merge-decision-tile');
+              choice.id = chain + '-decision-tile';
+              let html = '';
+              html += '<h3>' + chain + '</h3>';
+              // html += '<div id="' + chain + '-keep"><span>Keep</span><acquire-stepper value="0" max="' + this.player.portfolio[chain] + '"></acquire-stepper>';
+              html += '<div id="' + chain + '-keep"><span>Keep</span><acquire-stepper value="0" max="5"></acquire-stepper>';
+              // html += '<div id="' + chain + '-sell"><span>Sell</span><acquire-stepper value="0" max="' + this.player.portfolio[chain] + '"></acquire-stepper>';
+              html += '<div id="' + chain + '-sell"><span>Sell</span><acquire-stepper value="0" max="5"></acquire-stepper>';
+              // html += '<div id="' + chain + '-trade"><span>Trade</span><acquire-stepper value="0" max="' + this.player.portfolio[chain] + '"></acquire-stepper>';
+              html += '<div id="' + chain + '-trade"><span>Trade</span><acquire-stepper value="0" max="5"></acquire-stepper>';
+              choice.innerHTML = html;
+              this.root.querySelector('#merge-choices').appendChild(choice);
+            }
+            this.root.querySelector('#merge-modal').classList.add('visible');
         }
       },
       
@@ -441,6 +491,11 @@
         }
       },
       
+      mergeModalDismiss() {
+        this.root.querySelector('#merge-modal').classList.remove('visible');
+        this.root.querySelector('#merge-choices').innerHTML = '';
+      },
+      
       stockModalSubmit(skip) {
         if (skip) {
           socket.emit('stocks purchased', { skip: true });
@@ -452,7 +507,7 @@
           let stockTiles = this.root.querySelectorAll('.stock-tile.available');
           let purchases = [];
           for (let tile of stockTiles) {
-            let stepper = tile.querySelector('acquire-stepper');
+            let stepper = tile.querySelector('.stock-tile acquire-stepper');
             console.log('tile', tile, 'stepper', stepper);
             purchases.push({
               chain: tile.id.replace(/-stock-tile/, ''),
@@ -479,6 +534,20 @@
         this.player.stateData = undefined;
         this.displayTurnStatus();
         this.mergeConflictModalDismiss();
+      },
+      
+      mergeModalSubmit() {
+        let result = [];
+        let tiles = this.root.querySelectorAll('.merge-decision-tile');
+        for (let tile of tiles) {
+          console.log(tile);
+          let chain = tile.id.replace(/-decision-tile/, '');
+          let keep = this.root.querySelector('#' + chain + '-keep acquire-stepper').value |0;
+          let sell = this.root.querySelector('#' + chain + '-sell acquire-stepper').value |0;
+          let trade = this.root.querySelector('#' + chain + '-trade acquire-stepper').value |0;
+          result.push({ chain, keep, sell, trade: });
+        }
+        console.log(result);
       },
       
       chainSubmit(chain) {
