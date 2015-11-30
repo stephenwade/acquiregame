@@ -52,7 +52,10 @@ class Chain {
   }
   
   get bonuses() {
-    
+    return {
+      first: this.price * 10,
+      second: this.price * 5
+    }
   }
 };
 
