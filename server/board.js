@@ -12,13 +12,13 @@ class Board {
     this.grid = this.constructBoard();
     
     this.availableChains = [
-      'luxor',
       'tower',
+      'luxor',
       'american',
-      'festival',
       'worldwide',
-      'continental',
-      'imperial'
+      'festival',
+      'imperial',
+      'continental'
     ]
     
     this.chains = [];

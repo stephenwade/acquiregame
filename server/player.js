@@ -9,13 +9,13 @@ class Player {
     this.tiles = [];
     this.money = 60;
     this.portfolio = {
-      luxor: 0,
       tower: 0,
+      luxor: 0,
       american: 0,
       festival: 0,
       worldwide: 0,
-      continental: 0,
-      imperial: 0
+      imperial: 0,
+      continental: 0
     };
   }
   

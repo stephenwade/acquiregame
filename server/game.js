@@ -15,13 +15,13 @@ class Game {
     this.board = new Board();
     this.tileStore = new TileStore();
     this.stockStore = {
-      luxor: 25,
       tower: 25,
+      luxor: 25,
       american: 25,
       festival: 25,
       worldwide: 25,
-      continental: 25,
-      imperial: 25
+      imperial: 25,
+      continental: 25
     };
     
     // The tile starting a chain or causing a merger
