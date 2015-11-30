@@ -335,6 +335,8 @@
         // Events
         socket.on('new tiles', (tiles) => self.addTiles(tiles) );
         socket.on('new shares', (shares) => self.updateShares(shares) );
+        socket.on('debit', (amount) => self.debit(amount) );
+        socket.on('credit', (amount) => self.credit(amount) );
         
         // States
         socket.on('play a tile', (tiles) => {
@@ -434,6 +436,22 @@
         this.player.state = 'waiting';
         this.player.stateData = undefined;
         this.displayTurnStatus();
+      },
+      
+      debit(amount) {
+        this.player.money -= amount;
+        this.updateMoney();
+      },
+      
+      credit(amout) {
+        this.player.money += amount;
+        this.updateMoney();
+      },
+      
+      updateMoney() {
+        this.root.querySelector('#money-value').innerText =
+          '$' + this.player.money.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        // http://stackoverflow.com/a/2901298/1102945
       },
       
       addTiles(tiles) {
