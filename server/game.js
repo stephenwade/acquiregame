@@ -180,13 +180,17 @@ class Game {
       
       this.currentPlayer = ++this.currentPlayer % this.players.length;
     }
+    
+    console.log('board state is:');
+    this.board.logState();
+    console.log('\n');
+    
     let player = this.players[this.currentPlayer];
     this.broadcast('next turn', player.uuid);
     this.whisper(player.id, 'play a tile');
     player.waitingFor = { ev: 'play a tile' };
     
-    console.log('board state is:');
-    this.board.logState();
+    console.log(player.nickname, 'needs to choose a tile.');
   }
   
   createChain(player, tile) {
@@ -211,6 +215,11 @@ class Game {
     }
   }
   
+  chooseWinningChain(player, chains) {
+    let names = chains.map( (chain) => chain.chainName );
+    this.whisper(player.id, 'choose merge winner', names);
+  }
+
   findPlayer(id) {
     for (let i = 0; i < this.players.length; i++) {
       if (this.players[i].id === id) {
@@ -267,15 +276,35 @@ class Game {
       this.broadcast('tile played', tile);
       
       if (result.create) { this.createChain(player, tile); }
-      if (result.merger) { this.mergeChains(player, tile); }
+      if (result.merger) { this.mergeChains(player, tile, result.neighboringChains); }
       if (result.noAction) { this.buyStock(player); }
     } else {
       this.replyInvalid(player, result.err);
     }
   }
   
-  mergeChains(player, tile) {
-    this.buyStock(player);
+  mergeChains(player, tile, chains) {
+    let largestChain = this.board.findChain(chains[0]);
+    let ties = [largestChain];
+    
+    for (let chainName of chains) {
+      let chain = this.board.findChain(chainName);
+      
+      if (chain.chainName !== largestChain.chainName) {
+        if (chain.length > largestChain.length) {
+          largestChain = chain;
+          ties = [chain];
+        } else if (chain.length === largestChain.length) {
+          ties.push(chain);
+        }
+      }
+    }
+    
+    if (ties.length > 1) {
+      this.chooseWinner();
+    } else {
+      this.resolveStock();
+    }
   }
   
   chainChosen(player, chain) {
