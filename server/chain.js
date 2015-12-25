@@ -4,7 +4,7 @@ var Tile = require('./tile');
 
 class Chain {
   constructor(name) {
-    this.chainName = name;
+    this.name = name;
     this.tiles = [];
     switch (name) {
       case 'tower':
@@ -24,7 +24,6 @@ class Chain {
   
   addTile(tile) {
     this.tiles.push(tile);
-    console.log('chain', this.chainName, 'now has', this.tiles.map( (tile) => tile.getLabel() ));
   }
   
   addTiles(tiles) {

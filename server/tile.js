@@ -60,7 +60,7 @@ class Tile {
   }
   
   setChain(chain) {
-    this.chain = chain.chainName;
+    this.chain = chain.name;
     chain.addTile(this);
     
     this.eachNeighbor((neighbor) => {

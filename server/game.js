@@ -204,7 +204,7 @@ class Game {
     if (this.board.chains.length > 0) {
       this.whisper(player.id, 'buy stocks', this.board.chains.map( (chain) => {
         return {
-          chain: chain.chainName,
+          chain: chain.name,
           count: this.stockStore[chain.name]
         }
       }) );
@@ -217,7 +217,8 @@ class Game {
   }
   
   chooseWinningChain(player, chains) {
-    let names = chains.map( (chain) => chain.chainName );
+    console.log(player.nickname, 'needs to choose between', chains);
+    let names = chains.map( (chain) => chain.name );
     this.whisper(player.id, 'choose merge winner', names);
   }
 
@@ -287,13 +288,15 @@ class Game {
   }
   
   mergeChains(player, tile, chains) {
+    console.log('merge between', chains);
+    
     let largestChain = this.board.findChain(chains[0]);
     let ties = [largestChain];
     
     for (let chainName of chains) {
       let chain = this.board.findChain(chainName);
       
-      if (chain.chainName !== largestChain.chainName) {
+      if (chain.name !== largestChain.name) {
         if (chain.length > largestChain.length) {
           largestChain = chain;
           ties = [chain];
@@ -305,8 +308,11 @@ class Game {
     
     this.pendingChains = chains;
     if (ties.length > 1) {
+      console.log('chains are equal');
       this.chooseWinningChain(player, ties);
     } else {
+      console.log(this.pendingChains);
+      console.log(this.pendingChains[0].length, '!==', this.pendingChains[1].length);
       this.pendingChains.splice(chains.indexOf(largestChain), 1);
       this.resolveStock(player, ties[0], this.pendingChains);
     }
@@ -342,7 +348,8 @@ class Game {
     
   }
   
-  mergerWinnerChosen(player, data) {
+  mergeWinnerChosen(player, data) {
+    console.log(player.nickname, 'chose', data);
     this.pendingChains.splice(this.pendingChains.indexOf(data), 1);
     this.resolveStock(player, data, this.pendingChains);
   }

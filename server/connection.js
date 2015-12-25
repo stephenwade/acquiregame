@@ -35,7 +35,7 @@ class Connection {
     let turnMsgs = [
       'tile chosen',
       'chain chosen',
-      'merger chosen',
+      'merge winner chosen',
       'stocks purchased'
     ];
     

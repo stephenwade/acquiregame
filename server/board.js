@@ -87,7 +87,7 @@ class Board {
   
   findChain(chainName) {
     for (let chain of this.chains) {
-      if (chain.chainName == chainName) {
+      if (chain.name == chainName) {
         return chain;
       }
     }
