@@ -2,6 +2,17 @@ Acquire
 =======
 
 
+SECURITY ALERT
+--------------
+
+This project is not being actively maintained. Please be aware that the
+version of socket.io used in this project is out of date and has a known
+security vulnerability. If you clone this project for your own use, you
+should update socket.io before using it.
+
+**More information**: https://github.com/advisories/GHSA-fxwf-4rqh-v8g3
+
+
 The project
 -----------
 
